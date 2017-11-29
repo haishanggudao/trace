@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.GoodsStockDao">
+	<resultMap id="goodsStock" type="GoodsStock">
+		<id property="goodsStockId" column="goodsStockId" />
+		<result property="goodsId" column="goodsId" />
+		<result property="storageLocationId" column="storageLocationId" />
+		<result property="stockNum" column="stockNum" />
+		<result property="companyId" column="companyId" />
+		<result property="warningNum" column="warningNum" />
+		<result property="isDeleted" column="isDeleted" />
+		<result property="goodsBatch" column="goodsBatch" />
+		
+		<association property="product" javaType="Product">
+			<id property="productId" column="productId" />
+			<result property="productName" column="productName" />
+			<result property="marketCode" column="marketCode" />
+		</association>
+		<association property="productStandardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="productStandardDetailId" />
+			<result property="productStandardNum" column="productStandardNum" />
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId" />
+				<result property="productStandardName" column="productStandardName" />
+			</association>
+		</association>
+	</resultMap>
+	
+	
+	<insert id="addGoodsStock">
+
+		insert into t_goodsStock
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="goodsStockId != null">
+				goodsStockId,
+			</if>
+			<if test="goodsId != null">
+				goodsId,
+			</if>
+			<if test="storageLocationId != null">
+				storageLocationId,
+			</if>
+			<if test="stockNum != null">
+				stockNum,
+			</if>
+			<if test="companyId != null">
+				companyId,
+			</if>
+			<if test="warningNum != null">
+				warningNum,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="goodsStockId != null">
+				#{goodsStockId,jdbcType=CHAR},
+			</if>
+			<if test="goodsId != null">
+				#{goodsId,jdbcType=CHAR},
+			</if>
+			<if test="storageLocationId != null">
+				#{storageLocationId,jdbcType=CHAR},
+			</if>
+			<if test="stockNum != null">
+				#{stockNum,jdbcType=DECIMAL},
+			</if>
+			<if test="companyId != null">
+				#{companyId,jdbcType=CHAR},
+			</if>
+			<if test="warningNum != null">
+				#{warningNum,jdbcType=DECIMAL},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateGoodsStockById">
+		update t_goodsStock
+		<set>
+			<if test="goodsId != null">
+				goodsId = #{goodsId,jdbcType=CHAR},
+			</if>
+			<if test="storageLocationId != null">
+				storageLocationId = #{storageLocationId,jdbcType=CHAR},
+			</if>
+			<if test="stockNum != null">
+				stockNum = #{stockNum,jdbcType=DECIMAL},
+			</if>
+			<if test="warningNum != null">
+				warningNum = #{warningNum,jdbcType=DECIMAL},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="isDeleted != null">
+				isDeleted = #{isDeleted,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where goodsStockId = #{goodsStockId,jdbcType=CHAR}
+	</update>
+	<select id="findByGoodsStockByCase" resultMap="goodsStock">
+		select gs.goodsStockId,gs.stockNum,gs.goodsId,g.productId,g.productStandardDetailId,gs.companyId
+		from t_goodsStock gs
+		INNER JOIN t_goods g on gs.goodsId=g.goodsId
+		<where>
+			<if test="goodsStockId != null and goodsStockId != ''">
+				gs.goodsStockId=#{goodsStockId}
+			</if>
+			<if test="goodsId != null and goodsId != ''">
+				and gs.goodsId = #{goodsId,jdbcType=CHAR}
+			</if>
+			<if test="companyId != null and companyId != ''">
+				and gs.companyId = #{companyId,jdbcType=CHAR}
+			</if>
+		</where> 
+	</select>
+	
+	<select id="findByProductIdStandDetailId" resultMap="goodsStock" useCache="false">
+	SELECT gs.goodsStockId, gs.goodsId, g.productId, gs.storageLocationId, 
+		gs.stockNum, gs.companyId, gs.warningNum, p.productName,
+	    d.productStandardNum, d.productStandardId, g.productStandardDetailId, s.productStandardName,
+		g.goodsBatch
+	FROM t_goodsStock gs
+	INNER JOIN t_goods g on g.goodsId = gs.goodsId
+	INNER JOIN t_product p on p.productId=g.productId
+	INNER JOIN t_product_standard_detail d on g.productStandardDetailId=d.productStandardDetailId
+	INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+	<where>
+		<if test="goodsStock.productId != null and goodsStock.productId != ''">
+			g.productId = #{goodsStock.productId,jdbcType=CHAR}
+		</if>
+		<if test="goodsStock.productStandardDetailId != null and goodsStock.productStandardDetailId != ''">
+			and g.productStandardDetailId = #{goodsStock.productStandardDetailId,jdbcType=CHAR}
+		</if>
+		<if test="goodsStock.goodsBatch !=null and goodsStock.goodsBatch != ''">
+			and g.goodsBatch=#{goodsStock.goodsBatch}
+		</if>
+		<if test="goodsStock.product != null">
+			<if test="goodsStock.product.productName != null and goodsStock.product.productName != ''">
+				and p.productName like CONCAT('%',#{goodsStock.product.productName},'%')
+			</if>
+		</if>
+		<if test="goodsStock.companyId != null and goodsStock.companyId != ''">
+			and gs.companyId=#{goodsStock.companyId}
+		</if>
+		<if test="goodsStock.GoodsId != null and goodsStock.GoodsId != ''">
+			and gs.GoodsId=#{goodsStock.GoodsId}
+		</if>		
+		
+	</where> 
+	order by gs.createTime desc 
+	</select>
+	<update id="updateStockById">
+		update t_goodsStock set stockNum =stockNum+#{stockNum,jdbcType=DECIMAL}
+		<if test="updateTime != null">
+				,updateTime = #{updateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="updateBy != null">
+				,updateBy = #{updateBy,jdbcType=VARCHAR}
+			</if>
+		where goodsStockId = #{goodsStockId,jdbcType=CHAR}
+	</update>
+</mapper>

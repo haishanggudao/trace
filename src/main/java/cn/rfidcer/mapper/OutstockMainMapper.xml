@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.rfidcer.dao.OutstockMainMapper">
+  <resultMap id="BaseResultMap" type="cn.rfidcer.bean.OutstockMain">
+    <id column="outstockMainId" jdbcType="CHAR" property="outstockMainId" />
+    <result column="saleOrderId" jdbcType="CHAR" property="saleOrderId" />
+    <result column="companyId" jdbcType="CHAR" property="companyId" />
+    <result column="outstockNum" jdbcType="VARCHAR" property="outstockNum" />
+    <result column="outstockBatchNum" jdbcType="VARCHAR" property="outstockBatchNum" />
+    <result column="consignor" jdbcType="VARCHAR" property="consignor" />
+    <result column="registrant" jdbcType="VARCHAR" property="registrant" />
+    <result column="outstockDate" jdbcType="TIMESTAMP" property="outstockDate"  />
+    <result column="registDate" jdbcType="TIMESTAMP" property="registDate" />
+    <result column="outstockType" jdbcType="CHAR" property="outstockType" />
+    <result column="status" jdbcType="CHAR" property="status" />
+    <result column="logisticsAlias" jdbcType="VARCHAR" property="logisticsAlias" />
+    <result column="traceCode" jdbcType="VARCHAR" property="traceCode" />
+    <result column="orderTime" jdbcType="VARCHAR" property="orderTime" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="createBy" jdbcType="VARCHAR" property="createBy" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="updateBy" jdbcType="VARCHAR" property="updateBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    outstockMainId, saleOrderId, companyId, outstockNum, outstockBatchNum, consignor, 
+    registrant, outstockDate, registDate, outstockType, status, createTime, createBy, 
+    updateTime, updateBy
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_outstock_main
+    where outstockMainId = #{outstockMainId,jdbcType=CHAR}
+  </select>
+  <select id="list" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_outstock_main
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_outstock_main
+    where outstockMainId = #{outstockMainId,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="cn.rfidcer.bean.OutstockMain">
+    insert into t_outstock_main (outstockMainId, saleOrderId, companyId, 
+      outstockNum, outstockBatchNum, consignor, 
+      registrant, outstockDate, registDate, 
+      outstockType, status, createTime, 
+      createBy, updateTime, updateBy,logisticsId
+      )
+    values (#{outstockMainId,jdbcType=CHAR}, #{saleOrderId,jdbcType=CHAR}, #{companyId,jdbcType=CHAR}, 
+      #{outstockNum,jdbcType=VARCHAR}, #{outstockBatchNum,jdbcType=VARCHAR}, #{consignor,jdbcType=VARCHAR}, 
+      #{registrant,jdbcType=VARCHAR}, #{outstockDate,jdbcType=TIMESTAMP}, #{registDate,jdbcType=TIMESTAMP}, 
+      #{outstockType,jdbcType=CHAR}, #{status,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, #{logisticsId}
+      )
+  </insert>
+  
+  <!-- 新增出库主单信息 -->
+  <insert id="insertSelective" parameterType="cn.rfidcer.bean.OutstockMain">
+    insert into t_outstock_main
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="outstockMainId != null">
+        outstockMainId,
+      </if>
+      <if test="saleOrderId != null">
+        saleOrderId,
+      </if>
+      <if test="companyId != null">
+        companyId,
+      </if>
+      <if test="outstockNum != null">
+        outstockNum,
+      </if>
+      <if test="outstockBatchNum != null">
+        outstockBatchNum,
+      </if>
+      <if test="consignor != null">
+        consignor,
+      </if>
+      <if test="registrant != null">
+        registrant,
+      </if>
+      <if test="outstockDate != null">
+        outstockDate,
+      </if>
+      <if test="registDate != null">
+        registDate,
+      </if>
+      <if test="outstockType != null">
+        outstockType,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        createTime,
+      </if>
+      <if test="createBy != null">
+        createBy,
+      </if>
+      <if test="updateTime != null">
+        updateTime,
+      </if>
+      <if test="updateBy != null">
+        updateBy,
+      </if>
+      <if test="logisticsId != null">
+        logisticsId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="outstockMainId != null">
+        #{outstockMainId,jdbcType=CHAR},
+      </if>
+      <if test="saleOrderId != null">
+        #{saleOrderId,jdbcType=CHAR},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=CHAR},
+      </if>
+      <if test="outstockNum != null">
+        #{outstockNum,jdbcType=VARCHAR},
+      </if>
+      <if test="outstockBatchNum != null">
+        #{outstockBatchNum,jdbcType=VARCHAR},
+      </if>
+      <if test="consignor != null">
+        #{consignor,jdbcType=VARCHAR},
+      </if>
+      <if test="registrant != null">
+        #{registrant,jdbcType=VARCHAR},
+      </if>
+      <if test="outstockDate != null">
+        #{outstockDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="registDate != null">
+        #{registDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="outstockType != null">
+        #{outstockType,jdbcType=CHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="logisticsId != null">
+        #{logisticsId,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 修改出库主单信息 -->
+  <update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.OutstockMain">
+    update t_outstock_main
+    <set>
+      <if test="saleOrderId != null">
+        saleOrderId = #{saleOrderId,jdbcType=CHAR},
+      </if>
+      <if test="companyId != null">
+        companyId = #{companyId,jdbcType=CHAR},
+      </if>
+      <if test="outstockNum != null">
+        outstockNum = #{outstockNum,jdbcType=VARCHAR},
+      </if>
+      <if test="outstockBatchNum != null">
+        outstockBatchNum = #{outstockBatchNum,jdbcType=VARCHAR},
+      </if>
+      <if test="consignor != null">
+        consignor = #{consignor,jdbcType=VARCHAR},
+      </if>
+      <if test="registrant != null">
+        registrant = #{registrant,jdbcType=VARCHAR},
+      </if>
+      <if test="outstockDate != null">
+        outstockDate = #{outstockDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="registDate != null">
+        registDate = #{registDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="outstockType != null">
+        outstockType = #{outstockType,jdbcType=CHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null">
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        createBy = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        updateBy = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="logisticsId != null">
+      	logisticsId = #{logisticsId}
+      </if>
+    </set>
+    where outstockMainId = #{outstockMainId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.OutstockMain">
+    update t_outstock_main
+    set saleOrderId = #{saleOrderId,jdbcType=CHAR},
+      companyId = #{companyId,jdbcType=CHAR},
+      outstockNum = #{outstockNum,jdbcType=VARCHAR},
+      outstockBatchNum = #{outstockBatchNum,jdbcType=VARCHAR},
+      consignor = #{consignor,jdbcType=VARCHAR},
+      registrant = #{registrant,jdbcType=VARCHAR},
+      outstockDate = #{outstockDate,jdbcType=TIMESTAMP},
+      registDate = #{registDate,jdbcType=TIMESTAMP},
+      outstockType = #{outstockType,jdbcType=CHAR},
+      status = #{status,jdbcType=CHAR},
+      createTime = #{createTime,jdbcType=TIMESTAMP},
+      createBy = #{createBy,jdbcType=VARCHAR},
+      updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      updateBy = #{updateBy,jdbcType=VARCHAR}
+    where outstockMainId = #{outstockMainId,jdbcType=CHAR}
+  </update>
+  
+  
+  <!-- 查询所有的出库单信息 -->
+  <select id="findAllList"  resultMap="BaseResultMap"  useCache="false">
+    select 
+    	outstockMainId, saleOrderId, companyId, outstockNum, outstockBatchNum, consignor, 
+    	registrant, outstockDate, registDate, outstockType, status, createTime, createBy, 
+    	updateTime, updateBy, logisticsId
+	    from t_outstock_main
+	    where companyId = #{outstockMain.companyId,jdbcType=CHAR} and outstockNum NOT LIKE 'G%' 
+	    AND outstockType =#{outstockMain.outstockType,jdbcType=CHAR}
+	    ORDER BY updateTime DESC
+	    
+  </select>
+  
+  <!-- 查询所有的出库单信息 -->
+  <select id="findAllProductOutstock" parameterType="java.lang.String" resultMap="BaseResultMap"  useCache="false">
+    SELECT 
+    	om.outstockMainId, om.saleOrderId, 
+    	om.companyId, om.outstockNum, om.outstockBatchNum, om.consignor, 
+    	(SELECT l.logisticsAlias from t_logistics l where l.logisticsId = om.logisticsId) as logisticsAlias,
+    	om.registrant, om.outstockDate, om.registDate, om.outstockType, om.status, om.createTime, om.createBy, 
+    	om.updateTime, om.updateBy, om.logisticsId
+    FROM t_outstock_main om
+    WHERE 
+	    outstockNum NOT LIKE 'G%' 
+	    AND  (SELECT count(*)  FROM t_saleOutstock so WHERE so.outstockMainId=om.outstockMainId ORDER BY so.createTime DESC) >0 
+	    AND outstockType ='1' 
+	    <if test="outstockMain.companyId != null">
+			AND om.companyId = #{outstockMain.companyId} 
+		</if>
+		<if test="outstockMain.outstockNum !=null and outstockMain.outstockNum != ''">
+			AND om.outstockNum LIKE CONCAT(CONCAT('%',#{outstockMain.outstockNum}),'%')
+		</if>
+		<if test="outstockMain.outstockBatchNum !=null and outstockMain.outstockBatchNum != ''">
+			AND om.outstockBatchNum LIKE CONCAT(CONCAT('%',#{outstockMain.outstockBatchNum}),'%')
+		</if>
+		<if test="outstockMain.registrant !=null and outstockMain.registrant != ''">
+			AND om.registrant LIKE CONCAT(CONCAT('%',#{outstockMain.registrant}),'%')
+		</if>
+		<if test="outstockMain.consignor !=null and outstockMain.consignor != ''">
+			AND om.consignor LIKE CONCAT(CONCAT('%',#{outstockMain.consignor}),'%')
+		</if>
+		<if test="outstockMain.registDateStart !=null and outstockMain.registDateStart !='' 
+			and outstockMain.registDateEnd !=null and outstockMain.registDateEnd !='' ">
+			AND om.registDate between #{outstockMain.registDateStart} and #{outstockMain.registDateEnd}
+		</if>
+		<if test="outstockMain.outstockDateStart !=null and outstockMain.outstockDateStart !='' 
+			and outstockMain.outstockDateEnd !=null and outstockMain.outstockDateEnd !='' ">
+			AND om.outstockDate between #{outstockMain.outstockDateStart} and #{outstockMain.outstockDateEnd}
+		</if>
+		<if test="outstockMain.logisticsId !=null and outstockMain.logisticsId !=''">
+			AND om.logisticsId = #{outstockMain.logisticsId}
+		</if>
+		<if test="outstockMain.productName !=null and outstockMain.productName !=''">
+		    AND om.outstockMainId in (SELECT ot.outstockMainId FROM t_outstock_product_items ot
+								inner join t_product tp on tp.productId = ot.productId
+								where tp.productName LIKE CONCAT(CONCAT('%',#{outstockMain.productName}),'%') )
+		</if>
+    	ORDER BY updateTime DESC
+  </select>
+  
+    <!-- 查询关联出库单的销售单ID -->
+  <select id="findSaleOrderIdsBySaleOutstock" parameterType="java.lang.String"  resultType="String"  useCache="false">
+  	SELECT GROUP_CONCAT(so.saleOrderId) as  saleOrderId FROM t_saleOutstock so 
+  	WHERE so.outstockMainId=#{outstockMainId,jdbcType=CHAR} 
+  	ORDER BY so.createTime DESC
+  </select>
+  
+  
+  <!-- 查询所有的出库单信息 -->
+  <select id="findAllGroupDinnerOutstock"  parameterType="cn.rfidcer.bean.OutstockMain" resultMap="BaseResultMap"  useCache="false">  
+      select
+    	o.outstockMainId, o.saleOrderId, o.companyId, o.outstockNum, o.outstockBatchNum, o.consignor, 
+    	o.registrant, o.outstockDate, o.registDate, o.outstockType, o.status, o.createTime, o.createBy, 
+    	o.updateTime, o.updateBy, o.logisticsId,l.logisticsAlias,s.traceCode,s.orderTime
+    	from t_outstock_main o
+		left join t_logistics l on l.logisticsId = o.logisticsId
+		inner join t_sale_order s on s.saleOrderId = o.saleOrderId
+   		where o.companyId =#{outstockMain.companyId,jdbcType=CHAR}  and o.outstockNum LIKE 'G%'
+   		ORDER BY o.updateTime DESC
+  </select>
+  
+  
+  
+  
+  
+  <select id="listOutstockMainBySaleOrderId" parameterType="java.lang.String" resultMap="BaseResultMap"  useCache="false">
+    select 
+    <include refid="Base_Column_List" />
+    from t_outstock_main
+    where saleOrderId = #{saleorderid,jdbcType=CHAR}
+  </select>
+</mapper>

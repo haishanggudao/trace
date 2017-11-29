@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.GoodsQCDao">
+	<resultMap type="GoodsQC" id="goodsQC">
+		<id property="materialQcId" column="materialQcId"/>
+		<result property="originNo" column="originNo"/>
+		<result property="quarantineNo" column="quarantineNo"/>
+		<result property="inspection" column="inspection"/>
+		<result property="inspectionDate" column="inspectionDate"/>
+		<result property="sampleName" column="sampleName"/>
+		<result property="result" column="result"/>
+		<association property="goods" javaType="Goods">
+			<id property="goodsId" column="goodsId"/>
+			<result property="goodsBatch" column="goodsBatch"/>
+			<association property="product" javaType="Product">
+				<id property="productId" column="productId"/>
+				<result property="productName" column="productName"/>
+			</association>
+			<association property="productStandardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="productStandardDetailId"/>
+			<result property="productStandardNum" column="productStandardNum"/>
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId"/>
+				<result property="productStandardName" column="productStandardName"/>
+			</association>
+		</association>
+		</association>
+	</resultMap>
+	<select id="findAll" resultMap="goodsQC">
+		select q.materialQcId,q.goodsId,g.productId,g.goodsBatch,g.productStandardDetailId,d.productStandardNum,d.productStandardId,s.productStandardName,
+			p.productName,q.originNo,q.quarantineNo,q.inspection,q.inspectionDate,q.sampleName,q.result 
+			from t_goods_qc q
+ 			INNER JOIN t_goods g on q.goodsId=g.goodsId 
+ 			INNER JOIN t_product p on g.productId=p.productId
+ 			INNER JOIN t_product_standard_detail d on g.productStandardDetailId=d.productStandardDetailId
+			INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+			order by q.createTime desc
+	</select>
+	<insert id="createGoodsQC">
+		insert into t_goods_qc (materialQcId,goodsId,originNo,quarantineNo,inspection,inspectionDate,sampleName,result,createTime,createBy) values 
+		(#{materialQcId},#{goods.goodsId},#{originNo},#{quarantineNo},#{inspection},#{inspectionDate},#{sampleName},#{result},#{createTime},#{createBy})
+	</insert>
+	<update id="updateGoodsQC">
+		update t_goods_qc set goodsId=#{goods.goodsId},originNo=#{originNo},quarantineNo=#{quarantineNo},inspection=#{inspection},inspectionDate=#{inspectionDate},
+			sampleName=#{sampleName},result=#{result},updateTime=#{updateTime},updateBy=#{updateBy}
+			where materialQcId=#{materialQcId}
+	</update>
+	<delete id="delGoodsQC">
+		delete from t_goods_qc where materialQcId=#{materialQcId}
+	</delete>
+	<select id="checkGoodsQCExists" resultType="int">
+		select count(materialQcId) from t_goods_qc where goodsId=#{goods.goodsId}
+		<if test="materialQcId!=null and materialQcId!=''">
+			and materialQcId!=#{materialQcId}
+		</if>
+	</select>
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>

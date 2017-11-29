@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProductMapper">
+	<resultMap id="BaseResultMap" type="cn.rfidcer.bean.Product">
+		<id column="productId" property="productId" jdbcType="CHAR" />
+		<result column="productName" property="productName" jdbcType="VARCHAR" />
+		<result column="productCode" property="productCode" jdbcType="VARCHAR" />
+		<result column="productDesc" property="productDesc" jdbcType="VARCHAR" />
+		<result column="marketCode" property="marketCode" jdbcType="VARCHAR" />
+		<result column="productShortName" property="productShortName" jdbcType="VARCHAR" />
+		<result column="productType" property="productType" jdbcType="CHAR" />
+		<result column="productCategoryId" property="productCategoryId" jdbcType="CHAR" />
+		<result column="productImageUrl" property="productImageUrl" jdbcType="VARCHAR" />
+		<result column="publicityImageLink" property="publicityImageLink" jdbcType="VARCHAR" />
+		<result column="publicityImageUrl" property="publicityImageUrl" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="CHAR" />
+		<result column="companyId" property="companyId" jdbcType="CHAR" />
+		<result column="productDetailMapId" property="productDetailMapId" jdbcType="CHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+		<result column="madein" property="madein" jdbcType="VARCHAR" />
+		<result column="productDate" property="productDate"  />
+		<result column="shelfLife" property="shelfLife" />
+		<association column="productCategoryId" property="category" select="getProductCategory"></association>
+		<association column="productDetailMapId" property="detailMap" select="getProductDetailMap"></association>
+	</resultMap>
+	
+	<resultMap id="productInfo" type="cn.rfidcer.bean.Product">
+		<id column="productId" property="productId" jdbcType="CHAR" />
+		<result column="productName" property="productName" jdbcType="VARCHAR" />
+		<result column="productCategoryId" property="productCategoryId" jdbcType="CHAR" />
+	</resultMap>
+	
+	<resultMap id="ResultMapWithBLOBs" type="cn.rfidcer.bean.Product"
+		extends="BaseResultMap">
+		<result column="productDesc" property="productDesc" jdbcType="LONGVARCHAR" />
+	</resultMap>
+
+	<resultMap id="Product" type="cn.rfidcer.bean.Product">
+		<id column="productId" property="productId" jdbcType="CHAR" />
+		<result column="productName" property="productName" jdbcType="VARCHAR" />
+		<result column="productCode" property="productCode" jdbcType="VARCHAR" />
+		<result column="productDesc" property="productDesc" jdbcType="VARCHAR" />
+		<result column="marketCode" property="marketCode" jdbcType="VARCHAR" />
+		<result column="productStandardName" property="productStandardName" />
+		<result column="productShortName" property="productShortName" jdbcType="VARCHAR" />
+		<result column="productType" property="productType" jdbcType="CHAR" />
+		<result column="productCategoryId" property="productCategoryId" jdbcType="CHAR" />
+		<result column="productImageUrl" property="productImageUrl" jdbcType="VARCHAR" />
+		<result column="publicityImageLink" property="publicityImageLink" jdbcType="VARCHAR" />
+		<result column="publicityImageUrl" property="publicityImageUrl" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="CHAR" />
+		<result column="companyId" property="companyId" jdbcType="CHAR" />
+		<result column="productDetailMapId" property="productDetailMapId" jdbcType="CHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+		<result column="madein" property="madein" jdbcType="VARCHAR" />
+		<result column="madeinStr" property="madeinStr"  />
+		<result column="productDate" property="productDate" />
+		<result column="productStandardDetailId" property="productStandardDetailId" />
+		<result column="salePrice" property="salePrice" />
+		<result column="shelfLife" property="shelfLife" />
+		<association property="category" javaType="ProductCategory">
+			<id property="productCategoryId" column="productCategoryId" />
+			<result property="productCategoryName" column="productCategoryName" />
+		</association>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		productId, productName, productCode,marketCode, productShortName, productType,
+		productCategoryId,publicityImageLink,publicityImageUrl,madein,productName,shelfLife,productDesc,
+		productImageUrl, status, companyId, productDetailMapId, createTime, createBy,
+		updateTime,
+		updateBy
+	</sql>
+	<sql id="Base_Column_List2">
+		productName, productCode,marketCode, productShortName, productType,
+		productCategoryId,publicityImageLink,publicityImageUrl,madein,productName,shelfLife,
+		productImageUrl, status, productDetailMapId,productDesc
+	</sql>
+
+	<sql id="Blob_Column_List">
+		productDesc
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from t_product
+		where productId = #{productId,jdbcType=CHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_product
+		where productId = #{productId,jdbcType=CHAR}
+	</delete>
+	
+	<delete id="delProductStandardDetailByProductStandardId" parameterType="java.lang.String">
+		delete from t_product_standard_detail
+		where productStandardDetailId = #{productStandardDetailId,jdbcType=CHAR}
+	</delete>
+	
+	<insert id="insert" parameterType="cn.rfidcer.bean.Product">
+		insert into t_product (productId, productName, productCode,
+		marketCode,
+		productShortName, productType, productCategoryId,
+		productImageUrl, status, companyId,
+		productDetailMapId, createTime, createBy,
+		updateTime, updateBy, productDesc,madein,productName,shelfLife,
+		)
+		values (#{productId,jdbcType=CHAR}, #{productName,jdbcType=VARCHAR},
+		#{productCode,jdbcType=VARCHAR},#{marketCode,jdbcType=VARCHAR},
+		#{productShortName,jdbcType=VARCHAR}, #{productType,jdbcType=CHAR},
+		#{productCategoryId,jdbcType=CHAR},#{productDate},#{shelfLife},
+		#{productImageUrl,jdbcType=VARCHAR}, #{status,jdbcType=CHAR},
+		#{companyId,jdbcType=CHAR},
+		#{productDetailMapId,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR},
+		#{productDesc,jdbcType=LONGVARCHAR}, #{madein,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.Product">
+		insert into t_product
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="productId != null">
+				productId,
+			</if>
+			<if test="productName != null">
+				productName,
+			</if>
+			<if test="productCode != null">
+				productCode,
+			</if>
+			<if test="marketCode != null">
+				marketCode,
+			</if>
+			<if test="productShortName != null">
+				productShortName,
+			</if>
+			<if test="productType != null">
+				productType,
+			</if>
+			<if test="productCategoryId != null">
+				productCategoryId,
+			</if>
+			<if test="productImageUrl != null">
+				productImageUrl,
+			</if>
+			<if test="publicityImageLink != null">
+				publicityImageLink,
+			</if>
+			<if test="publicityImageUrl != null">
+				publicityImageUrl,
+			</if>						
+			<if test="status != null">
+				status,
+			</if>
+			<if test="companyId != null">
+				companyId,
+			</if>
+			<if test="productDetailMapId != null">
+				productDetailMapId,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+			<if test="productDesc != null">
+				productDesc,
+			</if>
+			<if test="madein != null">
+				madein,
+			</if>
+			<if test="productDate != null">
+				productDate,
+			</if>
+			<if test="shelfLife != null">
+				shelfLife,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="productId != null">
+				#{productId,jdbcType=CHAR},
+			</if>
+			<if test="productName != null">
+				#{productName,jdbcType=VARCHAR},
+			</if>
+			<if test="productCode != null">
+				#{productCode,jdbcType=VARCHAR},
+			</if>
+			<if test="marketCode != null">
+				#{marketCode,jdbcType=VARCHAR},
+			</if>
+			<if test="productShortName != null">
+				#{productShortName,jdbcType=VARCHAR},
+			</if>
+			<if test="productType != null">
+				#{productType,jdbcType=CHAR},
+			</if>
+			<if test="productCategoryId != null">
+				#{productCategoryId,jdbcType=CHAR},
+			</if>
+			<if test="productImageUrl != null">
+				#{productImageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="publicityImageLink != null">
+				#{publicityImageLink,jdbcType=VARCHAR},
+			</if>
+			<if test="publicityImageUrl != null">
+				#{publicityImageUrl,jdbcType=VARCHAR},
+			</if>						
+			<if test="status != null">
+				#{status,jdbcType=CHAR},
+			</if>
+			<if test="companyId != null">
+				#{companyId,jdbcType=CHAR},
+			</if>
+			<if test="productDetailMapId != null">
+				#{productDetailMapId,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="productDesc != null">
+				#{productDesc,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="madein != null">
+				#{madein,jdbcType=VARCHAR},
+			</if>
+			<if test="productDate != null">
+				#{productDate}, 
+			</if>
+			<if test="shelfLife != null">
+				#{shelfLife},  
+			</if>
+		</trim>
+		
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.Product">
+		update t_product
+		<set>
+			<if test="productName != null">
+				productName = #{productName,jdbcType=VARCHAR},
+			</if>
+			<if test="productCode != null">
+				productCode = #{productCode,jdbcType=VARCHAR},
+			</if>
+			<if test="marketCode != null">
+				marketCode = #{marketCode,jdbcType=VARCHAR},
+			</if>
+			<if test="productShortName != null">
+				productShortName = #{productShortName,jdbcType=VARCHAR},
+			</if>
+			<if test="productType != null">
+				productType = #{productType,jdbcType=CHAR},
+			</if>
+			<if test="productCategoryId != null">
+				productCategoryId = #{productCategoryId,jdbcType=CHAR},
+			</if>
+			<if test="productImageUrl != null">
+				productImageUrl = #{productImageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="publicityImageLink != null">
+				publicityImageLink = #{publicityImageLink,jdbcType=VARCHAR},
+			</if>
+			<if test="publicityImageUrl != null">
+				publicityImageUrl = #{publicityImageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=CHAR},
+			</if>
+			<if test="companyId != null">
+				companyId = #{companyId,jdbcType=CHAR},
+			</if>
+			<if test="productDetailMapId != null">
+				productDetailMapId = #{productDetailMapId,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				createBy = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="productDesc != null">
+				productDesc = #{productDesc,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="madein != null">
+				madein = #{madein,jdbcType=VARCHAR},
+			</if>
+			<if test="productDate != null">
+				productDate = #{productDate},
+			</if>
+			<if test="shelfLife != null">
+				shelfLife = #{shelfLife},
+			</if>
+		</set>
+		where productId = #{productId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="cn.rfidcer.bean.Product">
+		update t_product
+		set productName = #{productName,jdbcType=VARCHAR},
+		productCode = #{productCode,jdbcType=VARCHAR},
+		marketCode = #{marketCode,jdbcType=VARCHAR},
+		productShortName = #{productShortName,jdbcType=VARCHAR},
+		productType = #{productType,jdbcType=CHAR},
+		productCategoryId = #{productCategoryId,jdbcType=CHAR},
+		productImageUrl = #{productImageUrl,jdbcType=VARCHAR},
+		status = #{status,jdbcType=CHAR},
+		productDetailMapId = #{productDetailMapId,jdbcType=CHAR},
+		<!-- createTime = #{createTime,jdbcType=TIMESTAMP}, createBy = #{createBy,jdbcType=VARCHAR}, -->
+		updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		updateBy = #{updateBy,jdbcType=VARCHAR},
+		madein = #{madein,jdbcType=VARCHAR},
+		productDesc = #{productDesc,jdbcType=LONGVARCHAR},
+		productDate=#{productDate},
+		shelfLife=#{shelfLife},
+		where productId = #{productId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.Product">
+		update t_product
+		set productName = #{productName,jdbcType=VARCHAR},
+		productCode = #{productCode,jdbcType=VARCHAR},
+		marketCode = #{marketCode,jdbcType=VARCHAR},
+		productShortName = #{productShortName,jdbcType=VARCHAR},
+		productType = #{productType,jdbcType=CHAR},
+		productCategoryId = #{productCategoryId,jdbcType=CHAR},
+		productImageUrl = #{productImageUrl,jdbcType=VARCHAR},
+		status = #{status,jdbcType=CHAR},
+		companyId = #{companyId,jdbcType=CHAR},
+		madein = #{madein,jdbcType=VARCHAR},
+		productDetailMapId = #{productDetailMapId,jdbcType=CHAR},
+		<!-- createTime = #{createTime,jdbcType=TIMESTAMP}, createBy = #{createBy,jdbcType=VARCHAR}, -->
+		updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		updateBy = #{updateBy,jdbcType=VARCHAR}
+		productDate=#{productDate},
+		shelfLife=#{shelfLife},
+		where productId = #{productId,jdbcType=CHAR}
+	</update>
+
+	<!-- 通过更改状态来移除产品 -->
+	<update id="deleteWithStatusByPrimaryKey" parameterType="java.lang.String">
+		update t_product
+		set isDeleted = -1
+		where productId = #{productId,jdbcType=CHAR}
+	</update>
+
+
+	<select id="findProductListByGoodsVariable" resultMap="Product" useCache="false">
+		select distinct p.productId ,p.productName
+		FROM t_product p
+		<if test="product.varGroup!=null and product.varGroup!='' and product.varName!=null and product.varName!='' ">
+			INNER JOIN t_common_variable v on v.varGroup =#{product.varGroup} and v.varName=#{product.varName}
+			INNER JOIN t_goods g on g.productId = p.productId  and v.varId = g.deliverType
+		</if> 
+		where p.isDeleted = 0 and p.companyId=#{product.companyId}  and p.productType =1
+	</select>
+
+	<select id="checkProductNameExists" resultType="int">
+		SELECT count(productId) FROM t_product where productName =
+		#{productName} and companyId=#{companyId} and isDeleted=0
+		<if test="productId!=null and productId!=''">
+			and productId!=#{productId} 
+		</if>
+	</select>
+	<select id="checkProductExists" resultType="int">
+		SELECT count(productId) FROM t_product where  1=1 
+		<if test="companyId!=null and companyId!=''">
+			and companyId=#{companyId}
+		</if>
+		<if test="productId!=null and productId!=''">
+			and productId =#{productId}
+		</if>
+		<if test="productName!=null and productName!=''">
+			and productName = #{productName} 
+		</if>		
+	</select>
+
+	<select id="getProductList" resultMap="ResultMapWithBLOBs"
+		useCache="false">
+		select productId, productName, productCode,marketCode,
+		productShortName,madein,
+		productType, productCategoryId,
+		productImageUrl, status, companyId, productDetailMapId, createTime, createBy,
+		updateTime,
+		updateBy, productDesc
+		from t_product
+		<where>
+			<if
+				test="product.productCategoryId!=null and product.productCategoryId!=''">
+				productCategoryId=#{product.productCategoryId}
+			</if>
+			<if test="product.companyId != null and product.companyId != ''">
+				and companyId=#{product.companyId}
+			</if>
+			<if test="product.productType != null and product.productType != ''">
+				and productType=#{product.productType}
+			</if>
+			<if test="product.productName != null and product.productName != ''">
+				and productName=#{product.productName}
+			</if>
+			<if test="product.productCode != null and product.productCode != ''">
+				and productCode=#{product.productCode}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 用left join的方式来获取产品列表信息 -->
+	<select id="findProductList" resultMap="Product" useCache="false">
+		select p.productId, p.productName, p.productCode,p.marketCode,
+		p.productShortName,p.madein,
+		p.productDesc, p.productType, p.productCategoryId,
+		p.productImageUrl,p.publicityImageLink,p.publicityImageUrl,
+		p.status, p.companyId, p.productDetailMapId,
+		p.createTime, p.createBy, p.updateTime, p.updateBy,
+		c.productCategoryName, a.catgName as madeinStr
+		FROM t_product p
+		left join t_product_category c on c.productCategoryId = p.productCategoryId
+		<if test="product.isStandarddetail!=null and product.isStandarddetail!=''">
+			INNER  join t_product_standard_detail d on d.productId =p.productId 
+		</if>
+		LEFT JOIN sys_area_info a on a.id = p.madein
+		where p.isDeleted = 0
+		<if
+			test="product.productCategoryId!=null and product.productCategoryId!=''">
+			and p.productCategoryId=#{product.productCategoryId}
+		</if>
+		<if test="product.companyId != null and product.companyId != ''">
+			and p.companyId=#{product.companyId}
+		</if>
+		<if test="product.productType != null and product.productType != ''">
+			and (p.productType=#{product.productType} or p.productType=0)
+		</if>
+		<if test="product.productCode != null and product.productCode != ''">
+			and p.productCode=#{product.productCode}
+		</if>
+		<if test="product.productName != null and product.productName != '' and product.marketCode != null and product.marketCode != ''">
+				and (p.productName like CONCAT('%',#{product.productName},'%') or p.marketCode like CONCAT(#{product.marketCode},'%'))
+		</if>
+		order by p.updateTime desc
+	</select>
+	
+	<!-- 用left join的方式来获取产品列表信息 -->
+	<select id="findProductFruitList" resultMap="Product" useCache="false">
+		select p.productId, p.productName, p.productCode,p.marketCode,
+		p.productShortName,p.madein,
+		p.productDesc, p.productType, p.productCategoryId,
+		p.productImageUrl,p.publicityImageLink,p.publicityImageUrl,
+		p.status, p.companyId, p.productDetailMapId,d.salePrice,p.productDate,
+		p.createTime, p.createBy, p.updateTime, p.updateBy,d.productStandardDetailId,
+		c.productCategoryName,s.productStandardName, a.catgName as madeinStr,p.shelfLife
+		FROM t_product p
+		INNER  JOIN  t_product_standard_detail  d  on  d.productId = p.productId
+		INNER JOIN t_product_standard s  on s.productStandardId = d.productStandardId
+		LEFT JOIN sys_area_info a on a.id = p.madein
+		LEFT JOIN t_product_category c on c.productCategoryId =p.productCategoryId
+		WHERE p.isDeleted = 0
+		<if
+			test="product.productCategoryId!=null and product.productCategoryId!=''">
+			and p.productCategoryId=#{product.productCategoryId}
+		</if>
+		<if test="product.companyId != null and product.companyId != ''">
+			and p.companyId=#{product.companyId}
+		</if>
+		<if test="product.productType != null and product.productType != ''">
+			and (p.productType=#{product.productType} or p.productType=0)
+		</if>
+	 	<if test="product.productName != null and product.productName != ''">
+			and p.productName=#{product.productName}
+		</if>
+		<if test="product.productCode != null and product.productCode != ''">
+			and p.productCode=#{product.productCode}
+		</if>
+		order by p.updateTime desc
+	</select>
+
+
+	<!-- 查询产品列表信息 -->
+	<select id="findProductListByQuery" resultMap="ResultMapWithBLOBs"
+		useCache="false">
+		select productId, productName, productCode,marketCode,
+		productShortName,madein,
+		productType, productCategoryId,
+		productImageUrl, status, companyId, productDetailMapId, createTime, createBy,
+		updateTime,
+		updateBy, productDesc
+		from t_product
+		<where>
+			isDeleted = 0
+			<if
+				test="product.productCategoryId!=null and product.productCategoryId!=''">
+				and productCategoryId=#{product.productCategoryId}
+			</if>
+			<if test="product.companyId != null and product.companyId != ''">
+				and companyId=#{product.companyId}
+			</if>
+			<if test="product.productType != null and product.productType != ''">
+				and productType=#{product.productType}
+			</if>
+			<if test="product.productName != null and product.productName != ''">
+				and productName like CONCAT('%',#{product.productName},'%')
+			</if>
+		</where>
+	</select>
+	<!-- 查询水果列表信息 -->
+	<select id="findProductFruitListByQuery" resultMap="Product" useCache="false">
+		select p.productId, p.productName, p.productCode,p.marketCode,
+		p.productShortName,p.madein,
+		p.productDesc, p.productType, p.productCategoryId,
+		p.productImageUrl,p.publicityImageLink,p.publicityImageUrl,
+		p.status, p.companyId, p.productDetailMapId,d.salePrice,p.productDate,
+		p.createTime, p.createBy, p.updateTime, p.updateBy,d.productStandardDetailId,
+		c.productCategoryName,s.productStandardName, a.catgName as madeinStr,p.shelfLife
+		FROM t_product p
+		INNER  JOIN  t_product_standard_detail  d  on  d.productId = p.productId
+		INNER JOIN t_product_standard s  on s.productStandardId = d.productStandardId
+		LEFT JOIN sys_area_info a on a.id = p.madein
+		LEFT JOIN t_product_category c on c.productCategoryId =p.productCategoryId
+		
+		<where>
+			p.isDeleted = 0
+			<if
+				test="product.productCategoryId!=null and product.productCategoryId!=''">
+				and p.productCategoryId=#{product.productCategoryId}
+			</if>
+			<if test="product.companyId != null and product.companyId != ''">
+				and p.companyId=#{product.companyId}
+			</if>
+			<if test="product.productType != null and product.productType != ''">
+				and p.productType=#{product.productType}
+			</if>
+			<if test="product.productName != null and product.productName != ''">
+				and p.productName like CONCAT('%',#{product.productName},'%')
+			</if>
+		</where>
+	</select>
+	<select id="findProductBygoodsId" resultMap="ResultMapWithBLOBs"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List2" />
+		from t_product inner join t_goods
+		ON t_goods.goodsId= #{goodsId,jdbcType=CHAR}
+		where t_product.productId = t_goods.productId
+	</select>
+	<!-- 查询有规格明细的产品 -->
+	<select id="findProductInfoAreDetailed" resultMap="productInfo" useCache="false">
+		SELECT   p.productId,p.productName,p.productCategoryId,p.madein
+		FROM  t_product p
+		INNER JOIN  t_product_standard_detail d on d.productId = p.productId
+		INNER JOIN t_product_standard sd on sd.productStandardId=d.productStandardId  and  sd.productCategoryId = p.productCategoryId
+		<where>
+			p.isDeleted = 0 
+			<if test="companyId != null and companyId !=''">
+				and p.companyId=#{companyId}
+			</if>
+			<if test="productType != null and productType != ''">
+				and (p.productType=#{productType} or p.productType=0)
+		</if>
+		</where>
+		GROUP BY p.productId
+		ORDER BY p.createTime DESC
+	</select>
+
+
+
+
+
+	<select id="getProductCategory" parameterType="java.lang.String"
+		resultType="cn.rfidcer.bean.ProductCategory">
+		select productCategoryId,productCategoryName,
+		productCategoryDesc, level, parentCategoryId
+		from t_product_category
+		where productCategoryId = #{id}
+	</select>
+
+	<select id="getProductDetailMap" parameterType="java.lang.String"
+		resultType="cn.rfidcer.bean.ProductDetailMap">
+		select productDetailMapId, productDetailTable
+		FROM
+		t_product_detail_map
+		where productDetailMapId = #{id}
+	</select>
+	<select id="findProductByName" resultMap="Product">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM t_product where productName = #{productName} and
+		companyId=#{companyId}
+	</select>
+	<select id="findProductCountByName" resultType="int">
+		SELECT count(productId) FROM t_product where productName = #{productName} and
+		companyId=#{companyId}
+	</select>
+	<select id="findProductListByName" resultMap="Product">
+		SELECT <include refid="Base_Column_List" /> 
+		FROM t_product where productName = #{productName} and
+		companyId=#{companyId}
+	</select>	
+</mapper>

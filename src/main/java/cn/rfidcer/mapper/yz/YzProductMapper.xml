@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.yz.YzProductMapper">
+<resultMap type="YzProduct" id="yzProduct" autoMapping="true">
+	<id column="productStandardDetailId" property="productStandardDetailId"/>
+	<result column="companyId" property="supplierCompanyId"/>
+	<result column="salePrice" property="purchasePrice"/>
+</resultMap>
+<select id="getUpdateProductByIdAndTime" resultMap="yzProduct">
+	select
+			d.productStandardDetailId,
+			d.salePrice,
+			d.retailPrice,
+			d.productStandardNum,
+			d.isDeleted,
+			ps.warningNum,
+			s.productStandardName,
+			p.productId,
+			p.productName,
+			p.productShortName,
+			p.productCode,
+			p.productCategoryId,
+			p.status,
+			p.companyId
+	from t_product_standard_detail d
+	INNER JOIN  t_product p on d.productId=p.productId
+	INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+	INNER JOIN t_product_company c on d.productId=c.productId
+	LEFT JOIN t_productStock ps on d.productStandardDetailId=ps.productStandardDetailId and ps.companyId=d.companyId
+	where (c.companyId=#{companyId} or p.companyId=#{companyId})
+	<if test="lastUpdateTime!=null and lastUpdateTime != ''">
+		and (d.updateTime>#{lastUpdateTime} or p.updateTime>#{lastUpdateTime} or ps.updateTime>#{lastUpdateTime})
+	</if>
+	GROUP BY d.productStandardDetailId
+</select>
+
+<select id="getCategoryByIdAndTime" resultType="ProductCategory">
+	select
+		 c.productCategoryId,
+		 c.productCategoryName,
+		 c.status
+	from t_product_category c
+	INNER JOIN t_product p on c.productCategoryId=p.productCategoryId
+	INNER JOIN t_product_company pc on pc.productId=p.productId
+	where (pc.companyId=#{companyId} or p.companyId=#{companyId})
+	<!-- <if test="lastUpdateTime!=null and lastUpdateTime != ''">
+		and c.updateTime>#{lastUpdateTime}
+	</if> -->
+	group by p.productCategoryId
+</select>
+</mapper>

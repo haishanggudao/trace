@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.GoodsDao">
+
+	<resultMap type="Goods" id="goods">
+		<id column="goodsId" property="goodsId" />
+		<result column="companyId" property="companyId" jdbcType="CHAR" />
+		<result column="usable" property="usable" jdbcType="CHAR" />
+		<result column="goodsBatch" property="goodsBatch" jdbcType="VARCHAR" />
+		<result column="areaInfoId" property="areaInfoId" jdbcType="CHAR" />
+		<result column="slaughterhouseId" property="slaughterhouseId" jdbcType="CHAR" />
+		<result column="num" property="num" jdbcType="DECIMAL" />
+		<result column="type" property="type" jdbcType="INTEGER" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="secretKey" property="secretKey" jdbcType="VARCHAR" />
+		<result column="productStandardDetailId" property="productStandardDetailId"	jdbcType="CHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="productId" property="productId" />
+		<result column="productName" property="productName"  />		
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+		<result column="deliverType" property="deliverType" jdbcType="CHAR" />
+		<result column="deliverTypeName" property="deliverTypeName" jdbcType="VARCHAR" />
+		<result column="level" property="level" jdbcType="VARCHAR" />
+		
+		<association property="product" javaType="Product">
+			<id property="productId" column="productId" />
+			<result property="productName" column="productName" />
+			<result property="marketCode" column="marketCode" />
+		</association>
+		<association property="company" javaType="Company">
+			<id property="companyid" column="companyId" />
+			<result property="name" column="name" />
+		</association>
+		<association property="productStandardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="productStandardDetailId" />
+			<result property="productStandardNum" column="productStandardNum" />
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId" />
+				<result property="productStandardName" column="productStandardName" />
+			</association>
+		</association>
+	</resultMap>
+	<sql id="baseColumn">
+		g.goodsId, g.productId,g.areaInfoId,g.slaughterhouseId,
+		g.processMainId, g.companyId, g.num, g.productStandardDetailId,
+		g.goodsBatch,
+		g.type, g.code, g.secretKey, g.createTime, g.createBy, g.updateTime,
+		g.updateBy,g.usable,g.deliverType
+	</sql>
+	<!-- 创建商品 -->
+	<insert id="createGoods" parameterType="cn.rfidcer.bean.Goods">
+		insert into t_goods
+		(goodsId, productId, processMainId,
+		companyId, num, productStandardDetailId,
+		goodsBatch,
+		type, code, secretKey,areaInfoId, slaughterhouseId,
+		createTime, createBy, updateTime, updateBy,deliverType)
+		values (#{goodsId,jdbcType=CHAR}, #{productId,jdbcType=CHAR},
+		#{processMainId,jdbcType=CHAR},
+		#{companyId,jdbcType=CHAR}, #{num,jdbcType=DECIMAL}, #{productStandardDetailId,jdbcType=CHAR},
+		#{goodsBatch,jdbcType=VARCHAR},
+		#{type,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR}, #{secretKey,jdbcType=VARCHAR},
+		#{areaInfoId,jdbcType=VARCHAR}, #{slaughterhouseId,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR},#{deliverType,jdbcType=CHAR})
+	</insert>
+
+	<!-- 创建商品 -->
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.Goods">
+		insert into t_goods
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="goodsId != null">
+				goodsId,
+			</if>
+			<if test="productId != null">
+				productId,
+			</if>
+			<if test="processMainId != null">
+				processMainId,
+			</if>
+			<if test="companyId != null">
+				companyId,
+			</if>
+			<if test="num != null">
+				num,
+			</if>
+			<if test="productStandardDetailId != null">
+				productStandardDetailId,
+			</if>
+			<if test="goodsBatch != null">
+				goodsBatch,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="code != null">
+				code,
+			</if>
+			<if test="secretKey != null">
+				secretKey,
+			</if>
+			<if test="areaInfoId != null">
+				areaInfoId,
+			</if>
+			<if test="slaughterhouseId != null">
+				slaughterhouseId,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+			<if test="deliverType != null">
+				deliverType,
+			</if>
+			<if test="level != null">
+				level,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="goodsId != null">
+				#{goodsId},
+			</if>
+			<if test="productId != null">
+				#{productId},
+			</if>
+			<if test="processMainId != null">
+				#{processMainId},
+			</if>
+			<if test="companyId != null">
+				#{companyId},
+			</if>
+			<if test="num != null">
+				#{num},
+			</if>
+			<if test="productStandardDetailId != null">
+				#{productStandardDetailId},
+			</if>
+			<if test="goodsBatch != null">
+				#{goodsBatch},
+			</if>
+			<if test="type != null">
+				#{type},
+			</if>
+			<if test="code != null">
+				#{code},
+			</if>
+			<if test="secretKey != null">
+				#{secretKey},
+			</if>
+			<if test="areaInfoId != null">
+				#{areaInfoId,jdbcType=VARCHAR},
+			</if>
+			<if test="slaughterhouseId != null">
+				#{slaughterhouseId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="deliverType != null">
+				#{deliverType,jdbcType=CHAR},
+			</if>
+			<if test="level != null">
+				#{level,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 修改商品 -->
+	<update id="updateGoods" parameterType="cn.rfidcer.bean.Goods">
+		update t_goods
+		<set>
+			<if test="productId != null">
+				productId = #{productId,jdbcType=CHAR},
+			</if>
+			<if test="deliverType != null">
+				deliverType = #{deliverType,jdbcType=CHAR},
+			</if>
+			<if test="processMainId != null">
+				processMainId = #{processMainId,jdbcType=CHAR},
+			</if>
+			<if test="companyId != null">
+				companyId = #{companyId,jdbcType=CHAR},
+			</if>
+			<if test="areaInfoId != null">
+				areaInfoId =#{areaInfoId,jdbcType=VARCHAR},
+			</if>
+			<if test="slaughterhouseId != null">
+				slaughterhouseId =#{slaughterhouseId,jdbcType=VARCHAR},
+			</if>
+
+			<if test="num != null">
+				num = #{num,jdbcType=DECIMAL},
+			</if>
+			<if test="productStandardDetailId != null">
+				productStandardDetailId = #{productStandardDetailId,jdbcType=CHAR},
+			</if>
+			<if test="goodsBatch != null">
+				goodsBatch = #{goodsBatch,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=INTEGER},
+			</if>
+			<if test="code != null">
+				code = #{code,jdbcType=VARCHAR},
+			</if>
+			<if test="secretKey != null">
+				secretKey = #{secretKey,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="isDeleted != null">
+				isDeleted = #{isDeleted,jdbcType=INTEGER},
+			</if>
+			<if test="level != null">
+				level = #{level,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where goodsId = #{goodsId,jdbcType=CHAR}
+	</update>
+
+	<!-- 修改商品 -->
+	<update id="updateGoodsUsable" parameterType="java.lang.String">
+		update t_goods set usable = '1'
+		where goodsId = #{goodsid,jdbcType=VARCHAR}
+	</update>
+
+	<!-- 删除商品 -->
+	<delete id="delGoods" parameterType="java.lang.String">
+		delete from t_goods
+		where goodsId = #{goodsId,jdbcType=CHAR}
+	</delete>
+
+	<select id="findGoodTypeByName" resultType="int">
+		select count(id) from t_good_type where type_name=#{type_name}
+		<if test="id!=null and id!=''">
+			and id!=#{id}
+		</if>
+	</select>
+
+	<!-- 查询商品名字列表 -->
+	<select id="findAllGoodsName" resultMap="goods" useCache="false">
+		SELECT
+		g.goodsId,g.num,g.goodsBatch,p.productId,p.productName,d.productStandardDetailId,d.productStandardNum,d.productStandardId,s.productStandardName
+		FROM t_goods g
+		INNER JOIN t_product p on p.productId=g.productId
+		INNER JOIN t_product_standard_detail d on
+		g.productStandardDetailId=d.productStandardDetailId
+		INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+		WHERE g.companyId=#{companyId} ORDER BY g.updateTime DESC
+	</select>
+	
+	<!-- 统计商品的记录数 => findCountGoods -->
+	<select id="findCountGoods" resultType="int">
+		SELECT count(goodsId)
+		FROM t_goods g
+		<where>
+			<if test="goods.productId != null and goods.productId != ''">
+				g.productId = #{goods.productId}
+			</if>
+			<if
+				test="goods.productStandardDetailId != null and goods.productStandardDetailId != ''">
+				and g.productStandardDetailId = #{goods.productStandardDetailId}
+			</if>
+			<if test="goods.goodsBatch != null and goods.goodsBatch != ''">
+				and g.goodsBatch = #{goods.goodsBatch}
+			</if>
+		</where>
+	</select>
+
+	<!-- 查找商品信息 -->
+	<select id="findByProductidStandarddetailidBatch" resultMap="goods"
+		useCache="false">
+		SELECT goodsId, productId, areaInfoId, slaughterhouseId,processMainId,
+		companyId, num,
+		productStandardDetailId, goodsBatch, type, code,
+		secretKey,
+		createTime, createBy, updateTime, updateBy,usable,deliverType
+		FROM t_goods
+		where productId = #{0}
+		and productStandardDetailId = #{1}
+		and goodsBatch = #{2}
+	</select>
+
+
+
+
+
+
+	<select id="getByGoodsId" resultMap="goods" useCache="false">
+		SELECT goodsId, productId, areaInfoId,slaughterhouseId, processMainId,
+		companyId, num,
+		productStandardDetailId, goodsBatch, type, code,
+		secretKey,
+		createTime, createBy, updateTime, updateBy,usable,deliverType
+		FROM t_goods
+		where goodsId = #{goodsId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getByProductId" resultMap="goods" useCache="false">
+		SELECT goodsId, productId, areaInfoId,slaughterhouseId, processMainId,
+		companyId, num,
+		productStandardDetailId, goodsBatch, type, code,
+		secretKey,
+		createTime, createBy, updateTime, updateBy,usable,deliverType
+		FROM t_goods
+		where productId = #{productid,jdbcType=VARCHAR}
+	</select>
+
+	<select id="findByProductidStandarddetailidBatchCompany"
+		resultType="int">
+		SELECT count(goodsId) FROM t_goods
+		where productId = #{productId}
+		and productStandardDetailId = #{productStandardDetailId}
+		and goodsBatch = #{goodsBatch}
+		and companyId=#{companyId}
+		and isDeleted!=-1
+		<if test="goodsId!=null and goodsId!=''">
+			and goodsId!=#{goodsId}
+		</if>
+	</select>
+
+	<!-- begin of 查询产品列表 -->
+	<select id="getGoodsList" resultMap="goods" useCache="false">
+		SELECT g.goodsId,ai.catgName as areaInfoId,g.slaughterhouseId,
+		g.productId,p.marketCode,p.productName, g.companyId,c.name, g.num,
+		g.productStandardDetailId,d.productStandardNum,d.productStandardId,s.productStandardName,
+		g.goodsBatch,
+		g.type, g.code, g.secretKey, g.createTime, g.createBy, g.updateTime,
+		g.updateBy,g.usable, g.deliverType,(select varValue from t_common_variable where varId = g.deliverType) as deliverTypeName,
+		g.level 
+		FROM t_goods g
+		INNER join t_product p on g.productId = p.productId
+		INNER JOIN t_product_standard_detail d on g.productStandardDetailId=d.productStandardDetailId
+		INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+		INNER JOIN t_company c on g.companyId=c.companyId
+		LEFT JOIN sys_area_info ai on p.madein = ai.id 
+		where g.isDeleted!=-1 
+		<if test="goods.product != null and goods.product.productCategoryId!=null and goods.product.productCategoryId!=''">
+			and p.productCategoryId=#{goods.product.productCategoryId}
+        </if>
+		<if test="goods.companyId != null and goods.companyId != ''">
+			and g.companyId=#{goods.companyId}
+		</if>
+		<if test="goods.productName != null and goods.productName != ''">
+			and p.productName like CONCAT('%','${goods.productName}','%' )
+		</if>
+		<if test="goods.productId != null and goods.productId != ''">
+			and g.productId = #{goods.productId}
+		</if>
+		<if test="goods.deliverType != null and goods.deliverType != ''">
+			and g.deliverType = #{goods.deliverType}
+		</if>
+		<if test="goods.productStandardDetailId != null and goods.productStandardDetailId != ''">
+			and g.productStandardDetailId = #{goods.productStandardDetailId}
+		</if>
+		<if test="producttype != null and producttype != ''">
+			and p.productType = #{producttype}
+		</if>
+		<!--  
+		<if test="goods.product.productCategoryId != null and goods.product.productCategoryId != ''">
+			and p.productCategoryId=#{goods.product.productCategoryId}
+        </if>
+        -->
+        <if test="goods.createTimeOne != null and goods.createTimeOne != ''">
+       		 <![CDATA[ and g.createTime >= #{goods.createTimeOne} ]]>
+        </if>
+        <if test="goods.createTimeTwo != null and goods.createTimeTwo != ''">
+        	 <![CDATA[ and g.createTime <= #{goods.createTimeTwo} ]]>
+        </if>  
+		order by g.updateTime desc
+	</select>
+
+	<!-- 联表查询 企业信息 -->
+	<select id="getCompany" parameterType="java.lang.String"
+		resultType="cn.rfidcer.bean.Company">
+		select companyId, name, shortName from t_company where
+		companyId=#{id}
+	</select>
+	<!-- 联表查询 产品信息 -->
+	<select id="getProduct" parameterType="java.lang.String"
+		resultType="cn.rfidcer.bean.Product">
+		SELECT productId, productName
+		FROM t_product
+		where productId = #{id}
+	</select>
+	<!-- 联表查询 产品规格明细 -->
+	<select id="getProductStandardDetail" parameterType="java.lang.String"
+		resultType="cn.rfidcer.bean.ProductStandardDetail">
+		SELECT productStandardDetailId, productStandardNum
+		FROM t_product_standard_detail
+		where productStandardDetailId = #{id}
+	</select>
+	<!-- end of 查询产品列表 -->
+
+	<select id="checkGoodsNameExists" resultType="int">
+		select count(id) from t_goods where good_name=#{good_name}
+		<if test="id!=null and id!=''">
+			and id!=#{id}
+		</if>
+	</select>
+
+	<!-- begin of 查询产品列表 -->
+	<select id="list" resultMap="goods" useCache="false">
+		SELECT
+		<include refid="baseColumn" />
+		FROM t_goods g
+	</select>
+	
+	<!-- 依据productStandardDetailId 来查询商品信息列表 -->
+	<select id="findGoodsByStandardDetailId" resultMap="goods">
+		select goodsId, goodsBatch, code 
+		from t_goods g 
+		where g.productStandardDetailId=#{standardDetailId} 
+		and g.usable=0
+		order by g.createTime desc
+	</select>
+	
+	<select id="findMinCreateTimeGoodsByDetailId" resultMap="goods">
+		SELECT
+			goodsId,
+			goodsBatch,
+			createTime
+		FROM
+			t_goods
+		WHERE
+			productStandardDetailId = #{standardDetailId}
+		AND usable = 0
+		ORDER BY
+			createTime desc
+		LIMIT 0,1
+	</select>
+	
+	<select id="findGoodsByCode" resultMap="goods">
+		select
+		<include refid="baseColumn" />
+		from t_goods g where g.code=#{code}
+	</select>
+	<select id="findGoodsByStandardDetailIdLimit" resultMap="goods">
+	select goodsId, goodsBatch, code 
+		from t_goods g 
+		where g.productStandardDetailId=#{standardDetailId} 
+		and g.usable=0
+		order by g.createTime desc limit #{limit}
+	</select>
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>

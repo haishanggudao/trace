@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.GoodsQCMaterialsMapper">
+	<resultMap type="GoodsQCMaterials" id="goodsQCMaterials" autoMapping="true">
+		<id column="goodsId" property="goodsId"/>
+		<association property="productStandardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="productStandardDetailId" />
+			<result property="productStandardNum" column="productStandardNum" />
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId" />
+				<result property="productStandardName" column="productStandardName" />
+			</association>
+		</association>
+	</resultMap>
+	<select id="findAllList" resultMap="goodsQCMaterials">
+	SELECT
+		g.goodsId,
+		g.goodsBatch,
+		g.createTime,
+		g.productStandardDetailId,
+		d.productStandardNum,
+		d.productStandardId,
+		s.productStandardName,
+		p.productName,
+		qc.qcmaterialsURL,
+		qc.id
+	FROM
+	t_goods g
+	INNER JOIN t_product p ON g.productId = p.productId
+	INNER JOIN t_product_standard_detail d on g.productStandardDetailId=d.productStandardDetailId
+	INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+	LEFT JOIN t_goods_qcmaterials qc ON qc.goodsId = g.goodsId
+	where 1=1
+	<if test="goodsQC != null">
+		<if test="goodsQC.companyId != null">
+			and g.companyId = #{goodsQC.companyId}
+		</if>
+		<if test="goodsQC.productName !=null and goodsQC.productName!=''">
+			and p.productName like CONCAT('%',#{goodsQC.productName},'%' )
+		</if>
+		<if test="goodsQC.productType != null and goodsQC.productType != ''">
+			and p.productType = #{goodsQC.productType}
+		</if>
+	</if>
+	ORDER BY
+	g.createTime DESC
+  </select>
+</mapper>

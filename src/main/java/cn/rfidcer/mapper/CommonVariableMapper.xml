@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.CommonVariableMapper">
+	<resultMap id="BaseResultMap" type="cn.rfidcer.bean.CommonVariable">
+		<id column="varId" property="varId" jdbcType="CHAR" />
+		<result column="companyId" property="companyId" jdbcType="CHAR" />
+		<result column="varGroup" property="varGroup" jdbcType="VARCHAR" />
+		<result column="varName" property="varName" jdbcType="VARCHAR" />
+		<result column="varValue" property="varValue" jdbcType="VARCHAR" />
+		<result column="sort" property="sort" jdbcType="INTEGER" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		varId, companyId, varGroup, varName, varValue, sort,
+		createTime, createBy,
+		updateTime,
+		updateBy
+	</sql>
+	<select id="selectByVarGroup" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_common_variable
+		where varGroup = #{varGroup,jdbcType=VARCHAR}
+	</select>
+	<select id="selectByCVV" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_common_variable
+		where varGroup = #{vargroup,jdbcType=VARCHAR}
+		and companyId =
+		#{companyid,jdbcType=VARCHAR} and varName =
+		#{varname,jdbcType=VARCHAR}
+	</select>
+	<select id="selectByBean" resultMap="BaseResultMap"
+		parameterType="cn.rfidcer.bean.CommonVariable">
+		select
+		<include refid="Base_Column_List" />
+		from t_common_variable
+		where 1 = 1
+		<if test="cv != null">
+			<if test="cv.varId != null">
+				and varId = #{cv.varId,jdbcType=VARCHAR}
+			</if>
+			<if test="cv.companyId != null">
+				and companyId = #{cv.companyId,jdbcType=VARCHAR}
+			</if>
+			<if test="cv.varGroup != null">
+				and varGroup = #{cv.varGroup,jdbcType=VARCHAR}
+			</if>
+			<if test="cv.varName != null">
+				and varName = #{cv.varName,jdbcType=VARCHAR}
+			</if>
+			<if test="cv.varValue != null">
+				and varValue = #{cv.varValue,jdbcType=VARCHAR}
+			</if>
+		</if>
+	</select>
+	<update id="updateVarvalueIncreament">
+		update t_common_variable
+		set
+		varValue=
+		(CASE WHEN varValue>#{varValue} THEN 1
+		ELSE varValue+1 END)
+		<where>
+			<if test="varId != null">
+				varId=#{varId}
+			</if>
+			<if test="companyId != null">
+				and companyId = #{companyId}
+			</if>
+			<if test="varGroup != null">
+				and varGroup = #{varGroup}
+			</if>
+			<if test="varName != null">
+				and varName = #{varName}
+			</if>
+		</where>
+	</update>
+	<select id="getCommonVariables" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM t_common_variable
+		<where>
+			<if test="varGroup != null">
+				varGroup = #{varGroup,jdbcType=VARCHAR}
+			</if>
+			<if test="varId != null">
+				and varId = #{varId,jdbcType=CHAR}
+			</if>
+			<if test="companyId != null">
+				and companyId = #{companyId,jdbcType=CHAR}
+			</if>
+			<if test="varName != null">
+				and varName = #{varName,jdbcType=VARCHAR}
+			</if>
+			<if test="varValue != null">
+				and varValue = #{varValue,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

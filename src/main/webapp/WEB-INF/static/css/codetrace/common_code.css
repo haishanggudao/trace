@@ -1,0 +1,261 @@
+@charset "UTF-8";
+/* CSS Document */
+
+/*重构所有元素*/ 
+body,div,ul,li,dl,dd,dt,form,table,p{margin:0;padding: 0;font-size:12px;font-family: arial,"Hiragino Sans GB","Microsoft Yahei",sans-serif;}
+ul, menu, dir {list-style-type: none;margin: 0;padding: 0;}
+a{text-decoration: none;cursor:pointer;color:#333333;}
+a:visited {text-decoration:none;}
+a:hover {text-decoration:none;color:#e98f36;}
+a:active {text-decoration:none;}
+a:focus{outline: none;}
+
+img{border:0;}
+a img{vertical-align: middle;}
+
+.global-input{width:190px;height:25px;line-height:25px;}
+.clearfix{zoom: 1;}
+.clearfix:after{content: ".";display: block;height: 0;clear: both;visibility: hidden; }
+.index .l{float:left; width:680px;}
+.r{float: right;width:290px;}
+.hand{cursor:pointer;}
+.line{color:#ccc;}
+/*清楚浮动*/
+.clear{clear:both; height:0px; overflow:hidden;}
+/*重构结束*//* CSS Document */
+
+/*头部样式*/
+.header{
+	width: 100%;
+}
+.box-left{
+
+	float: left;
+}
+.header .top-link{
+	height: 35px;
+	background-color: #2e3444;
+}
+.top-center{
+	width: 945px;
+	height: 35px;
+	margin: 0 auto;
+	color: #d8d8d8
+}
+.top-center .tel,.server-time{
+	margin: 0 20px 0 0;
+	height: 35px;
+	line-height: 35px;
+	display: inline-block;
+	font-size: 14px;
+	float: left;
+}
+.icon-list{
+	/*background: url(../static/images/server_icon.png) no-repeat;*/
+	width: 25px;
+	height: 35px;
+	display: inline-block;
+	float: left;
+	margin: 0 10px 0 0
+}
+.webo{
+	background-position: 0px 5px;
+}
+.wecat{
+	background-position: 0px -25px;
+}
+.tencat{
+	background-position: 0px -55px;
+}
+.mark-left{
+	float: left;
+}
+.mark-right{
+	float: right;
+}
+.mark-right ul li{
+	float: left;
+	height: 35px;
+	line-height: 35px;
+}
+.login-btn{
+	padding: 0 7px;
+	line-height: 35px;
+	display: inline-block;
+	color: #fff;
+	font-size: 14px;
+	background-color: #4b4d55;
+}
+.login-menu{
+	width: 960px;
+	margin: 0 auto;
+	position: relative;
+
+}
+.login-title{
+	color: #eec00a;
+	font-size: 14px;
+}
+.help-btn{
+	padding-left: 25px;
+	margin-left: 10px;
+	height: 35px;
+	display: inline-block;
+	/*background: url(../../src/images/server_icon.png) no-repeat 0 -85px;*/
+}
+.wrp-nav {
+  height: 80px;
+  border: 1px solid #eaeaea;
+}
+.logo {
+  width: 359px;
+  margin-top: 10px;
+  float: left;
+}
+#navs {
+  height: 75px;
+  position: relative;
+  width: 650px;
+ 
+  float: left;
+}
+#navs li {
+  float: left;
+  list-style: none;
+  margin-left: 30px;
+}
+.wrp-nav .navs li a {
+  display: block;
+  font-size: 18px;
+  font-family: "微软雅黑";
+  width: 88px;
+  height: 40px;
+  color: #454545;
+  line-height: 40px;
+  text-align: center;
+  margin: 0 3px;
+  margin-top: 30px;
+}
+.wrp-nav .navs li a:hover, .wrp-nav .navs li.cur a, .wrp-nav .navs li.hover2 a {
+  color: #2EA7E0 !important;
+  text-decoration: none;
+  border-bottom: 2px solid #2EA7E0;
+}
+
+/*页脚样式*/
+.footer{
+	width: 100%;
+	height: auto;
+	background-color: #1e2430;
+	margin-top: 50px;
+}
+.footer .companyinfo{
+	width: 100%;
+	padding-top: 40px;
+	/*background: url(../../src/images/footer_bg.png) repeat;*/
+}
+.footer .companyinfo .footer-cent{
+	width: 875px;
+	margin: 0 auto;
+}
+.footer .logo-infomain{
+	float: left;
+	width: 267px;
+	margin-right: 86px;
+}
+.logo-infomain .pulline{
+	margin-bottom: 25px;
+	display: inline-block;
+	position: relative;
+}
+
+.footer .logo-infomain .seeus{
+	font-size: 16px;
+	height: 50px;
+	display: inline-block;
+	line-height: 50px;
+	float: left;
+	color: #fbfbfb;
+	font-family: 微软雅黑;
+	margin-right: 10px;
+}
+.footer .logo-infomain .server-icont{
+	/*background: url(../../src/images/server_icon2.png) no-repeat;*/
+	width: 45px;
+	height: 33px;
+	display: inline-block;
+	float: left;
+	
+	margin: 8px 14px 0 0;
+}
+.footer .logo-infomain .qqicon{
+	background-position: 0px 0px;
+}
+.footer .logo-infomain .wecaticon{
+	background-position: 0px -39px;
+}
+.footer .logo-infomain .weboicon{
+	background-position: 0px -84px;
+}
+.wecatimg{
+	width: 128px;
+	height: 128px;
+	display: block;
+	position: absolute;
+	top: -120px;
+  	left: 101px;
+  	display: none;
+}
+.server-tel{
+	width: 235px;
+	float: left;
+	margin-right: 115px;
+	text-align: center;
+}
+.tel-tit{
+	font-size: 16px;
+	color: #fff;
+	margin-bottom: 27px;
+}
+.tel-num{
+	font-size: 30px;
+	font-weight: bold;
+	color: #fff;
+	font-family: 微软雅黑;
+	margin-bottom: 27px;
+}
+.tel-time{
+	color: #fff;
+}
+.about-nav{
+	width: 172px;
+	float: left;
+
+}
+.about-nav ul{
+	width: 202px;
+	overflow: hidden;
+}
+.about-nav ul li{
+	float: left;
+	margin-right: 35px;
+	margin-bottom: 15px;
+}
+.about-nav a{
+	color: #fff;
+	font-size: 16px;
+}
+.footer .company-list{
+	height: 80px;
+}
+.footer .company-list .company-icon{
+	width: 630px;
+	margin: 10px auto;
+	text-align: center;
+
+}
+.footer .company-list .company-icon span{
+	color: #fff;
+	margin-top: 15px;
+	display: block;
+}

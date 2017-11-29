@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.PackageMainMapper">
+	<resultMap id="BaseResultMap" type="cn.rfidcer.bean.PackageMain">
+		<id column="packageMainId" property="packageMainId" jdbcType="CHAR" />
+		<result column="packageCode" property="packageCode" jdbcType="VARCHAR" />
+		<result column="packageTime" property="packageTime" jdbcType="TIMESTAMP" />
+		<result column="transNodeInteriorId" property="transNodeInteriorId" jdbcType="CHAR" />
+		<result column="operator" property="operator" jdbcType="CHAR" />
+		<result column="packageType" property="packageType" jdbcType="CHAR" />
+		<result column="parentPackageMainId" property="parentPackageMainId" jdbcType="CHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+		<result column="parentPackageCode" property="parentPackageCode" jdbcType="VARCHAR" />
+		<association property="user" javaType="cn.rfidcer.bean.User">
+			<id property="id" column="user_id" />
+			<result property="username" column="username" />
+		</association>
+	</resultMap>
+	<sql id="Base_Column_List">
+		packageMainId, packageCode, packageTime, transNodeInteriorId, operator, packageType,
+		parentPackageMainId, createTime, createBy, updateTime, updateBy
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_package_main
+		where packageMainId = #{packageMainId,jdbcType=CHAR}
+	</select>
+
+	<!-- 查询包装绑定列表 -->
+	<select id="findAll" resultMap="BaseResultMap" useCache="false">
+		select pm.packageMainId, pm.packageCode, pm.packageTime,
+		pm.transNodeInteriorId, pm.operator,
+		pm.packageType, pm.parentPackageMainId, pm.createTime, pm.createBy, pm.updateTime,
+		pm.updateBy, u.id as user_id, u.username, ppm.packageCode as
+		parentPackageCode
+		from t_package_main pm
+		inner join sys_user u on u.id = pm.operator
+		left join t_package_main ppm on ppm.packageMainId = pm.parentPackageMainId
+		order by pm.updateTime desc
+	</select>
+
+	<!-- 查询父类包装绑定列表 -->
+	<select id="findParentPackageMains" resultMap="BaseResultMap"
+		useCache="false">
+		select packageMainId, packageCode, packageTime, transNodeInteriorId,
+		operator, packageType,
+		parentPackageMainId, createTime, createBy, updateTime, updateBy
+		from t_package_main
+		where packageType = '1' order by updateTime desc
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_package_main
+		where packageMainId = #{packageMainId,jdbcType=CHAR}
+	</delete>
+	<insert id="insert" parameterType="cn.rfidcer.bean.PackageMain">
+		insert into t_package_main (packageMainId, packageCode, packageTime,
+		transNodeInteriorId, operator, packageType,
+		parentPackageMainId, createTime, createBy,
+		updateTime, updateBy)
+		values (#{packageMainId,jdbcType=CHAR}, #{packageCode,jdbcType=VARCHAR},
+		#{packageTime,jdbcType=TIMESTAMP},
+		#{transNodeInteriorId,jdbcType=CHAR}, #{operator,jdbcType=CHAR},
+		#{packageType,jdbcType=CHAR},
+		#{parentPackageMainId,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR})
+	</insert>
+
+	<!-- 新增包装绑定信息 -->
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.PackageMain">
+		insert into t_package_main
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="packageMainId != null">
+				packageMainId,
+			</if>
+			<if test="packageCode != null">
+				packageCode,
+			</if>
+			<if test="packageTime != null">
+				packageTime,
+			</if>
+			<if test="transNodeInteriorId != null">
+				transNodeInteriorId,
+			</if>
+			<if test="operator != null">
+				operator,
+			</if>
+			<if test="packageType != null">
+				packageType,
+			</if>
+			<if test="parentPackageMainId != null">
+				parentPackageMainId,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="packageMainId != null">
+				#{packageMainId,jdbcType=CHAR},
+			</if>
+			<if test="packageCode != null">
+				#{packageCode,jdbcType=VARCHAR},
+			</if>
+			<if test="packageTime != null">
+				#{packageTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="transNodeInteriorId != null">
+				#{transNodeInteriorId,jdbcType=CHAR},
+			</if>
+			<if test="operator != null">
+				#{operator,jdbcType=CHAR},
+			</if>
+			<if test="packageType != null">
+				#{packageType,jdbcType=CHAR},
+			</if>
+			<if test="parentPackageMainId != null">
+				#{parentPackageMainId,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.PackageMain">
+		update t_package_main
+		<set>
+			<if test="packageCode != null">
+				packageCode = #{packageCode,jdbcType=VARCHAR},
+			</if>
+			<if test="packageTime != null">
+				packageTime = #{packageTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="transNodeInteriorId != null">
+				transNodeInteriorId = #{transNodeInteriorId,jdbcType=CHAR},
+			</if>
+			<if test="operator != null">
+				operator = #{operator,jdbcType=CHAR},
+			</if>
+			<if test="packageType != null">
+				packageType = #{packageType,jdbcType=CHAR},
+			</if>
+			<if test="parentPackageMainId != null">
+				parentPackageMainId = #{parentPackageMainId,jdbcType=CHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where packageMainId = #{packageMainId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.PackageMain">
+		update t_package_main
+		set packageCode = #{packageCode,jdbcType=VARCHAR},
+		packageTime = #{packageTime,jdbcType=TIMESTAMP},
+		transNodeInteriorId = #{transNodeInteriorId,jdbcType=CHAR},
+		operator = #{operator,jdbcType=CHAR},
+		packageType = #{packageType,jdbcType=CHAR},
+		parentPackageMainId = #{parentPackageMainId,jdbcType=CHAR},
+		updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		updateBy = #{updateBy,jdbcType=VARCHAR}
+		where packageMainId = #{packageMainId,jdbcType=CHAR}
+	</update>
+</mapper>

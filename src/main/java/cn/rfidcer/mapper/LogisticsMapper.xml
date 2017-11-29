@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.LogisticsMapper">
+	<resultMap id="BaseResultMap" type="cn.rfidcer.bean.Logistics">
+		<result column="logisticsId" property="logisticsId" jdbcType="CHAR" />
+		<result column="logisticsCompanyId" property="logisticsCompanyId"
+			jdbcType="CHAR" />
+		<result column="contact" property="contact" jdbcType="VARCHAR" />
+		<result column="altContact" property="altContact" jdbcType="VARCHAR" />
+		<result column="tel" property="tel" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="CHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+		<result column="logisticsAlias" property="logisticsAlias" />
+		<association property="company" javaType="cn.rfidcer.bean.Company">
+			<id column="companyid" property="companyid" />
+			<result column="name" property="name" />
+		</association>
+	</resultMap>
+
+	<resultMap type="Logistics" id="logisticsCompany">
+		<id column="companyId" property="logisticsCompanyId" />
+		<result column="logisticsAlias" property="logisticsAlias" />
+		<result column="name" property="logisticsCompanyName" />
+	</resultMap>
+
+	<!-- 删除物流信息 -->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_logistics
+		where logisticsId = #{logisticsId,jdbcType=CHAR}
+	</delete>
+
+
+	<!-- 删除物流信息 修改状态的方式 -->
+	<update id="deleteWithStatusByPrimaryKey" parameterType="cn.rfidcer.bean.Logistics">
+		update t_logistics
+		set isDeleted = -1
+		where logisticsId = #{logisticsId,jdbcType=CHAR}
+	</update>
+
+	<insert id="insert" parameterType="cn.rfidcer.bean.Logistics">
+		insert into t_logistics (logisticsId,logisticsAlias, companyId, logisticsCompanyId,
+		contact, altContact, tel,
+		status, createTime, createBy,
+		updateTime, updateBy)
+		values (#{logisticsId,jdbcType=CHAR},#{logisticsAlias,jdbcType=VARCHAR}, #{companyId,jdbcType=CHAR},
+		#{logisticsCompanyId,jdbcType=CHAR},
+		#{contact,jdbcType=VARCHAR}, #{altContact,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR},
+		#{status,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP},
+		#{createBy,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR})
+	</insert>
+
+	<!-- 新增物流企业信息 -->
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.Logistics">
+		insert into t_logistics
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="logisticsId != null">
+				logisticsId,
+			</if>
+			<if test="companyId != null">
+				companyId,
+			</if>
+			<if test="logisticsCompanyId != null">
+				logisticsCompanyId,
+			</if>
+			<if test="contact != null">
+				contact,
+			</if>
+			<if test="altContact != null">
+				altContact,
+			</if>
+			<if test="tel != null">
+				tel,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+			<if test="logisticsAlias != null">
+				logisticsAlias,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="logisticsId != null">
+				#{logisticsId,jdbcType=CHAR},
+			</if>
+			<if test="companyId != null">
+				#{companyId,jdbcType=CHAR},
+			</if>
+			<if test="logisticsCompanyId != null">
+				#{logisticsCompanyId,jdbcType=CHAR},
+			</if>
+			<if test="contact != null">
+				#{contact,jdbcType=VARCHAR},
+			</if>
+			<if test="altContact != null">
+				#{altContact,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				#{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="logisticsAlias != null">
+				#{logisticsAlias,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 查询所有物流信息 -->
+	<select id="findAll" resultMap="BaseResultMap" useCache="false">
+		select l.logisticsId, l.logisticsCompanyId companyid, l.logisticsCompanyId,
+		l.contact, l.altContact,
+		l.tel, l.status, l.createTime, l.createBy, l.updateTime,
+		l.updateBy,l.logisticsAlias,
+		c.name
+		from t_logistics l
+		inner join t_company c on c.companyId = l.logisticsCompanyId
+		where l.isDeleted != -1 and l.companyId=#{logistics.companyId}
+		order by l.updateTime desc
+	</select>
+
+	<!-- 依据用户所属企业ID来查询物流企业信息 -->
+	<select id="findByUserCompanyId" resultMap="BaseResultMap"
+		useCache="false" parameterType="java.lang.String">
+		select l.logisticsId, l.companyId, l.logisticsCompanyId, l.contact,
+		l.altContact,
+		l.tel, l.status, l.createTime, l.createBy, l.updateTime, l.updateBy,
+		c.name
+		from t_logistics l
+		inner join t_company c on c.companyId = l.logisticsCompanyId
+		where l.companyId = #{companyId} and l.isDeleted != -1
+		order by l.updateTime desc
+	</select>
+
+	<!-- 修改物流企业信息 -->
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.Logistics">
+		update t_logistics
+		<set>
+			<if test="companyId != null">
+				companyId = #{companyId,jdbcType=CHAR},
+			</if>
+			<if test="logisticsCompanyId != null">
+				logisticsCompanyId = #{logisticsCompanyId,jdbcType=CHAR},
+			</if>
+			<if test="contact != null">
+				contact = #{contact,jdbcType=VARCHAR},
+			</if>
+			<if test="altContact != null">
+				altContact = #{altContact,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				tel = #{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				createBy = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="logisticsAlias != null">
+				logisticsAlias = #{logisticsAlias,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where logisticsId = #{logisticsId,jdbcType=CHAR}
+	</update>
+	<select id="getLogisticsCompanys" resultMap="logisticsCompany">
+		select l.logisticsId,c.companyId,c.name,l.logisticsAlias from t_logistics l
+		RIGHT JOIN t_company c on l.logisticsCompanyId=c.companyId
+		and l.isDeleted=0 and l.companyId=#{companyId}
+	</select>
+	<select id="checkLogisticsExistsByLogisticsId" resultType="int">
+		select count(logisticsId) from t_logistics where isDeleted = 0 and
+		companyId=#{companyId} 
+		<if test="logisticsId!=null and logisticsId!=''">
+			and logisticsId!=#{logisticsId}
+		</if>
+		<if test="logisticsCompanyId and logisticsCompanyId''">
+			and logisticsCompanyId!=#{logisticsCompanyId}
+		</if>
+	</select>
+
+	<select id="checkCountByLogisticsId" resultType="int">
+		select count(logisticsId) from t_logistics where isDeleted = 0 
+		<if test="logisticsId!=null and logisticsId!=''">
+			and logisticsId =#{logisticsId}
+		</if>
+	</select>
+
+
+	<select id="checkLogisticsExistsByLogisticsName" resultType="int">
+		select count(logisticsId) from t_logistics where  logisticsAlias=#{logisticsCompanyName} and companyId=#{companyId} and
+		isDeleted = 0
+		<if test="logisticsId!=null and logisticsId!=''">
+			and logisticsId!=#{logisticsId}
+		</if>
+	</select>
+</mapper>

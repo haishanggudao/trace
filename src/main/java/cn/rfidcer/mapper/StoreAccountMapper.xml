@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.StoreAccountMapper">
+<resultMap type="StoreAccount" id="storeAccount">
+	<id property="id" column="id"/>
+	<result property="username" column="username"/>
+	<result property="password" column="password"/>
+	<result property="nickName" column="nickName"/>
+	<association property="company" javaType="Company">
+		<id property="companyid" column="companyId"/>
+		<result property="name" column="name"/>
+	</association>
+</resultMap>
+
+<select id="findAllList" resultMap="storeAccount">
+	select 
+		r.id,
+		r.companyId,
+		r.username,
+		r.password,
+		r.nickName,
+		c.name
+	from t_store_account r
+	INNER JOIN t_company c on r.companyId=c.companyId
+	order by r.updateTime desc
+</select>
+<select id="findAccountByCompanyId" resultType="StoreAccount">
+	select 
+		r.username,
+		r.password,
+		r.nickName
+	from t_store_account r
+	where r.companyId=#{companyId}
+</select>
+</mapper>

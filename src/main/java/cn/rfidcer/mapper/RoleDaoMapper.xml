@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.RoleDao">
+	<resultMap type="Role" id="role"></resultMap>
+	<select id="findOne" resultMap="role">
+		select id, role_name, description, available from sys_role where id=#{roleId}
+	</select>
+	<select id="findAll" resultMap="role" useCache="false">
+		select id, role_name, description, available from sys_role
+	</select>
+	<select id="findRolesByUserId" resultMap="role">
+		select r.* from sys_role r inner join sys_user_role_relation b on r.id=b.role_id where b.user_id=#{userId}
+	</select>
+	<insert id="addRoleForUser">
+		insert into sys_user_role_relation (user_id,role_id) values (#{0},#{1})
+	</insert>
+	<update id="updateRole">
+		update sys_role set role_name=#{role_name}, description=#{description},available=#{available} where id=#{id}
+	</update>
+	<insert id="createRole">
+		insert into sys_role(role_name, description,available) values(#{role_name},#{description},#{available})
+	</insert>
+	<delete id="deleteRole">
+		delete from sys_role where id=#{roleId}
+	</delete>
+	<delete id="delResourceRelation">
+		delete from sys_role_resource_relation where role_id=#{roleId}
+	</delete>
+	<delete id="delUserRelation">
+		delete from sys_user_role_relation where role_id=#{roleId}
+	</delete>
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>

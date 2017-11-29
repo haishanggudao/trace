@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProductStandardRateDao">
+	<resultMap type="ProductStandardRate" id="productStandardRate">
+		<id property="productStandardRateId" column="productStandardRateId" />
+		<result property="productStandardNum" column="productStandardNum" />
+		<result property="rateProductStandardNum" column="rateProductStandardNum" />
+		<result property="companyId" column="companyId" />
+		<association property="productStandard" javaType="ProductStandard">
+			<id property="productStandardId" column="productStandardId" />
+			<result property="productStandardName" column="productStandardName" />
+		</association>
+		<association property="rateProductStandard" javaType="ProductStandard">
+			<id property="productStandardId" column="rateProductStandardId" />
+			<result property="productStandardName" column="rateProductStandardName" />
+		</association>
+		<association property="productCategory" javaType="ProductCategory">
+			<id property="productCategoryId" column="productCategoryId" />
+			<result property="productCategoryName" column="productCategoryName" />
+		</association>
+	</resultMap>
+	<select id="findAll" resultMap="productStandardRate" useCache="false">
+		select
+		r.productStandardRateId,r.productStandardId,s.productStandardName,r.productStandardNum,r.rateProductStandardId,st.productStandardName
+		rateProductStandardName,
+		r.rateProductStandardNum,r.productCategoryId,c.productCategoryName,r.companyId
+		from t_product_standard_rate r 
+		INNER JOIN t_product_standard s on s.productStandardId=r.productStandardId
+		INNER JOIN t_product_standard st on r.rateProductStandardId=st.productStandardId
+		INNER JOIN t_product_category c on c.productCategoryId=r.productCategoryId
+		<where>
+			<if test="rate.companyId!=null and rate.companyId!=''">
+				r.companyId=#{rate.companyId}
+			</if>
+			<if
+				test="rate.productCategory!=null and rate.productCategory.productCategoryId!=null and rate.productCategory.productCategoryId!=''">
+				and r.productCategoryId=#{rate.productCategory.productCategoryId}
+			</if>
+		</where>
+		order by r.createTime desc
+	</select>
+
+	<insert id="createProductStandardRate">
+		insert into t_product_standard_rate
+		(productStandardRateId,productStandardId,
+		rateProductStandardId,productStandardNum,rateProductStandardNum,companyId,productCategoryId,createTime,createBy)
+		values
+		(#{productStandardRateId},#{productStandard.productStandardId},#{rateProductStandard.productStandardId},#{productStandardNum},#{rateProductStandardNum},
+		#{companyId},#{productCategory.productCategoryId},#{createTime},#{createBy})
+	</insert>
+
+	<delete id="delProductStandardRate">
+		delete from t_product_standard_rate where
+		productStandardRateId=#{productStandardRateId}
+	</delete>
+
+	<update id="updateProductStandardRate">
+		update t_product_standard_rate set
+		productStandardId=#{productStandard.productStandardId},rateProductStandardId=#{rateProductStandard.productStandardId},productStandardNum=#{productStandardNum},
+		rateProductStandardNum=#{rateProductStandardNum},productCategoryId=#{productCategory.productCategoryId},updateTime=#{updateTime},updateBy=#{updateBy}
+		where productStandardRateId=#{productStandardRateId}
+	</update>
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>

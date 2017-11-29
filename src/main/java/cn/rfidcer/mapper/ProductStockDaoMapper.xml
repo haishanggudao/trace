@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProductStockDao">
+	<resultMap id="productStock" type="ProductStock">
+		<id property="productStockId" column="productStockId" />
+		<result property="productId" column="productId" />
+		<result property="productStandardDetailId" column="productStandardDetailId" />
+		<result property="storageLocationId" column="storageLocationId" />
+		<result property="stockNum" column="stockNum" />
+		<result property="companyId" column="companyId" />
+		<result property="warningNum" column="warningNum" />
+		<result property="isDeleted" column="isDeleted" />
+		<association property="company" javaType="Company">
+  			<id property="companyid" column="companyid"/>
+  			<result property="name" column="name"/>
+  			<result property="shortname" column="shortname"/>
+  		</association>
+  		<association property="product" javaType="Product">
+			<id property="productId" column="productId" />
+			<result property="productName" column="productName" />
+			<result property="marketCode" column="marketCode" />
+		</association>
+		<association property="productStandardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="productStandardDetailId" />
+			<result property="productStandardNum" column="productStandardNum" />
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId" />
+				<result property="productStandardName" column="productStandardName" />
+			</association>
+		</association>
+	</resultMap>
+	
+	<select id="list" resultMap="productStock" useCache="false">
+	SELECT ps.productStockId, ps.productId, ps.productStandardDetailId, ps.storageLocationId, 
+		ps.stockNum, ps.companyId, c.name, ps.warningNum,
+	    p.productName, d.productStandardNum, s.productStandardName
+	FROM t_productStock ps 
+	INNER JOIN t_company c on c.companyId = ps.companyId 
+	INNER JOIN t_product p on p.productId = ps.productId
+	INNER JOIN t_product_standard_detail d on d.productStandardDetailId = ps.productStandardDetailId
+	INNER JOIN t_product_standard s on s.productStandardId = d.productStandardId
+	WHERE ps.isDeleted = 0 
+	and ps.companyId = #{productStock.companyId,jdbcType=CHAR}
+	<if test="productStock.productName !=null and productStock.productName !=''">
+		and p.productName LIKE CONCAT(CONCAT('%',#{productStock.productName}),'%')
+	</if> 
+	order by ps.updateTime DESC, ps.createTime DESC
+	</select>
+	
+	
+	<insert id="addProductStock">
+
+		insert into t_productStock
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="productStockId != null">
+				productStockId,
+			</if>
+			<if test="productId != null">
+				productId,
+			</if>
+			<if test="productStandardDetailId != null">
+				productStandardDetailId,
+			</if>
+			<if test="storageLocationId != null">
+				storageLocationId,
+			</if>
+			<if test="stockNum != null">
+				stockNum,
+			</if>
+			<if test="warningNum != null">
+				warningNum,
+			</if>
+			<if test="companyId != null">
+				companyId,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="productStockId != null">
+				#{productStockId,jdbcType=CHAR},
+			</if>
+			<if test="productId != null">
+				#{productId,jdbcType=CHAR},
+			</if>
+			<if test="productStandardDetailId != null">
+				#{productStandardDetailId,jdbcType=CHAR},
+			</if>
+			<if test="storageLocationId != null">
+				#{storageLocationId,jdbcType=CHAR},
+			</if>
+			<if test="stockNum != null">
+				#{stockNum,jdbcType=DECIMAL},
+			</if>
+			<if test="warningNum != null">
+				#{warningNum,jdbcType=DECIMAL},
+			</if>
+			<if test="companyId != null">
+				#{companyId,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateProductStockById">
+		update t_productStock
+		<set>
+			<if test="productId != null">
+				productId = #{productId,jdbcType=CHAR},
+			</if>
+			<if test="productStandardDetailId != null">
+				productStandardDetailId = #{productStandardDetailId,jdbcType=CHAR},
+			</if>
+			<if test="storageLocationId != null">
+				storageLocationId = #{storageLocationId,jdbcType=CHAR},
+			</if>
+			<if test="stockNum != null">
+				stockNum = #{stockNum,jdbcType=DECIMAL},
+			</if>
+			<if test="warningNum != null">
+				warningNum = #{warningNum,jdbcType=DECIMAL},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where productStockId = #{productStockId,jdbcType=CHAR}
+	</update>
+	<update id="updateStockNumById">
+		update t_productStock set stockNum=stockNum+#{stockNum},updateTime = #{updateTime,jdbcType=TIMESTAMP} where productStockId = #{productStockId,jdbcType=CHAR} 
+	</update>
+	<select id="findByProductIdAndDetailId" resultMap="productStock">
+		select * from t_productStock
+		<where>
+			<if test="productId != null and productId!= ''">
+				productId = #{productId,jdbcType=CHAR}
+			</if>
+			<if test="productStandardDetailId != null and productStandardDetailId != ''">
+				and productStandardDetailId = #{productStandardDetailId,jdbcType=CHAR}
+			</if>
+			<if test="companyId != null and companyId != ''">
+				and companyId = #{companyId,jdbcType=CHAR}
+			</if>
+		</where>
+		
+	</select>
+</mapper>

@@ -1,0 +1,181 @@
+----------------------------------------------------
+接口说明：扫描商品条形码获取商品信息
+
+本地接口：http://localhost:8080/trace/yzws/getGoodsDetailByQRCode
+测试接口：http://192.168.8.39:8080/trace/yzws/getGoodsDetailByQRCode
+
+JSON参数：{"traceCode":"3103101182782016070702021032"}
+
+参数说明：traceCode 扫描的条形码号
+
+返回结果：
+{
+	"code":"1",
+	"baseEntity":{
+		"createTime":null,
+		"createBy":null,
+		"updateTime":null,
+		"updateBy":null,
+		"costAmount":"22000.00",
+		"traceCode":"31011827816070763307",
+		"goodsID":"bf00c2f322d0464db5aafc4fbd6e4b8b",
+		"productBatch":"20160706196543",
+		"shouldIncome":"110"
+	}
+}
+
+结果说明：
+"code":"1"  返回结果状态 1为成功其他状态为失败
+costAmount  商品总价
+traceCode  商品二维码（追溯码）
+goodsID 商品ID
+productBatch  批次号码
+shouldIncome 规格数量 L为单位  暂时
+----------------------------------------------------
+接口说明：要货单信息
+
+本地接口：http://localhost:8080/trace/yzws/getStockOrder
+测试接口：http://192.168.8.39:8080/trace/yzws/getStockOrder
+JSON参数：
+{
+    "customerId":"4f215af6f59b42e9b2e3a1df4af26b7f",
+    "companyId":"28c5c65bf46f4281aeac7d45cfd234f3",
+    "storeNo":"0001",
+    "itemList":[
+                {"quantity":"220","productId":"bf00c2f322d0464db5aafc4fbd6e4b8b","productStandardName":"L/桶"},
+                {"quantity":"220","productId":"cb8bd9f06de74db2983cd761d16fa83c","productStandardName":"L/桶"}
+    ]
+}
+参数说明：
+customerId 客户ID  门店的的GUID号  没有可以先写死
+companyId  企业ID   配送中心的企业ID号吗  可以先写死
+storeNo  门店编号   门店的编号  暂时用作操作用户的ID  后面可能要改动成动态 暂时写死
+itemList.quantity  要货数量 220L  后台是110L/桶  会计算成 2桶进行换算****
+itemList.productId  这个ID是你们的goodId 商品的ID号 ****
+itemList.productStandardName  商品的单位  我们后台是规格  这个规格先写死成 L/桶
+
+返回结果：
+{"code":"1","msg":"下单成功"}
+
+结果说明：
+"code":"1"  返回结果状态 1为成功其他状态为失败
+----------------------------------------------------
+接口说明：扫描采购单条形码获取商品信息
+
+本地接口：http://localhost:8080/trace/yzws/addDeliveryOrder
+测试接口：http://192.168.8.39:8080/trace/yzws/addDeliveryOrder
+
+JSON参数：
+{
+    "deliveryQRCode":"20160704144509",
+    "goodList":
+    [
+        {"goodQRCodeId":"test12316070447176"},
+        {"goodQRCodeId":"test12316070447176"}
+    ]
+}
+参数说明：
+deliveryQRCode 采购单扫描单号
+goodList.goodQRCodeId 商品扫码ID号
+
+返回结果：
+{"code":"1","msg":"入库完毕"}
+
+结果说明：
+"code":"1"  返回结果状态 1为成功其他状态为失败
+
+
+
+----------------------------------------------------
+接口说明：POS机销售单回传接口
+本地接口：http://localhost:8080/trace/yzws/addStoreSaleOrder
+测试接口：http://192.168.8.39:8080/trace/yzws/addStoreSaleOrder
+JSON参数：
+{
+    "companyCode": "310118689",
+    "companyId": "4f215af6f59b42e9b2e3a1df4af26b7f",
+    "items": [
+        {
+            "goodsBarCode": "310310118278201607071021026",
+            "quantity": 3,
+            "salePrice": 30.5,
+            "storeSaleItemId": "4e2e0454c3e2462199bd0ee9d8c63608",
+            "storeSaleOrderId": "10b518f76ce2468ea29c243a921d7129",
+            "unitName": "L"
+        },
+        {
+            "goodsBarCode": "310310118278201607071021027",
+            "quantity": 4,
+            "salePrice": 80.88,
+            "storeSaleItemId": "1173b101a41c4acd8557441871b3a2dd",
+            "storeSaleOrderId": "10b518f76ce2468ea29c243a921d7129",
+            "unitName": "L"
+        }
+    ],
+    "orderTime": 1467968125333,
+    "storeSaleOrdeNo": "201607081655333",
+    "storeSaleOrderId": "10b518f76ce2468ea29c243a921d7129",
+    "userId": "小张"
+}
+参数说明：
+companyCode 企业编码 暂时可以写死
+companyId   门店ID  暂时可以写死
+orderTime   下单时间
+storeSaleOrdeNo  销售编号
+storeSaleOrderId 销售主单ID
+userId 操作人ID
+
+items.goodsBarCode  扫描的商品条形码
+items.quantity 数量
+items.storeSaleItemId  销售明细ID
+items.unitName  单位
+items.storeSaleOrderId 销售主单ID
+
+返回结果：
+{
+    "code": "1",
+    "msg": "添加成功",
+    "baseEntity": {
+        "createTime": 1467968808785,
+        "createBy": "小张",
+        "updateTime": 1467968808785,
+        "updateBy": "小张",
+        "storeSaleOrderId": "3d469001717d49b2922440616f084a3a",
+        "storeSaleOrdeNo": "201607081704245",
+        "companyId": "4f215af6f59b42e9b2e3a1df4af26b7f",
+        "orderTime": 1467968668244,
+        "userId": "小张",
+        "items": [
+            {
+                "createTime": 1467968811680,
+                "createBy": "小张",
+                "updateTime": 1467968811680,
+                "updateBy": "小张",
+                "storeSaleItemId": "68eaa401d53a4efab0db9b8534dc0959",
+                "storeSaleOrderId": "3d469001717d49b2922440616f084a3a",
+                "goodsBarCode": "310310118278201607071021026",
+                "goodsTraceCode": "31011868916070852459",
+                "salePrice": 30.5,
+                "unitName": "L",
+                "quantity": 3
+            },
+            {
+                "createTime": 1467968811692,
+                "createBy": "小张",
+                "updateTime": 1467968811692,
+                "updateBy": "小张",
+                "storeSaleItemId": "3da91136acf64f3f8c1f8a8166b50771",
+                "storeSaleOrderId": "3d469001717d49b2922440616f084a3a",
+                "goodsBarCode": "310310118278201607071021027",
+                "goodsTraceCode": "31011868916070883733",
+                "salePrice": 80.88,
+                "unitName": "L",
+                "quantity": 4
+            }
+        ],
+        "companyCode": "310118689"
+    }
+}
+结果说明：
+"code":"1"  返回结果状态 1为成功其他状态为失败
+items.goodsTraceCode 这个是小票上要贴的追溯码

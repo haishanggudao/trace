@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProcessTemplateMapper">
+	<resultMap type="ProcessTemplate" id="processTemplate">
+		<id property="processTemplateId" column="processTemplateId" />
+		<result column="templateName" jdbcType="VARCHAR" property="templateName" />
+		<result column="productType" jdbcType="VARCHAR" property="productType" />
+		<result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="createBy" jdbcType="VARCHAR" property="createBy" />
+		<result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="updateBy" jdbcType="VARCHAR" property="updateBy" />
+		<association property="product" javaType="Product">
+			<id property="productId" column="productId" />
+			<result property="productName" column="productName" />
+		</association>
+		<association property="standardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="standardDetailId" />
+			<result property="productStandardNum" column="productStandardNum" />
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId" />
+				<result property="productStandardName" column="productStandardName" />
+			</association>
+		</association>
+		<association property="processor" javaType="Processor" autoMapping="true">
+		</association>
+	</resultMap>
+	<resultMap type="ProcessTemplateItem" id="processTemplateItem">
+			<id property="templateItemId" column="templateItemId"/>
+			<result property="processTemplateId" column="processTemplateId"/>
+			<result property="productId" column="productId"/>
+			<result property="productType" column="productType" />
+			<result property="productStandardDetailId" column="standardDetailId"/>
+			<result property="productName" column="productName"/>
+			<result property="goodsId" column="goodsId"/>
+			<result property="goodsBatch" column="goodsBatch"/>
+			<result property="num" column="num"/>
+			<result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+			<result column="createBy" jdbcType="VARCHAR" property="createBy" />
+			<result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+			<result column="updateBy" jdbcType="VARCHAR" property="updateBy" />
+			<result property="type" column="type"/>
+			<association property="product" javaType="Product">
+				<id property="productId" column="productId" />
+				<result property="productName" column="productName" />
+			</association>
+			<association property="standardDetail" javaType="ProductStandardDetail">
+				<id property="productStandardDetailId" column="standardDetailId" />
+				<result property="productStandardNum" column="productStandardNum" />
+				<association property="productStandard" javaType="ProductStandard">
+					<id property="productStandardId" column="productStandardId" />
+					<result property="productStandardName" column="productStandardName" />
+				</association>
+			</association>
+	</resultMap>
+	<insert id="createProcessTemplate">
+		insert into t_process_template
+		(processTemplateId,productId,standardDetailId,templateName,type,productType, companyId, createTime,createBy,updateTime,updateBy,processorId)
+		values
+		(#{processTemplateId},#{product.productId},#{standardDetail.productStandardDetailId}, #{templateName}, #{type},#{productType}, #{companyId}, #{createTime},#{createBy}, #{updateTime},#{updateBy},
+		#{processor.id})
+	</insert>
+	<update id="updateProcessTemplate">
+		update t_process_template set
+		productId=#{product.productId},
+		standardDetailId=#{standardDetail.productStandardDetailId},
+		templateName=#{templateName},type=#{type},
+		productType=#{productType},
+		updateTime=#{updateTime},
+		updateBy=#{updateBy},
+		processorId=#{processor.id}
+		where processTemplateId=#{processTemplateId}
+	</update>
+	<delete id="delProcessTemplate">
+		delete from t_process_template where
+		processTemplateId=#{processTemplateId}
+	</delete>
+
+	<insert id="createProcessTemplateItem">
+		insert into t_template_item
+		(templateItemId,processTemplateId,productId,standardDetailId,num,type,productType,createTime,createBy,updateTime,updateBy)
+		values
+		(#{templateItemId},#{processTemplateId},#{productId},#{standardDetail.productStandardDetailId},#{num},#{type},#{productType},#{createTime},#{createBy},#{updateTime},#{updateBy})
+	</insert>
+	<update id="updateProcessTemplateItem">
+		update t_template_item set
+		productId=#{productId},standardDetailId=#{standardDetail.productStandardDetailId},type=#{type},productType=#{productType},num =#{num},updateTime=#{updateTime},
+		updateBy=#{updateBy} where templateItemId=#{templateItemId}
+	</update>
+	<delete id="delProcessTemplateItem">
+		delete from t_template_item where 
+		<if test="templateItemId!=null and templateItemId!=''">
+			templateItemId=#{templateItemId}
+		</if>
+		<if test="processTemplateId!=null and processTemplateId!=''">
+			processTemplateId=#{processTemplateId}
+		</if>
+	</delete>
+
+	<select id="getProcessTemplateList" resultMap="processTemplate" useCache="false">
+		select 
+			t.processTemplateId,
+			t.templateName,
+			t.productId,
+			t.productType,
+			p.productName,
+			t.standardDetailId,
+			d.productStandardNum,
+			s.productStandardName,
+			t.createTime,
+			t.updateTime,
+			pr.id,
+			pr.name,
+			pr.healthCard,
+			u.username as createBy,
+			u2.username as updateBy
+			from t_process_template t 
+			INNER JOIN t_product_standard_detail d on t.standardDetailId=d.productStandardDetailId
+			INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+			INNER JOIN t_product p on t.productId=p.productId
+			INNER JOIN sys_user u on t.createBy=u.id
+			INNER JOIN sys_user u2 on t.updateBy=u2.id
+			LEFT JOIN t_processor pr on t.processorId=pr.id
+			where t.companyId = #{processTemplate.companyId} and type=#{processTemplate.type} ORDER BY t.updateTime DESC
+	</select>
+	<select id="findProcessTemplateItemsBTemplateid" resultMap="processTemplateItem" useCache="false">
+		select i.templateItemId,i.productId,p.productName,i.productType,i.num,i.type,i.standardDetailId,d.productStandardNum,d.productStandardId,s.productStandardName,
+			i.createTime,i.updateTime,
+			(select username from sys_user where id = i.createBy) as createBy,
+			(select username from sys_user where id = i.updateBy) as updateBy
+			 from t_template_item i 
+			INNER JOIN t_product p on p.productId=i.productId 
+			INNER JOIN t_product_standard_detail d on d.productStandardDetailId=i.standardDetailId 
+			INNER JOIN t_product_standard s on s.productStandardId=d.productStandardId 
+			where processTemplateId=#{processTemplateId}  ORDER BY i.updateTime DESC
+	</select>
+	<select id="findCountByProductIdAndStandardDetailId" resultType="int">
+		select count(processTemplateId) from t_process_template where 
+			productId=#{product.productId} and standardDetailId=#{standardDetail.productStandardDetailId}
+			<if test="processTemplateId!=null and processTemplateId!=''">
+				and processTemplateId!=#{processTemplateId}
+			</if>
+	</select>
+	<select id="findTemplateName" resultType="int">
+		select count(processTemplateId) from t_process_template where 
+			templateName=#{templateName} 
+			<if test="processTemplateId!=null and processTemplateId!=''">
+				and processTemplateId!=#{processTemplateId} 
+			</if>
+			<if test="companyId!=null and companyId!=''">
+				and companyId=#{companyId}
+			</if>
+
+	</select>	
+	
+	<select id="findProcessTemplateItemsByProduct" resultMap="processTemplateItem">
+		select i.templateItemId,i.productId,p.productName,i.standardDetailId,d.productStandardNum,s.productStandardName,i.num,i.type from t_template_item i
+	INNER JOIN t_process_template t on i.processTemplateId=t.processTemplateId
+	INNER JOIN t_product p on i.productId=p.productId
+	INNER JOIN t_product_standard_detail d on i.standardDetailId=d.productStandardDetailId
+	INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+	where t.productId=#{productId} and t.standardDetailId=#{standardDetailId}
+	</select>
+	<select id="findProcessTemplateItemsByProcessId" resultMap="processTemplateItem" useCache="false">
+		select i.processItemId templateItemId,i.goodsId,i.num,i.type,g.productId,g.productStandardDetailId standardDetailId,d.productStandardNum,s.productStandardName,g.goodsBatch,p.productName,
+			i.createTime,i.updateTime,
+			(select username from sys_user where id = i.createBy) as createBy,
+			(select username from sys_user where id = i.updateBy) as updateBy
+			 from t_process_item i
+			INNER JOIN t_goods g on i.goodsId=g.goodsId
+			INNER JOIN t_product p on g.productId=p.productId
+			INNER JOIN t_product_standard_detail d on g.productStandardDetailId=d.productStandardDetailId
+			INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+			where i.processMainId=#{processMainId}
+	</select>
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>

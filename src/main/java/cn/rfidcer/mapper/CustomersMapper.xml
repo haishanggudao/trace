@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.CustomersMapper">
+	<resultMap id="BaseResultMap" type="cn.rfidcer.bean.Customers">
+		<id column="customerId" property="customerId" jdbcType="CHAR" />
+		<!-- <result column="companyId" property="companyId" jdbcType="CHAR" /> -->
+		<result column="custCompanyId" property="custCompanyId" jdbcType="CHAR" />
+		<result column="contact" property="contact" jdbcType="VARCHAR" />
+		<result column="altContact" property="altContact" jdbcType="VARCHAR" />
+		<result column="customerAlias" property="customerAlias" jdbcType="VARCHAR" />
+		<result column="tel" property="tel" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="CHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+		<result column="isDeleted" property="isDeleted" jdbcType="INTEGER" />
+		<!-- 20160614 -->
+		<result column="cadministrativedivision" property="cadministrativedivision" jdbcType="VARCHAR" />
+    	<result column="custCode" property="custCode" jdbcType="VARCHAR" />
+		<association property="company" javaType="Company">
+			<id property="companyid" column="custCompanyId" />
+			<result property="name" column="name" />
+			<result column="code" property="code" jdbcType="VARCHAR" />
+			<!-- 2016.06.13 -->
+			<result column="cname" property="cname" jdbcType="VARCHAR" />
+    		<result column="cnature" property="cnature" jdbcType="VARCHAR" />
+    		<result column="cidnumb" property="cidnumb" jdbcType="VARCHAR" />
+    		<result column="ccustomercategories" property="ccustomercategories" jdbcType="VARCHAR" />
+    		<result column="cbusinessscope" property="cbusinessscope" jdbcType="VARCHAR" />
+    		<result column="cliquorbusinesslicense" property="cliquorbusinesslicense" jdbcType="VARCHAR" />
+    		<result column="cbusinessaddress" property="cbusinessaddress" jdbcType="VARCHAR" />
+    		<result column="chygienelicense" property="chygienelicense" jdbcType="VARCHAR" />
+    		<result column="clegalpersonaddress" property="clegalpersonaddress" jdbcType="VARCHAR" />
+    		<result column="cbusinesslicense" property="cbusinesslicense" jdbcType="VARCHAR" />
+    		<result column="ceffectivedate1" property="ceffectivedate1" jdbcType="TIMESTAMP" />
+    		<result column="ceffectivedate2" property="ceffectivedate2" jdbcType="TIMESTAMP" />
+    		<result column="cregistrationnumber" property="cregistrationnumber" jdbcType="VARCHAR" />
+    		<result column="cnatureName" property="cnatureName" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+	<resultMap id="customersInfo" type="cn.rfidcer.bean.Customers"></resultMap>
+	<resultMap type="Customers" id="customersCompany">
+		<id column="companyId" property="custCompanyId" />
+		<result column="customerAlias" property="customerAlias" />
+		<result column="name" property="custCompanyName" />
+		<result column="custCompanyId" property="custCompanyId"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		customerId, companyId, custCompanyId, contact, altContact,
+		tel, status,
+		createTime,isDeleted,
+		createBy, updateTime,
+		updateBy,customerAlias, cadministrativedivision,custCode
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_customers
+		where customerId = #{customerId,jdbcType=CHAR} and
+		isDeleted = 0
+	</select>
+	<select id="selectByCustCompanyId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_customers
+		where custCompanyId = #{custCompanyId,jdbcType=CHAR} and companyId = #{companyId,jdbcType=CHAR} and
+		isDeleted = 0
+	</select>	
+	
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		t_customers
+		where customerId = #{customerId,jdbcType=CHAR}
+	</delete>
+	<insert id="insert" parameterType="cn.rfidcer.bean.Customers">
+		insert into t_customers
+		(customerId, companyId, custCompanyId,
+		contact,
+		altContact,customerAlias, tel,
+		status, createTime, createBy,
+		updateTime, updateBy)
+		values (#{customerId,jdbcType=CHAR},
+		#{companyId,jdbcType=CHAR},
+		#{custCompanyId,jdbcType=CHAR},
+		#{contact,jdbcType=VARCHAR}, #{altContact,jdbcType=VARCHAR},
+		#{customerAlias,jdbcType=VARCHAR},
+		#{tel,jdbcType=VARCHAR},
+		#{status,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP},
+		#{createBy,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{updateBy,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.Customers">
+		insert into t_customers
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="customerId != null">
+				customerId,
+			</if>
+			<if test="companyId != null">
+				companyId,
+			</if>
+			<if test="custCompanyId != null">
+				custCompanyId,
+			</if>
+			<if test="contact != null">
+				contact,
+			</if>
+			<if test="altContact != null">
+				altContact,
+			</if>
+			<if test="customerAlias != null">
+				customerAlias,
+			</if>
+			<if test="tel != null">
+				tel,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+			<if test="isDeleted != null">
+				isDeleted,
+			</if>
+			<if test="cadministrativedivision != null">
+				cadministrativedivision,
+			</if>
+			<if test="custCode != null" >
+        		custCode,
+      		</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="customerId != null">
+				#{customerId,jdbcType=CHAR},
+			</if>
+			<if test="companyId != null">
+				#{companyId,jdbcType=CHAR},
+			</if>
+			<if test="custCompanyId != null">
+				#{custCompanyId,jdbcType=CHAR},
+			</if>
+			<if test="contact != null">
+				#{contact,jdbcType=VARCHAR},
+			</if>
+			<if test="altContact != null">
+				#{altContact,jdbcType=VARCHAR},
+			</if>
+			<if test="customerAlias != null">
+				#{customerAlias,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				#{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="isDeleted != null">
+				#{isDeleted,jdbcType=VARCHAR},
+			</if>
+			<if test="cadministrativedivision != null">
+				#{cadministrativedivision,jdbcType=VARCHAR},
+			</if>
+			<if test="custCode != null" >
+        		#{custCode,jdbcType=VARCHAR},
+      		</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.Customers">
+		update t_customers
+		<set>
+			<if test="companyId != null">
+				companyId = #{companyId,jdbcType=CHAR},
+			</if>
+			<if test="custCompanyId != null">
+				custCompanyId = #{custCompanyId,jdbcType=CHAR},
+			</if>
+			<if test="contact != null">
+				contact = #{contact,jdbcType=VARCHAR},
+			</if>
+			<if test="altContact != null">
+				altContact = #{altContact,jdbcType=VARCHAR},
+			</if>
+			<if test="customerAlias != null">
+				customerAlias = #{customerAlias,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				tel = #{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				createBy = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="isDeleted != null">
+				isDeleted = #{isDeleted,jdbcType=INTEGER},
+			</if>
+			<if test="cadministrativedivision != null">
+				cadministrativedivision = #{cadministrativedivision,jdbcType=VARCHAR},
+			</if>
+			<if test="custCode != null" >
+        		custCode = #{custCode,jdbcType=VARCHAR},
+      		</if>
+		</set>
+		where customerId = #{customerId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.Customers">
+		update t_customers
+		set companyId = #{companyId,jdbcType=CHAR},
+		custCompanyId =
+		#{custCompanyId,jdbcType=CHAR},
+		contact = #{contact,jdbcType=VARCHAR},
+		altContact = #{altContact,jdbcType=VARCHAR},
+		customerAlias =
+		#{customerAlias,jdbcType=VARCHAR},
+		tel = #{tel,jdbcType=VARCHAR},
+		status = #{status,jdbcType=CHAR},
+		createTime =
+		#{createTime,jdbcType=TIMESTAMP},
+		createBy =
+		#{createBy,jdbcType=VARCHAR},
+		updateTime =
+		#{updateTime,jdbcType=TIMESTAMP},
+		updateBy =
+		#{updateBy,jdbcType=VARCHAR},
+		isDeleted = #{isDeleted,jdbcType=INTEGER}
+		where customerId = #{customerId,jdbcType=CHAR}
+	</update>
+	<select id="list" resultMap="BaseResultMap" parameterType="cn.rfidcer.bean.Customers" useCache="false">
+	SELECT tc.customerId,
+	tc.custCompanyId, tc.contact,
+	tc.altContact,tc.customerAlias,
+	tc.tel,
+	tc.status, tc.createTime, tc.createBy, tc.updateTime,
+	tc.updateBy,tc.custCode,tc.cadministrativedivision,
+	c.name, c.companyid,
+	c.cname, c.cnature, c.cidnumb,c.code, c.ccustomercategories, c.cbusinessscope,
+	c.cliquorbusinesslicense, c.cbusinessaddress, c.chygienelicense,
+	c.clegalpersonaddress, c.cbusinesslicense,
+	c.ceffectivedate1,c.ceffectivedate2,c.cregistrationnumber,tn.name as
+	cnatureName
+	FROM t_customers tc
+	inner join t_company c on c.companyId = tc.custCompanyId left join t_nature tn on c.cnature = tn.id
+	where tc.companyId = #{customers.companyId} and tc.isDeleted = 0
+	<if test="customers != null">
+		<if test="customers.customerId != null and customers.customerId != ''">
+			and tc.customerId = #{customers.customerId}
+		</if>
+		<if test="customers.companyName != null and customers.companyName != ''">
+			and c.name like CONCAT('%','${customers.companyName}','%' )
+		</if>
+		<if test="customers.custCompanyId != null and customers.custCompanyId != ''">
+			and tc.custCompanyId = #{customers.custCompanyId}
+		</if>
+		<if test="customers.contact != null and customers.contact != ''">
+			and tc.contact = #{customers.contact}
+		</if>
+		<if test="customers.altContact != null and customers.altContact != ''">
+			and tc.altContact = #{customers.altContact}
+		</if>
+		<if test="customers.tel != null and customers.tel != ''">
+			and tc.tel = #{customers.tel}
+		</if>
+		<if test="customers.status != null and customers.status != ''">
+			and tc.status = #{customers.status}
+		</if>
+		<if test="customers.createTime != null and customers.createTime != ''">
+			and tc.createTime = #{customers.createTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="customers.createBy != null and customers.createBy != ''">
+			and tc.createBy = #{customers.createBy}
+		</if>
+		<if test="customers.updateTime != null and customers.updateTime != ''">
+			and tc.updateTime = #{customers.updateTime}
+		</if>
+		<if test="customers.updateBy != null and customers.updateBy != ''">
+			and tc.updateBy = #{customers.updateBy}
+		</if>
+		<if test="customers.customerAlias != null and customers.customerAlias != ''">
+			and tc.customerAlias = #{customers.customerAlias}
+		</if>
+		<if test="customers.isDeleted != null and customers.isDeleted != ''">
+			and tc.isDeleted = #{customers.isDeleted}
+		</if>
+		<if test="customers.custCode != null and customers.custCode != ''">
+			and tc.custCode = #{customers.custCode,jdbcType=VARCHAR}
+		</if>
+		<if test="customers.cadministrativedivision != null and customers.cadministrativedivision != ''">
+			and tc.cadministrativedivision = #{customers.cadministrativedivision}
+		</if>
+	</if>
+	<if test="company != null">
+		<if test="company.cname != null and company.cname != ''">
+			and c.cname = #{company.cname}
+		</if>
+		<if test="company.cidnumb != null and company.cidnumb != ''">
+			and c.cidnumb = #{company.cidnumb}
+		</if>
+		<if test="company.cnature != null and company.cnature != ''">
+			and c.cnature = #{company.cnature}
+		</if>
+		<if test="company.clegalpersonaddress != null and company.clegalpersonaddress != ''">
+			and c.clegalpersonaddress = #{company.clegalpersonaddress}
+		</if>
+		<if test="company.tel != null and company.tel != ''">
+			and c.tel = #{company.tel}
+		</if>
+		<if test="company.cregistrationnumber != null and company.cregistrationnumber != ''">
+			and c.cregistrationnumber = #{company.cregistrationnumber}
+		</if>
+		<if test="company.ccustomercategories != null and company.ccustomercategories != ''">
+			and c.ccustomercategories = #{company.ccustomercategories}
+		</if>
+		<if test="company.cbusinesslicense != null and company.cbusinesslicense != ''">
+			and c.cbusinesslicense = #{company.cbusinesslicense}
+		</if>
+		<if test="company.cbusinessscope != null and company.cbusinessscope != ''">
+			and c.cbusinessscope = #{company.cbusinessscope}
+		</if>
+		<if test="company.cliquorbusinesslicense != null and company.cliquorbusinesslicense != ''">
+			and c.cliquorbusinesslicense = #{company.cliquorbusinesslicense}
+		</if>
+		<if test="company.cbusinessaddress != null and company.cbusinessaddress != ''">
+			and c.cbusinessaddress = #{company.cbusinessaddress}
+		</if>
+		<if test="company.chygienelicense != null and company.chygienelicense != ''">
+			and c.chygienelicense = #{company.chygienelicense}
+		</if>
+	</if>
+	order by tc.updateTime desc
+	</select>
+	<select id="findCustomerList" resultMap="customersInfo" useCache="false">
+		SELECT tc.customerId,tc.customerAlias, tc.custCompanyId
+		FROM t_customers tc
+		where tc.companyId = #{companyId} and tc.isDeleted = 0
+		order by tc.updateTime desc
+	</select>
+	<select id="findFilterCustomers" resultMap="customersInfo" useCache="false">
+		SELECT tc.customerId,tc.customerAlias, tc.custCompanyId
+		FROM t_customers tc
+		where tc.companyId = #{companyId} and tc.isDeleted = 0 
+		and tc.custCompanyId not in 
+		( SELECT companyId from t_product_company where productId=#{productId})
+		order by tc.updateTime desc
+	</select>	
+	
+	
+	
+	
+	<select id="getCustomersCompanys" resultMap="customersCompany">
+		select
+		l.customerId,c.companyId,c.name,l.customerAlias from t_customers l
+		RIGHT JOIN t_company c on l.custCompanyId=c.companyId
+		and l.isDeleted=0
+		and l.companyId=#{companyId}
+	</select>
+	<select id="checkCustomersExistsByCustomersName" resultType="int">
+		select count(customerId) 
+		from t_customers 
+		where customerAlias=#{companyName} 
+		and companyId=#{companyId} 
+		and isDeleted = 0
+		<if test="customerId!=null and customerId!=''">
+			and customerId!=#{customerId}
+		</if>
+	</select>
+	
+	<select id="getCustomersByCustomerCompanyId" resultMap="BaseResultMap">
+		select
+			tc.customerId,
+		    tc.custCompanyId,
+		    tc.contact,
+		    tc.altContact,
+		    tc.customerAlias,
+		    tc.tel,
+		    tc.status,
+		    tc.custCode,
+		    tc.cadministrativedivision,
+		    c.name,
+		    c.companyid,
+		    c.cnature,
+		    c.cidnumb,
+		    c.code,
+		    c.ccustomercategories,
+		    c.cbusinessscope,
+		    c.cliquorbusinesslicense,
+		    c.cbusinessaddress,
+		    c.chygienelicense,
+		    c.clegalpersonaddress,
+		    c.cbusinesslicense,
+		    c.cregistrationnumber
+		from t_customers tc
+		INNER JOIN t_company c on tc.custCompanyId=c.companyid
+		where tc.custCompanyId=#{custCompanyId}
+	</select>
+	
+	<select id="findCustomers" resultMap="customersInfo" useCache="false">
+		select 
+			tc.customerId,
+			tc.customerAlias,
+			tc.custCompanyId
+		FROM t_customers tc
+		<where>
+			<if test="customers!=null and customers.customerAlias != null">
+				tc.customerAlias like CONCAT('%',#{customers.customerAlias},'%' )
+			</if>
+		</where>
+		order by tc.updateTime desc 
+	</select>
+	<!-- 根据出库id查询门店信息 -->
+	<select id="getCustomersByOutstockMainId" resultMap="BaseResultMap" parameterType="String" useCache="false">
+		SELECT * FROM t_customers t
+		INNER JOIN t_sale_order o ON t.customerId = o.customerId
+		LEFT JOIN t_company c ON c.companyId = t.custCompanyId
+		LEFT JOIN t_nature tn ON c.cnature = tn.id
+		LEFT JOIN t_saleOutstock s ON s.saleOrderId = o.saleOrderId
+		WHERE s.outstockMainId = #{outstockMainId} AND t.isDeleted = 0
+		GROUP BY t.customerId
+	</select>
+</mapper>

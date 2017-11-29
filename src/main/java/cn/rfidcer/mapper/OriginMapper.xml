@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.OriginMapper" >
+  <resultMap id="origin" type="Origin" autoMapping="true">
+    <id column="originId" property="originId" jdbcType="CHAR" />
+  </resultMap>
+  
+  <!-- 查询屠宰场列表信息 -->
+  <select id="findAllList" resultMap="origin" useCache="false">
+    select 
+    	*
+    from t_origin 
+    where companyId = #{origin.companyId} 
+    and isDeleted != -1
+    order by updateTime desc,createTime desc
+  </select>
+  
+</mapper>

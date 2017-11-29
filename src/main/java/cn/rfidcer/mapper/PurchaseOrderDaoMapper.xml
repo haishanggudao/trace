@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.PurchaseOrderDao">
+	<resultMap type="PurchaseOrder" id="purchaseOrder">
+		<id column="purchaseOrderId" property="purchaseOrderId" />
+		<result column="orderTime" property="orderTime" />
+		<result column="purchaseOrderNo" property="purchaseOrderNo" />
+		<result column="registrant" property="registrant" />
+		<result column="supplierAlias" property="supplierAlias" />
+		<result column="supplierId" property="supplierId" />
+	</resultMap>
+
+	<resultMap type="PurchaseItem" id="purchaseItem">
+		<id property="purchaseItemId" column="purchaseItemId" />
+		<result property="purchaseOrderId" column="purchaseOrderId" />
+		<result property="quantity" column="quantity" />
+		<result property="productId" column="productId" />
+		<result property="productStandardDetailId" column="productStandardDetailId" />
+		<result property="productName" column="productName" />
+		<association property="product" javaType="Product">
+			<id property="productId" column="productId" />
+			<result property="productName" column="productName" />
+		</association>
+		<association property="standardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="productStandardDetailId" />
+			<result property="productStandardNum" column="productStandardNum" />
+			<result property="purchasePrice" column="purchasePrice" />
+			<result property="purchaseCurrency" column="purchaseCurrency" />
+			<result property="salePrice" column="salePrice" />
+			<result property="saleCurrency" column="saleCurrency" />
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId" />
+				<result property="productStandardName" column="productStandardName" />
+			</association>
+		</association>
+		<association property="purchaseOrder" javaType="PurchaseOrder">
+			<id column="purchaseOrderId" property="purchaseOrderId" />
+			<result column="purchaseOrderNo" property="purchaseOrderNo" />
+			<result column="orderTime" property="orderTime" />
+		</association>
+	</resultMap>
+
+
+	<!-- 采购入库查询数据模型 可能需要删除 -->
+	<resultMap type="PurchaseInstockItem" id="purchaseInstockItem">
+		<id property="purchaseItemId" column="purchaseItemId" />
+		<result column="goodsBatch" property="goodsBatch" />
+		<result column="instockItemId" property="instockItemId" />
+		<result column="goodsId" property="goodsId" />
+		<result column="areaInfoId" property="areaInfoId" />
+		<result column="slaughterhouseId" property="slaughterhouseId" />
+		<result column="slaughterhouseName" property="slaughterhouseName" />
+		<result column="catgName" property="catgName" />
+		<result property="purchaseOrderId" column="purchaseOrderId" />
+		<result property="quantity" column="quantity" />
+		<association property="product" javaType="Product">
+			<id property="productId" column="productId" />
+			<result property="productName" column="productName" />
+		</association>
+		<association property="standardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="productStandardDetailId" />
+			<result property="productStandardNum" column="productStandardNum" />
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId" />
+				<result property="productStandardName" column="productStandardName" />
+			</association>
+		</association>
+	</resultMap>
+
+
+	<!-- 采购入库数据模型 -->
+	<resultMap type="PurchaseInstockOrder" id="purchaseInstockOrder">
+		<id property="purchaseOrderId" column="purchaseOrderId" />
+		<result property="purchaseOrderId" column="purchaseOrderId" />
+		<result property="itemCount" column="itemCount" />
+		<association property="instockMain" javaType="InstockMain">
+			<id column="instockMainId" jdbcType="CHAR" property="instockMainId" />
+			<result column="purchaseOrderId" jdbcType="CHAR" property="purchaseOrderId" />
+			<result column="instockNum" jdbcType="VARCHAR" property="instockNum" />
+			<result column="instockBatchNum" jdbcType="VARCHAR" property="instockBatchNum" />
+			<result column="consignee" jdbcType="VARCHAR" property="consignee" />
+			<result column="registrant" jdbcType="VARCHAR" property="registrant" />
+			<result column="instockDate" jdbcType="VARCHAR" property="instockDate" />
+			<result column="remark" jdbcType="VARCHAR" property="remark" />
+			<result column="registDate" jdbcType="VARCHAR" property="registDate" />
+			<result column="instockType" jdbcType="CHAR" property="instockType" />
+		</association>
+		<association property="purchaseOrder" javaType="PurchaseOrder">
+			<id column="purchaseOrderId" property="purchaseOrderId" />
+			<result column="orderTime" property="orderTime" />
+			<result column="purchaseOrderNo" property="purchaseOrderNo" />
+			<result property="supplierId" column="supplierId" />
+			<result property="supplierAlias" column="supplierAlias" />
+		</association>
+	</resultMap>
+
+	<resultMap type="PurchaseInstockOrder" id="purchaseInstockOrder1">
+		<id property="purchaseItemId" column="purchaseItemId" />
+	</resultMap>
+
+
+	<select id="findRepeat" resultType="int">
+		select count(purchaseOrderId) from t_purchase_order where 1=1
+		<if test="companyId!=null and companyId !=''">
+			and companyId =#{companyId}
+		</if>
+		<if test="purchaseOrderNo!=null and purchaseOrderNo!=''">
+			and purchaseOrderNo =#{purchaseOrderNo}
+		</if>
+	</select>
+
+	<insert id="addPurchaseOrder">
+		insert into t_purchase_order
+		(purchaseOrderId,purchaseOrderNo,supplierId,companyId,
+		orderTime,
+		registrant,
+		createTime,createBy,updateTime,updateBy)
+		values
+		(#{purchaseOrderId},#{purchaseOrderNo},#{supplierId},#{companyId},
+		#{orderTime}, #{registrant},
+		#{createTime},#{createBy},#{updateTime},#{updateBy})
+	</insert>
+
+	<insert id="addPurchaseItem">
+		insert into
+		t_purchase_item(purchaseItemId,purchaseOrderId,productId,quantity,productStandardDetailId,createTime,createBy,updateTime,updateBy)
+		values
+		(#{purchaseItemId},#{purchaseOrderId},#{product.productId},#{quantity},#{standardDetail.productStandardDetailId},#{createTime},#{createBy},#{updateTime},#{updateBy})
+	</insert>
+
+	<update id="updatePurchaseOrder" parameterType="cn.rfidcer.bean.PurchaseOrder">
+		update t_purchase_order
+		<set>
+			<if test="supplierId != null">
+				supplierId=#{supplierId,jdbcType=CHAR},
+			</if>
+			<if test="orderTime != null">
+				orderTime=#{orderTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="registrant != null">
+				registrant=#{registrant,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where purchaseOrderId=#{purchaseOrderId,jdbcType=CHAR}
+	</update>
+
+	<delete id="deletePurchaseOrder">
+		delete from t_purchase_order where
+		purchaseOrderId=#{purchaseOrderId}
+	</delete>
+
+	<delete id="deletePurchaseItemsByPurchaseOrderId">
+		delete from t_purchase_item where
+		purchaseOrderId=#{purchaseOrderId}
+	</delete>
+
+	<select id="list" resultMap="purchaseOrder" useCache="false">
+		select
+		p.purchaseOrderId, p.orderTime, p.purchaseOrderNo, p.supplierId, s.supplierAlias, p.registrant
+		from t_purchase_order p
+		LEFT JOIN t_supplier s on s.supplierId = p.supplierId
+		where p.companyId=#{purchaseOrder.companyId}
+		<if test="purchaseOrder.supplierId!=null and purchaseOrder.supplierId != ''">
+			and p.supplierId=#{purchaseOrder.supplierId}
+		</if>
+		ORDER BY p.createTime DESC
+	</select>
+
+	<select id="listByAdvancedQuery" resultMap="purchaseOrder" useCache="false">
+		select p.purchaseOrderId, p.orderTime, p.purchaseOrderNo, p.supplierId, 
+		c.name as supplierAlias, p.registrant 
+		from t_purchase_order p 
+		INNER JOIN t_supplier s on s.supplierId = p.supplierId
+		INNER JOIN t_company c on c.companyId = s.supplierCompanyId
+		where p.companyId=#{purchaseOrder.companyId} 
+		<if test="purchaseOrder.purchaseOrderNo !=null and purchaseOrder.purchaseOrderNo != ''">
+			and p.purchaseOrderNo LIKE CONCAT(CONCAT('%',#{purchaseOrder.purchaseOrderNo}),'%')
+		</if> 
+		<if test="purchaseOrder.orderTimeStart !=null and purchaseOrder.orderTimeStart !='' and purchaseOrder.orderTimeEnd !=null and purchaseOrder.orderTimeEnd !='' ">
+			and p.orderTime between #{purchaseOrder.orderTimeStart} and #{purchaseOrder.orderTimeEnd}
+		</if>
+		<if test="purchaseOrder.supplierAlias !=null and purchaseOrder.supplierAlias !=''">
+			and p.supplierId in (SELECT sp.supplierCompanyId FROM t_supplier sp 
+								where sp.supplierAlias = #{purchaseOrder.supplierAlias} )
+		</if>
+		<if test="purchaseOrder.productName !=null and purchaseOrder.productName !=''">
+			and p.purchaseOrderId in (SELECT tpi.purchaseOrderId FROM t_purchase_item tpi
+								inner join t_product tp on tp.productId = tpi.productId
+								where tp.productName = #{purchaseOrder.productName} )
+		</if> 
+		order by p.updateTime desc, p.createTime desc
+	</select>
+
+	<select id="listPurchaseInstockOrder" resultMap="purchaseInstockOrder"
+		useCache="false">
+		select
+			p.purchaseOrderId,
+			p.orderTime,
+			p.purchaseOrderNo,
+			c.name,
+			p.supplierId,
+			s.supplierAlias,
+			m.instockMainId,
+			m.instockNum,
+			m.instockBatchNum,
+			m.consignee,
+			m.remark,
+			m.registrant,
+			m.instockDate,
+			m.registDate,
+			m.instockType
+		from t_purchase_order p
+		INNER JOIN t_supplier s on s.supplierId = p.supplierId
+		INNER JOIN t_company c on s.supplierCompanyId=c.companyId
+		INNER JOIN t_instock_main m on m.purchaseOrderId = p.purchaseOrderId and m.instockType=#{instockType}
+		where p.companyId=#{companyId} ORDER BY p.updateTime DESC
+	</select>
+
+
+
+
+	<select id="listAll" resultMap="purchaseOrder" useCache="false">
+		select
+		p.purchaseOrderId,p.orderTime,p.purchaseOrderNo,c.companyId,c.name
+		from t_purchase_order p 
+		INNER JOIN t_company c on p.supplierId=c.companyId
+	</select>
+
+	<select id="findAllPurchaseOrderId" resultMap="purchaseOrder"
+		useCache="false">
+		select purchaseOrderId,purchaseOrderNo,orderTime from
+		t_purchase_order where companyId=#{companyId} ORDER BY orderTime DESC
+	</select>
+	
+	<!-- 根据采购主单来查询采购明细 -->
+	<select id="listItemsByPurchaseOrder" resultMap="purchaseItem">
+		select i.purchaseItemId,i.purchaseOrderId,i.quantity,p.productId,
+		p.productName,i.productStandardDetailId,d.productStandardNum,d.productStandardId,
+		s.productStandardName, po.purchaseOrderNo, po.orderTime
+		from t_purchase_item i
+		INNER JOIN t_purchase_order po on po.purchaseOrderId = i.purchaseOrderId
+		INNER JOIN t_product p on i.productId=p.productId
+		INNER JOIN t_product_standard_detail d on i.productStandardDetailId=d.productStandardDetailId
+		INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+		where po.companyId=#{purchaseOrder.companyId}
+		<if test="purchaseOrder.purchaseOrderNo !=null and purchaseOrder.purchaseOrderNo != ''">
+			and po.purchaseOrderNo LIKE CONCAT(CONCAT('%',#{purchaseOrder.purchaseOrderNo}),'%')
+		</if> 
+		<if test="purchaseOrder.orderTimeStart !=null and purchaseOrder.orderTimeStart !='' and purchaseOrder.orderTimeEnd !=null and purchaseOrder.orderTimeEnd !='' ">
+			and po.orderTime between #{purchaseOrder.orderTimeStart} and #{purchaseOrder.orderTimeEnd}
+		</if>
+		<if test="purchaseOrder.supplier != null ">
+			<if test="purchaseOrder.supplierAlias !=null and purchaseOrder.supplierAlias != ''">
+			and po.supplierId in (SELECT sp.supplierId FROM t_supplier sp 
+								where sp.supplierAlias LIKE CONCAT(CONCAT('%',#{purchaseOrder.supplierAlias}),'%'))
+			</if>
+		</if> 
+		<if test="purchaseOrder.productName !=null and purchaseOrder.productName !=''">
+			and p.productName LIKE CONCAT(CONCAT('%',#{purchaseOrder.productName}),'%')
+		</if> 
+		ORDER BY p.updateTime desc, p.createTime desc
+	</select>
+
+
+	<!-- 根据采购单ID查询采购明细 -->
+	<select id="findPurchaseItemsByOrderId" resultMap="purchaseItem">
+		select
+		i.purchaseItemId,i.purchaseOrderId,i.quantity,p.productId,p.productName,i.productStandardDetailId,d.productStandardNum,d.productStandardId,s.productStandardName
+		from t_purchase_item i
+		INNER JOIN t_product p on i.productId=p.productId
+		INNER JOIN t_product_standard_detail d on
+		i.productStandardDetailId=d.productStandardDetailId
+		INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+		where i.purchaseOrderId=#{purchaseOrderId} ORDER BY p.createTime DESC
+	</select>
+
+	<select id="findPurchaseItemsByOrderIdOderPage" resultMap="purchaseItem"
+		useCache="false">
+		select
+		i.purchaseItemId,i.purchaseOrderId,i.quantity,p.productId,p.productName,i.productStandardDetailId,
+		d.productStandardNum,d.productStandardId,s.productStandardName,d.purchasePrice,d.purchaseCurrency,d.salePrice,d.saleCurrency
+		from t_purchase_item i
+		INNER JOIN t_product p on i.productId=p.productId
+		INNER JOIN t_product_standard_detail d on
+		i.productStandardDetailId=d.productStandardDetailId
+		INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+		where i.purchaseOrderId=#{purchaseOrderId} ORDER BY p.createTime DESC
+	</select>
+
+
+	<!-- 此方法有问题 后期可以删除 -->
+	<select id="findPurchaseInstockItemsByOrderId" resultMap="purchaseInstockItem"
+		useCache="false">
+		select
+		g.goodsBatch,g.areaInfoId,g.slaughterhouseId,g.goodsId,ii.instockItemId,i.purchaseItemId,i.purchaseOrderId,i.quantity,p.productId,p.productName,i.productStandardDetailId,d.productStandardNum,d.productStandardId,s.productStandardName
+		from t_purchase_item i
+		INNER JOIN t_product p on i.productId=p.productId
+		INNER JOIN t_product_standard_detail d on
+		i.productStandardDetailId=d.productStandardDetailId
+		INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+		INNER JOIN t_instock_main m on m.purchaseOrderId = i.purchaseOrderId
+		INNER JOIN t_instock_item ii on ii.instockMainId = m.instockMainId
+		INNER JOIN t_goods g on g.goodsId = ii.goodsId
+		where i.purchaseOrderId=#{purchaseOrderId} and g.productId =i.productId and
+		ii.instockNum =i.quantity ORDER BY i.createTime DESC
+	</select>
+
+
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>

@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.TraceDao">
+
+	<resultMap type="GoodsInfo" id="goodsInfo">
+		<id property="goodsDetailId" column="goodsDetailId" />
+		<result property="goodsId" column="goodsId" />
+		<result property="goodsBatch" column="goodsBatch" />
+		<result property="num" column="num" />
+		<result property="slaughterhouseId" column="slaughterhouseId" />
+		<result property="productName" column="productName" />
+		<result property="productStandardName" column="productStandardName" />
+		<result property="productStandardNum" column="productStandardNum" />
+		<result property="imgURL" column="productImageUrl" />
+		<result property="companyId" column="companyId"/>
+		<result property="traceCount" column="traceCount"/>
+		<result property="deliverType" column="deliverType"/>
+		<result property="productCategoryName" column="productCategoryName"/>
+		<result property="publicityImageUrl" column="publicityImageUrl"/>
+		<result property="secretKey" column="secretKey"/>
+		<result property="madein" column="madein"/>
+		<result property="createTime" column="createTime"/>
+		<result property="levelName" column="levelName"/>
+		<result property="shelfLife" column="shelfLife"/>
+		<association property="areaInfo" javaType="AreaInfo">
+			<id property="id" column="id" />
+			<result property="catgName" column="catgName" />
+		</association>
+	</resultMap>
+
+	<resultMap type="GoodsQC" id="goodsQC">
+		<id property="materialQcId" column="materialQcId" />
+		<result property="originNo" column="originNo" />
+		<result property="quarantineNo" column="quarantineNo" />
+		<result property="inspection" column="inspection" />
+		<result property="inspectionDate" column="inspectionDate" />
+		<result property="sampleName" column="sampleName" />
+		<result property="result" column="result" />
+	</resultMap>
+	
+	<resultMap type="ProcessMain" id="processMain">
+		<id property="processMainId" column="processMainId" />
+		<result property="processTime" column="processTime" />
+		<result property="processBatch" column="processBatch" />
+		<result property="processQuantity" column="processQuantity" /> 
+		<association property="processor" javaType="Processor">
+			<id property="id" column="processorId"/>
+			<result property="name" column="name"/>
+			<result property="healthCard" column="healthCard"/>
+		</association>
+		<collection property="processItems" ofType="ProcessItem">
+			<id property="processItemId" column="processItemId" />
+			<result property="goodsId" column="itemGoodsId"/>
+			<result property="productName" column="productName" />
+			<result property="type" column="type" />
+			<result property="num" column="num" />
+			<result property="goodsBatch" column="goodsBatch" />
+			<association property="standardDetail" javaType="ProductStandardDetail">
+				<id property="productStandardDetailId" column="productStandardDetailId"/>
+				<result property="productStandardNum" column="productStandardNum" />
+				<association property="productStandard" javaType="ProductStandard">
+					<id property="productStandardId" column="productStandardId"/>
+					<result property="productStandardName" column="productStandardName"/>
+				</association>
+			</association>
+		</collection>
+	</resultMap>
+	
+	<resultMap type="ProcessMain" id="processSplit">
+		<id property="processMainId" column="processMainId" />
+		<result property="processTime" column="processTime" />
+		<result property="processBatch" column="processBatch" />
+		<result property="processQuantity" column="processQuantity" />
+		<association property="goods" javaType="Goods">
+			<id property="goodsId" column="goodsId"/>
+			<result property="goodsId" column="goodsId"/>
+			<result property="productName" column="productName"/>
+			<result property="slaughterhouseId" column="slaughterhouseId" />
+			<association property="productStandardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="productStandardDetailId" />
+			<result property="productStandardNum" column="productStandardNum" />
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId" />
+				<result property="productStandardName" column="productStandardName" />
+			</association>
+		</association>
+		</association>
+	</resultMap>
+	<resultMap type="OutstockInfo" id="outstockInfo">
+		<id property="outstockItemId" column="outstockItemId" />
+		<result property="outstockDate" column="outstockDate" />
+		<result property="updateTime" column="updateTime" />
+		<result property="deliveryTime" column="deliveryTime" />
+		<result property="name" column="name" />
+	</resultMap>
+	<resultMap type="Slaughterhouse" id="slaughterhouse">
+		<id property="slaughterhouseId" column="slaughterhouseId" />
+		<result property="slaughterhouseName" column="slaughterhouseName" />
+		<result property="slaughterhouseAddress" column="slaughterhouseAddress" />
+		<result property="contact" column="contact" />
+		<result property="altContact" column="altContact" />
+		<result property="tel" column="tel" />
+		<association property="company" javaType="Company">
+			<id property="companyid" column="companyid" />
+			<result property="name" column="name" />
+			<result property="shortname" column="shortname" />
+		</association>
+	</resultMap>
+	<resultMap type="InstockInfo" id="instockInfo" autoMapping="true">
+		<id property="instockItemId" column="instockItemId"/>
+		<association property="supplier" javaType="Supplier" autoMapping="true"></association>
+		<association property="origin" javaType="Origin" autoMapping="true">
+			<id property="originId" column="originId"/>
+			<result property="contact" column="originContact"/>
+			<result property="tel" column="originTel"/>
+		</association>
+	</resultMap>
+	<resultMap type="Company" id="company"></resultMap>
+	<select id="getGoodsByDetailCode" resultMap="goodsInfo">
+		select
+		<choose>
+			<when test="columns!=null">
+				d.goodsDetailId,d.goodsId,g.slaughterhouseId,g.companyId,g.deliverType,${columns}
+			</when>
+			<otherwise>
+				d.goodsDetailId,
+				d.goodsId,
+				d.traceCount,
+				d.secretKey,
+				p.productImageUrl,
+				p.productName,
+				p.publicityImageUrl,
+				p.shelfLife,
+				g.slaughterhouseId,
+				g.companyId,
+				g.deliverType,
+				g.num,
+				g.goodsBatch,
+				g.areaInfoId,
+				sd.productStandardNum,
+				s.productStandardName,
+				a.id,
+				a.catgName,
+				pc.productCategoryName,
+				g.createTime, cv.varValue as levelName 
+			</otherwise>
+		</choose>
+		from t_goods_detail d
+		INNER JOIN t_goods g on d.goodsId=g.goodsId
+		INNER JOIN t_product p on g.productId=p.productId
+		INNER JOIN t_product_standard_detail sd on 	g.productStandardDetailId=sd.productStandardDetailId
+		INNER JOIN	t_product_standard s on sd.productStandardId=s.productStandardId
+		LEFT JOIN sys_area_info a on p.madein=a.id
+		LEFT JOIN t_product_category pc ON pc.productCategoryId = p.productCategoryId
+		LEFT JOIN t_common_variable cv on g.level = cv.varName and cv.varGroup = 'goodsLevel'
+		where
+		d.code=#{QRCode}
+	</select>
+	
+	<select id="getGoodsByGoodsCode" resultMap="goodsInfo">
+		select
+		<choose>
+			<when test="columns!=null">
+				g.goodsId goodsDetailId,g.goodsId,g.slaughterhouseId,g.companyId,g.deliverType,${columns}
+			</when>
+			<otherwise>
+				g.goodsId goodsDetailId,
+				g.goodsId,
+				p.productImageUrl,
+				p.publicityImageUrl,
+				p.productName,
+				p.shelfLife,
+				g.slaughterhouseId,
+				g.companyId,
+				g.deliverType,
+				sd.productStandardNum,
+				s.productStandardName,
+				g.num,
+				g.goodsBatch,
+				g.areaInfoId,
+				a.catgName,
+				g.traceCount,
+				pc.productCategoryName
+			</otherwise>
+		</choose>
+		from t_goods g
+		INNER JOIN t_product p on g.productId=p.productId
+		INNER JOIN t_product_standard_detail sd on g.productStandardDetailId=sd.productStandardDetailId
+		INNER JOIN t_product_standard s on sd.productStandardId=s.productStandardId
+		LEFT JOIN sys_area_info a on g.areaInfoId=a.id
+		LEFT JOIN t_product_category pc ON pc.productCategoryId = p.productCategoryId
+		where g.code=#{QRCode}
+	</select>
+	
+	<!-- 根据 goodsId 来查询商品信息 -->
+	<select id="getGoodsByGoodsId" resultMap="goodsInfo">
+		select 
+				g.goodsId goodsDetailId,
+				g.goodsId,
+				p.productImageUrl,
+				p.publicityImageUrl,
+				p.productName,
+				g.slaughterhouseId,
+				g.companyId,
+				g.deliverType,
+				sd.productStandardNum,
+				s.productStandardName,
+				g.num,
+				g.goodsBatch,
+				g.areaInfoId,
+				a.catgName,
+				g.traceCount,
+				pc.productCategoryName 
+		from t_goods g
+		INNER JOIN t_product p on g.productId=p.productId
+		INNER JOIN t_product_standard_detail sd on g.productStandardDetailId=sd.productStandardDetailId
+		INNER JOIN t_product_standard s on sd.productStandardId=s.productStandardId
+		LEFT JOIN sys_area_info a on g.areaInfoId=a.id
+		LEFT JOIN t_product_category pc ON pc.productCategoryId = p.productCategoryId
+		where g.goodsId=#{goodsId}
+	</select>
+	
+	<select id="getGoodsQCByQRCode" resultMap="goodsQC">
+		select
+		<choose>
+			<when test="columns!=null">
+				${columns}
+			</when>
+			<otherwise>
+				q.materialQcId,q.originNo,q.quarantineNo,q.inspection,q.inspectionDate,q.sampleName,q.result
+			</otherwise>
+		</choose>
+		from t_goods_qc q
+		where q.goodsId=#{goodsId}
+	</select>
+	
+	<!-- 根据商品ID查询加工信息 -->
+	<select id="getProcessInfoByGoodsId" resultMap="processMain">
+		select
+		<choose>
+			<when test="columns!=null">
+				${columns}
+			</when>
+			<otherwise>
+				pr.processMainId,
+				pr.processTime,
+				pr.processBatch,
+				pr.processQuantity,
+				pr.processorId, 
+				i.processItemId,
+				i.goodsId as itemGoodsId,
+				i.type,
+				i.num,
+				p.productName,
+				sd.productStandardDetailId,
+				sd.productStandardNum,
+				s.productStandardId,
+				s.productStandardName,
+				g.goodsBatch,
+				tp.name,
+				tp.healthCard
+			</otherwise>
+		</choose>
+		from t_process_main pr
+		INNER JOIN t_process_item i on pr.processMainId=i.processMainId
+		INNER JOIN t_goods g on i.goodsId=g.goodsId
+		INNER JOIN t_product p on g.productId=p.productId
+		INNER JOIN t_product_standard_detail sd on g.productStandardDetailId=sd.productStandardDetailId
+		INNER JOIN t_product_standard s on sd.productStandardId=s.productStandardId
+		LEFT JOIN t_processor tp on pr.processorId = tp.id
+		where pr.goodsId=#{goodsId}
+	</select>
+
+	<select id="getProcessSplitByGoodsId" resultMap="processSplit">
+		select
+		<choose>
+			<when test="columns!=null">
+				${columns}
+			</when>
+			<otherwise>
+				pr.processMainId,pr.processTime,pr.processBatch,pr.processQuantity,pr.goodsId,
+				p.productName,sd.productStandardNum,s.productStandardName,g.goodsBatch,g.slaughterhouseId
+			</otherwise>
+		</choose>
+		from t_process_main pr
+		INNER JOIN t_process_item i on
+		pr.processMainId=i.processMainId
+		INNER JOIN t_goods g on
+		pr.goodsId=g.goodsId
+		INNER JOIN t_product p on g.productId=p.productId
+		INNER JOIN t_product_standard_detail sd on
+		g.productStandardDetailId=sd.productStandardDetailId
+		INNER JOIN
+		t_product_standard s on sd.productStandardId=s.productStandardId
+		where pr.type=1 and i.goodsId=#{goodsId}
+	</select>
+
+	<select id="getOutStockMainInfoByGoodsId" resultMap="outstockInfo">
+		select
+		<choose>
+			<when test="columns!=null">
+				${columns}
+			</when>
+			<otherwise>
+				i.outstockMainId,i.outstockItemId,m.outstockDate,i.updateTime,i.deliveryTime,c.name,l.contact,l.tel,m.consignor,m.outstockNum,m.outstockBatchNum
+			</otherwise>
+		</choose>
+		from t_outstock_item i
+		LEFT JOIN t_outstock_main m on i.outstockMainId=m.outstockMainId
+		LEFT JOIN t_logistics l on m.logisticsId=l.logisticsId
+		LEFT JOIN t_company c on l.logisticsCompanyId=c.companyId
+		where i.goodsId=#{goodsDetailId}
+		order by i.createTime desc limit 0,1
+
+	</select>
+
+	<select id="getSlaughterhouseInfoById" resultMap="slaughterhouse">
+		select
+		<choose>
+			<when test="columns!=null">
+				${columns}
+			</when>
+			<otherwise>
+				s.slaughterhouseId,s.slaughterhouseCompanyId companyid,
+				s.slaughterhouseCompanyId, s.contact, s.altContact, s.mode, 
+				s.tel, s.status, 
+				s.slaughterhouseName,c.name,c.shortname,s.slaughterhouseAddress
+			</otherwise>
+		</choose>
+		from
+		t_slaughterhouse s
+		INNER JOIN t_company c on
+		s.slaughterhouseCompanyId=c.companyId
+		where s.slaughterhouseId =
+		#{slaughterhouseId}
+	</select>
+	
+	<!-- 根据商品ID查询入库信息 -->
+	<select id="getInstockInfoByGoodsId" resultMap="instockInfo">
+		select
+		<choose>
+			<when test="columns!=null">
+				${columns}
+			</when>
+			<otherwise>
+				i.instockItemId,
+				i.instockMainId,
+				i.instockNum,
+				m.instockDate,
+				m.instockBatchNum,
+				p.supplierId,
+				s.supplierAlias,
+				s.supplierDesc,
+				s.contact,
+				s.tel,
+				c.name companyName,
+				c.cbusinessaddress supplierAddress,
+				m.consignee,
+				o.originId,
+				o.originName,
+				o.originNo,
+				o.coordinate,
+				o.contact originContact,
+				o.tel originTel,
+				o.address,
+				o.remark
+			</otherwise>
+		</choose>
+		from t_instock_item i
+		INNER JOIN t_instock_main m on i.instockMainId=m.instockMainId
+		LEFT JOIN t_purchase_order p on m.purchaseOrderId=p.purchaseOrderId
+		LEFT JOIN t_supplier s on p.supplierId=s.supplierId
+		INNER JOIN t_company c ON s.supplierCompanyId=c.companyId
+		LEFT JOIN t_origin o on o.originId=i.originId
+		where i.goodsId=#{goodsId}
+	</select>
+	
+	<!-- 查询零售信息 -->
+	<select id="getTraceCompanyInfoById" resultType="cn.rfidcer.bean.Company">
+		select
+		<choose>
+			<when test="columns!=null">
+				${columns}
+			</when>
+			<otherwise>
+				companyId, name, shortName, code, address, contact, email, tel,
+				license,foodSafetyCode, orgCode,
+				companyFieldId, province, city, area, status, 
+				createTime, createBy, updateTime, updateBy, 
+				licenseUrl, chygienelicenseUrl,
+				presentation,cbusinessaddress
+			</otherwise>
+		</choose>
+		from t_company
+		where companyId = #{companyid}
+	</select>
+	<!-- 查询零售信息 -->
+	<select id="getGoodsQCMaterialsByGoodsId" resultType="cn.rfidcer.bean.GoodsQCMaterials">
+		SELECT
+			qc.qcmaterialsURL,
+			qc.id
+		FROM
+		t_goods_qcmaterials qc
+		where qc.goodsId = #{goodsId} and qc.qcmaterialsURL != ''
+	</select>
+	<update id="updateGoodsDetailTraceCount">
+		update t_goods_detail set traceCount=traceCount+1 where goodsDetailId=#{goodsDetailId}
+	</update>
+	<update id="updateGoodsTraceCount">
+		update t_goods set traceCount=traceCount+1 where goodsId=#{goodsId}
+	</update>
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>

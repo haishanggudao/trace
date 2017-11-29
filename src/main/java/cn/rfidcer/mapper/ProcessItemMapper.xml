@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProcessItemMapper">
+	<resultMap id="BaseResultMap" type="cn.rfidcer.bean.ProcessItem">
+		<id column="processItemId" property="processItemId" jdbcType="CHAR" />
+		<result column="processMainId" property="processMainId" jdbcType="CHAR" />
+		<result column="goodsId" property="goodsId" jdbcType="CHAR" />
+		<result column="num" property="num" jdbcType="DECIMAL" />
+		<result column="realnum" property="realnum" jdbcType="DECIMAL" />
+		<result column="type" property="type" jdbcType="CHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap type="cn.rfidcer.bean.ProcessItem" id="processItem">
+			<id column="processItemId" property="processItemId" />
+			<result column="processMainId" property="processMainId" />
+			<result column="goodsId" property="goodsId"  />
+			<result column="goodsBatch" property="goodsBatch"  />
+			<result column="realnum" property="realnum" />
+			<result column="num" property="num"  />
+			<result column="type" property="type"  />
+			<result column="productType" property="productType" />
+			
+			<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+			<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+			<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+			<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+			<result property="productId" column="productId"/>
+			<result property="productStandardDetailId" column="standardDetailId"/>
+			<result property="productName" column="productName"/>
+			<association property="product" javaType="Product">
+				<id property="productId" column="productId" />
+				<result property="productName" column="productName" />
+			</association>
+			<association property="standardDetail" javaType="ProductStandardDetail">
+				<id property="productStandardDetailId" column="standardDetailId" />
+				<result property="productStandardNum" column="productStandardNum" />
+				<association property="productStandard" javaType="ProductStandard">
+					<id property="productStandardId" column="productStandardId" />
+					<result property="productStandardName" column="productStandardName" />
+				</association>
+			</association>
+	</resultMap>
+	
+	
+	<sql id="Base_Column_List">
+		processItemId, processMainId, goodsId, num,realnum, type, createTime, createBy,
+		updateTime,
+		updateBy
+	</sql>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_process_item
+		where processItemId = #{processItemId,jdbcType=CHAR}
+	</delete>
+
+	<!-- 删除加工明细 -->
+	<delete id="deleteByMainid" parameterType="java.lang.String">
+		delete from t_process_item
+		where processMainId = #{processMainId,jdbcType=CHAR}
+	</delete>
+
+	<insert id="insert" parameterType="cn.rfidcer.bean.ProcessItem">
+		insert into t_process_item (processItemId, processMainId, goodsId,
+		num,realnum, type, createTime,
+		createBy, updateTime, updateBy
+		)
+		values (#{processItemId,jdbcType=CHAR}, #{processMainId,jdbcType=CHAR},
+		#{goodsId,jdbcType=CHAR},
+		#{num,jdbcType=DECIMAL},#{realnum,jdbcType=DECIMAL},
+		#{type,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP},
+		#{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP},
+		#{updateBy,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.ProcessItem">
+		insert into t_process_item
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="processItemId != null">
+				processItemId,
+			</if>
+			<if test="processMainId != null">
+				processMainId,
+			</if>
+			<if test="goodsId != null">
+				goodsId,
+			</if>
+			<if test="num != null">
+				num,
+			</if>
+			<if test="realnum != null">
+				realnum,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="productType != null">
+				productType,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="processItemId != null">
+				#{processItemId,jdbcType=CHAR},
+			</if>
+			<if test="processMainId != null">
+				#{processMainId,jdbcType=CHAR},
+			</if>
+			<if test="goodsId != null">
+				#{goodsId,jdbcType=CHAR},
+			</if>
+			<if test="num != null">
+				#{num,jdbcType=DECIMAL},
+			</if>
+			<if test="realnum != null">
+				#{realnum,jdbcType=DECIMAL},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=CHAR},
+			</if>
+			<if test="productType != null">
+				#{productType,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.ProcessItem">
+		update t_process_item
+		<set>
+			<if test="processMainId != null">
+				processMainId = #{processMainId,jdbcType=CHAR},
+			</if>
+			<if test="goodsId != null">
+				goodsId = #{goodsId,jdbcType=CHAR},
+			</if>
+			<if test="num != null">
+				num = #{num,jdbcType=DECIMAL},
+			</if>
+			<if test="realnum != null">
+				realnum = #{realnum,jdbcType=DECIMAL},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=CHAR},
+			</if>
+			<if test="productType != null">
+				productType =#{productType,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				createBy = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where processItemId = #{processItemId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.ProcessItem">
+		update t_process_item
+		set processMainId = #{processMainId,jdbcType=CHAR},
+		goodsId = #{goodsId,jdbcType=CHAR},
+		num = #{num,jdbcType=DECIMAL},
+		realnum = #{realnum,jdbcType=DECIMAL},
+		type = #{type,jdbcType=CHAR},
+		createTime = #{createTime,jdbcType=TIMESTAMP},
+		createBy = #{createBy,jdbcType=VARCHAR},
+		updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		updateBy = #{updateBy,jdbcType=VARCHAR}
+		where processItemId = #{processItemId,jdbcType=CHAR}
+	</update>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_process_item
+		where processItemId = #{processItemId,jdbcType=CHAR}
+	</select>
+
+	<!-- 查询加工原料 -->
+	<select id="findProcessItemsByMainid" resultMap="processItem">
+		select i.processItemId, i.processMainId, i.goodsId, i.num, i.type,
+		g.productId,g.productStandardDetailId standardDetailId,d.productStandardNum,s.productStandardName,g.goodsBatch,p.productName,i.productType,
+		i.createTime,  i.updateTime, 
+		(select username from sys_user where id = i.createBy) as createBy,
+		(select username from sys_user where id = i.updateBy) as updateBy 
+		from t_process_item i 
+	    INNER JOIN t_goods g on i.goodsId=g.goodsId 
+		INNER JOIN t_product p on g.productId=p.productId 
+		INNER JOIN t_product_standard_detail d on g.productStandardDetailId=d.productStandardDetailId 
+		INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId 
+		where i.processMainId = #{processMainId} order by i.updateTime DESC 
+	</select>
+	<select id="findSimilarProcessItems" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select i.processItemId, i.processMainId, i.goodsId, i.num,i.realnum, i.type
+		from t_process_item i left join t_goods g on i.goodsId = g.goodsId
+		left join t_process_main tpm on tpm.processMainId = i.processMainId
+		where g.productId = #{0} order by i.updateTime,i.processMainId,processTime desc
+	</select>
+	
+	<select id="checkCountByGoodsId" resultType="int">
+		select count(i.processItemId) from t_process_item i
+		INNER JOIN t_process_main m on i.processMainId=m.processMainId and m.type=1
+ 		where i.goodsId=#{goodsId}
+ 		<if test="processItemId !=null and processItemId !=''">
+ 			and i.processItemId!=#{processItemId}
+ 		</if>
+	</select>
+</mapper>

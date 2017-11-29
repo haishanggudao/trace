@@ -1,0 +1,2 @@
+<%@page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+{"code":"1","msg":"查询成功","resultEntity":{"loginInfo":[{"username":"yzzhongzelu","password":"123456","nickName":"羽众酒业中泽路店"},{"username":"test","password":"111111","nickName":"测试"}]}}

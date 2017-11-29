@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.UserDao">
+	<resultMap type="User" id="user"></resultMap>
+	<select id="findOne" resultMap="user">
+		select id, username, password, salt, nickName, locked from sys_user where id=#{userId}
+	</select>
+	<select id="findUserByname" resultMap="user">
+		select id, username, password, salt, nickName, locked from sys_user where username=#{username} 
+	</select>
+	<insert id="createUser" useGeneratedKeys="true" keyProperty="id">
+		insert into sys_user (username,password,salt,nickName,locked) values (#{username},#{password},#{salt},#{nickName},#{locked})
+	</insert>
+	<update id="updateUser">
+		update sys_user set username=#{username}, nickName=#{nickName} where id=#{id}
+	</update>
+	<delete id="deleteUser">
+		delete from sys_user where id=#{userId}
+	</delete>
+	<update id="changeUserLock">
+		update sys_user set locked=#{locked} where id=#{id}
+	</update>
+	<select id="findAll" resultMap="user" useCache="false">
+	SELECT
+	id,
+	username,
+	PASSWORD,
+	salt,
+	nickName,
+	locked,
+	(
+	SELECT
+	group_concat(tc. NAME)
+	FROM
+	sys_user_company suc
+	INNER JOIN t_company tc ON suc.companyId = tc.companyId
+	WHERE
+	suc.userId = t.id
+	) AS userCompanyIdsText
+	FROM
+	sys_user t
+	</select>
+	<delete id="delRoleRelation">
+		delete from sys_user_role_relation where user_Id=#{userId}
+	</delete>
+	<update id="updatePassword">
+		update sys_user set password=#{password},salt=#{salt} where id=#{id}
+	</update>
+	<insert id="addCompanyRelation">
+		insert into sys_user_company (userId,companyId) values (#{0},#{1})
+	</insert>
+	<delete id="delCompanyRelation">
+		delete from sys_user_company where userId=#{userId}
+	</delete>
+	<select id="getCompanyRelation" resultType="string">
+		select companyId from sys_user_company where userId=#{userId} 
+	</select>
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>

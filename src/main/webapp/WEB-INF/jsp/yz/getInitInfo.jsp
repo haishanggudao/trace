@@ -1,0 +1,2 @@
+<%@page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+{"code":"1","msg":"注册成功","resultEntity":{"config":{"traceCodePath":"http://trace.shianxian.cn/trace/ws/getTrace/","companyId":"4f215af6f59b42e9b2e3a1df4af26b7f","companyName":"羽众金汇路店","companyAddress":"上海市青浦区中泽路102号","companyTel":"13816905950","companyCode":"310118431"},"deviceSerial":{"wifiMacAddress":"cc:79:cf:d8:79:c9","location":"01","subLocation":"01"}}}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProductStockHistoryDao">
+	
+	<insert id="addProductStockHistory">
+		insert into t_productStock_history
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="productStockHistoryId != null">
+				productStockHistoryId,
+			</if>
+			<if test="productId != null">
+				productId,
+			</if>
+			<if test="productStandardDetailId != null">
+				productStandardDetailId,
+			</if>
+			<if test="currentNum != null">
+				currentNum,
+			</if>
+			<if test="operationNum != null">
+				operationNum,
+			</if>
+			<if test="doneNum != null">
+				doneNum,
+			</if>
+			<if test="operationType != null">
+				operationType,
+			</if>
+			<if test="changeType != null">
+				changeType,
+			</if>
+			<if test="companyId != null">
+				companyId,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="productStockHistoryId != null">
+				#{productStockHistoryId,jdbcType=CHAR},
+			</if>
+			<if test="productId != null">
+				#{productId,jdbcType=CHAR},
+			</if>
+			<if test="productStandardDetailId != null">
+				#{productStandardDetailId,jdbcType=CHAR},
+			</if>
+			<if test="currentNum != null">
+				#{currentNum,jdbcType=DECIMAL},
+			</if>
+			<if test="operationNum != null">
+				#{operationNum,jdbcType=DECIMAL},
+			</if>
+			<if test="doneNum != null">
+				#{doneNum,jdbcType=DECIMAL},
+			</if>
+			<if test="operationType != null">
+				#{operationType,jdbcType=CHAR},
+			</if>
+			<if test="changeType != null">
+				#{changeType,jdbcType=INTEGER},
+			</if>
+			<if test="companyId != null">
+				#{companyId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+</mapper>

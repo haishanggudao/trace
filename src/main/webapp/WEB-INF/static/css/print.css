@@ -1,0 +1,24 @@
+.tablebox{
+			width: 100%;
+		}
+		.tablebox table td{border:1px solid black} 
+		.tablebox h1{
+			text-align: center;
+		}
+		.tablebox ul li{
+			float: left;
+		}
+		.tablebox ul {
+			float: right;
+			padding-right: 10px;
+		}
+		.datelist{
+			margin-right: 15px
+		}
+
+		.tableBar{
+			margin-top: 20px;
+		}
+		.tableBar ul li{
+			margin-right: 150px;
+		}

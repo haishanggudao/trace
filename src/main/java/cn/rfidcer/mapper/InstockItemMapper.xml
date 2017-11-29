@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.rfidcer.dao.InstockItemMapper">
+	<resultMap id="BaseResultMap" type="InstockItem">
+
+		<id column="instockItemId" jdbcType="CHAR" property="instockItemId" />
+		<result column="instockMainId" jdbcType="CHAR" property="instockMainId" />
+		<result column="goodsId" jdbcType="CHAR" property="goodsId" />
+		<result column="instockNum" jdbcType="CHAR" property="instockNum" />
+		<result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="createBy" jdbcType="VARCHAR" property="createBy" />
+		<result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="updateBy" jdbcType="VARCHAR" property="updateBy" />
+	</resultMap>
+
+	<resultMap type="InstockPurchaseItem" id="InstockPurchaseItem">
+		<id property="instockItemId" column="instockItemId" />
+
+		<result column="createBy" property="createBy" />
+		<result column="updateBy" property="updateBy" />
+		<result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="goodsBatch" property="goodsBatch" />
+		<result column="goodsId" property="goodsId" />
+		<result column="areaInfoId" property="areaInfoId" />
+		<result column="slaughterhouseId" property="slaughterhouseId" />
+		<result property="purchaseOrderId" column="purchaseOrderId" />
+		<result property="instockNum" column="instockNum" />
+		<result property="originId" column="originId" />
+		<result property="productNameMarketCode" column="productNameMarketCode" />
+		<association property="product" javaType="Product">
+			<id property="productId" column="productId" />
+			<result property="productName" column="productName" />
+		</association>
+		<association property="standardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="productStandardDetailId" />
+			<result property="productStandardNum" column="productStandardNum" />
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId" />
+				<result property="productStandardName" column="productStandardName" />
+			</association>
+		</association>
+	</resultMap>
+
+	<resultMap type="InstockManagerItem" id="instockManagerItem" >
+		<id property="instockItemId" column="instockItemId"/>
+		<result property="instockNum" column="instockNum"/>
+		<result property="supplierAlias" column="supplierAlias"/>
+		<association property="instockMain" javaType="InstockMain">
+			<id property="instockMainId" column="instockMainId"/>
+			<result property="instockBatchNum" column="instockBatchNum"/>
+			<result property="instockNum" column="instockNum"/>
+			<result property="registrant" column="registrant"/>
+			<result property="instockDate" column="instockDate"/>
+			<result property="registDate" column="registDate"/>
+		</association>
+		<association property="standardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="productStandardDetailId"/>
+			<result property="productStandardNum" column="productStandardNum"/>
+			<association property="product" javaType="Product">
+				<id property="productId" column="productId"/>
+				<result property="productName" column="productName"/>
+			</association>
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId"/>
+				<result property="productStandardName" column="productStandardName"/>
+			</association>
+		</association>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+
+		instockItemId, instockMainId, goodsId, instockNum, createTime, createBy, updateTime,
+		updateBy
+	</sql>
+
+
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap" useCache="false">
+
+		select
+		<include refid="Base_Column_List" />
+		from t_instock_item
+		where instockItemId = #{instockItemId,jdbcType=CHAR}
+	</select>
+
+	<delete id="deleteByInstockMainId" parameterType="java.lang.String">
+		delete from
+		t_instock_item
+		where instockMainId =
+		#{instockMainId,jdbcType=CHAR}
+	</delete>
+
+	<select id="findCountByInstockMainId" resultType="int"
+		parameterType="java.lang.String">
+		select count(instockMainId) from t_instock_item where instockMainId
+		=#{instockMainId}
+	</select>
+
+	<select id="list" resultMap="BaseResultMap">
+
+		select
+		<include refid="Base_Column_List" />
+		from t_instock_item
+	</select>
+	<select id="listWidthIMID" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_instock_item
+		where instockMainId = #{instockMainId,jdbcType=CHAR}
+	</select>
+
+	<select id="findAllListByParamAnd" resultMap="InstockPurchaseItem"
+		useCache="false" parameterType="cn.rfidcer.bean.InstockItem">
+		select (select username from sys_user where id = i.createBy) as
+		createBy,(select username from sys_user where id = i.updateBy) as
+		updateBy,
+		i.createTime,i.updateTime,
+		i.instockItemId,g.goodsBatch,g.areaInfoId,g.slaughterhouseId,g.goodsId,i.instockNum,p.productId,p.productName,d.productStandardDetailId,d.productStandardNum,d.productStandardId,s.productStandardName
+		from t_instock_item i
+		INNER JOIN t_goods g on g.goodsId = i.goodsId
+		INNER JOIN t_product p on p.productId=g.productId
+		INNER JOIN t_product_standard_detail d on
+		g.productStandardDetailId=d.productStandardDetailId
+		INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if
+				test="instockItem.instockMainId !=null and instockItem.instockMainId !=''">
+				i.instockMainId = #{instockItem.instockMainId,jdbcType=CHAR}
+			</if>
+			<if
+				test="instockItem.instockItemId !=null and instockItem.instockItemId !=''">
+				AND i.instockItemId =
+				#{instockItem.instockItemId,jdbcType=CHAR}
+			</if>
+			<if test="instockItem.goodsId !=null and instockItem.goodsId !=''">
+				AND i.goodsId = #{instockItem.goodsId,jdbcType=CHAR}
+			</if>
+		</trim>
+		ORDER BY i.updateTime DESC
+	</select>
+
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+
+		delete from t_instock_item
+		where instockItemId = #{instockItemId,jdbcType=CHAR}
+	</delete>
+	<delete id="deleteInstockItemsByPurchaseOrderId" parameterType="java.lang.String">
+		delete i.* from t_instock_item i left join t_instock_main m on
+		i.instockMainId = m.instockMainId
+		where m.purchaseOrderId = #{purchaseOrderId,jdbcType=CHAR}
+	</delete>
+	<select id="listInstockItemsByPurchaseOrderId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_instock_item i left join t_instock_main m on i.instockMainId =
+		m.instockMainId
+		where m.purchaseOrderId = #{purchaseOrderId,jdbcType=CHAR}
+	</select>
+
+
+	<delete id="deleteInstockitemByInstockMainId" parameterType="java.lang.String">
+		delete from t_instock_item where instockMainId =
+		#{instockMainId,jdbcType=CHAR}
+	</delete>
+	<insert id="insert" parameterType="cn.rfidcer.bean.InstockItem">
+
+		insert into t_instock_item (instockItemId, instockMainId, goodsId,
+		instockNum,purchasePrice, createTime, createBy,
+		updateTime, updateBy,originId)
+		values (#{instockItemId,jdbcType=CHAR}, #{instockMainId,jdbcType=CHAR},
+		#{goodsId,jdbcType=CHAR},
+		#{instockNum,jdbcType=CHAR},#{purchasePrice,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR},#{originId})
+	</insert>
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.InstockItem">
+
+		insert into t_instock_item
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="instockItemId != null">
+				instockItemId,
+			</if>
+			<if test="instockMainId != null">
+				instockMainId,
+			</if>
+			<if test="goodsId != null">
+				goodsId,
+			</if>
+			<if test="instockNum != null">
+				instockNum,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+			<if test="purchasePrice != null">
+				purchasePrice,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="instockItemId != null">
+				#{instockItemId,jdbcType=CHAR},
+			</if>
+			<if test="instockMainId != null">
+				#{instockMainId,jdbcType=CHAR},
+			</if>
+			<if test="goodsId != null">
+				#{goodsId,jdbcType=CHAR},
+			</if>
+			<if test="instockNum != null">
+				#{instockNum,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="purchasePrice != null">
+				#{purchasePrice,jdbcType=DECIMAL},
+			</if>
+		</trim>
+	</insert>
+
+	<select id="findInstockItemsByOrderId" resultMap="InstockPurchaseItem"
+		useCache="false">
+		select
+			i.instockItemId,
+			i.instockNum,
+			i.originId,
+			g.goodsBatch,
+			g.areaInfoId,
+			g.slaughterhouseId,
+			g.goodsId,
+			m.purchaseOrderId,
+			p.productId,
+			p.productName,
+			d.productStandardDetailId,
+			d.productStandardNum,
+			d.productStandardId,
+			s.productStandardName,
+			CONCAT(p.productName,'-',p.marketCode) as productNameMarketCode
+		from t_instock_item i
+		INNER JOIN t_instock_main m on i.instockMainId = m.instockMainId
+		INNER JOIN t_goods g on g.goodsId = i.goodsId
+		INNER JOIN t_product p on p.productId=g.productId
+		INNER JOIN t_product_standard_detail d on g.productStandardDetailId=d.productStandardDetailId
+		INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+		where m.purchaseOrderId=#{purchaseOrderId} ORDER BY m.updateTime DESC
+	</select>
+
+
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.InstockItem">
+
+		update t_instock_item
+		<set>
+			<if test="instockMainId != null">
+				instockMainId = #{instockMainId,jdbcType=CHAR},
+			</if>
+			<if test="goodsId != null">
+				goodsId = #{goodsId,jdbcType=CHAR},
+			</if>
+			<if test="instockNum != null">
+				instockNum = #{instockNum,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				createBy = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="originId != null">
+				originId = #{originId,jdbcType=CHAR},
+			</if>
+		</set>
+		where instockItemId = #{instockItemId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.InstockItem">
+
+		update t_instock_item
+		set instockMainId = #{instockMainId,jdbcType=CHAR},
+		goodsId = #{goodsId,jdbcType=CHAR},
+		instockNum = #{instockNum,jdbcType=CHAR},
+		createTime = #{createTime,jdbcType=TIMESTAMP},
+		createBy = #{createBy,jdbcType=VARCHAR},
+		updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		updateBy = #{updateBy,jdbcType=VARCHAR}
+		where instockItemId = #{instockItemId,jdbcType=CHAR}
+	</update>
+	
+	<select id="findAllList" resultMap="instockManagerItem">
+		select i.instockItemId,i.instockMainId,p.productId,p.productName,d.productStandardDetailId,d.productStandardNum,s.productStandardId,s.productStandardName,i.instockNum,
+		m.instockBatchNum,m.instockDate,m.registDate,m.registrant,su.supplierAlias
+ 		from t_instock_item i
+		INNER JOIN t_instock_main m on i.instockMainId=m.instockMainId
+		INNER JOIN t_goods g on i.goodsId=g.goodsId
+		INNER JOIN t_product p on g.productId=p.productId
+		LEFT JOIN t_purchase_order o on m.purchaseOrderId=o.purchaseOrderId
+		LEFT JOIN t_supplier su on o.supplierId=su.supplierId
+		INNER JOIN t_product_standard_detail d on g.productStandardDetailId=d.productStandardDetailId
+		INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+		<where>
+			<if test="instockManagerItem.instockMain != null">
+				<if test="instockManagerItem.instockMain.companyId != null and instockManagerItem.instockMain.companyId != ''">
+					m.companyId=#{instockManagerItem.instockMain.companyId}
+				</if>
+				<if test="instockManagerItem.instockMain.instockBatchNum != null and instockManagerItem.instockMain.instockBatchNum != ''">
+					and m.instockBatchNum  LIKE CONCAT(CONCAT('%',#{instockManagerItem.instockMain.instockBatchNum}),'%')
+				</if>
+			</if>
+			<if test="instockManagerItem.startDate != null and instockManagerItem.startDate != ''">
+				<![CDATA[ and m.instockDate >= #{instockManagerItem.startDate} ]]>
+			</if>
+			<if test="instockManagerItem.endDate != null and instockManagerItem.endDate != ''">
+				<![CDATA[ and m.instockDate <= #{instockManagerItem.endDate} ]]>
+			</if>
+			<if test="instockManagerItem.standardDetail != null">
+				<if test="instockManagerItem.standardDetail.product !=null">
+					<if test="instockManagerItem.standardDetail.product.productName!=null and instockManagerItem.standardDetail.product.productName != ''">
+						and p.productName like CONCAT('%',#{instockManagerItem.standardDetail.product.productName},'%')
+					</if>
+				</if>
+			</if>
+		</where>
+		order by i.updateTime desc
+	</select>
+</mapper>

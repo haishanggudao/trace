@@ -1,0 +1,2 @@
+<%@page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+{"code":"1","msg":"查询成功","resultEntity":{"version":"2","url":"http://192.168.8.39:8080/trace/yzAndroid/version1.0.1.apk"}}

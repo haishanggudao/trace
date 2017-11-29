@@ -1,0 +1,1 @@
+update client_user set companyId='ebf2803bc67844efaae5a383769031c2',clientType='b0169fd410884fd4a02ec5e3e9fc1f14';

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.yz.StoreSaleItemMapper">
+	<resultMap id="storeSaleItem" type="cn.rfidcer.bean.yz.StoreSaleItem">
+		<id column="storeSaleItemId" jdbcType="CHAR" property="storeSaleItemId" />
+		<result column="storeSaleOrderId" jdbcType="VARCHAR" property="storeSaleOrderId" />
+		<result column="productName" jdbcType="VARCHAR" property="productName" />
+		<result column="goodsId" jdbcType="VARCHAR" property="goodsId" />
+	</resultMap>
+	
+	<resultMap id="SaleOrderTotalMoney" type="cn.rfidcer.bean.yz.SaleOrderTotalMoney">
+	</resultMap>
+	
+	<select id="findAll" resultMap="storeSaleItem" useCache="false">
+		SELECT si.storeSaleItemId, si.storeSaleOrderId, si.goodsBarCode, si.goodsTraceCode, si.salePrice,
+			si.unitName, si.quantity, si.totalPrice,
+			gd.goodsId, g.productId, p.productName,
+			si.createTime, si.createBy, si.updateTime, si.updateBy
+		FROM t_storeSale_item si
+		left join t_goods_detail gd on gd.barcode = si.goodsBarCode
+		left join t_goods g on g.goodsId = gd.goodsId
+		left join t_product p on p.productId = g.productId
+		<where>
+			<if test="storeSaleItem.storeSaleOrderId != null">
+				and si.storeSaleOrderId = #{storeSaleItem.storeSaleOrderId} 
+			</if>  
+			<if test="storeSaleItem.entId != null">
+				AND p.companyId = #{storeSaleItem.entId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getSaleTotalMoney" resultMap="SaleOrderTotalMoney" useCache="false">
+	select i.storeSaleOrderId,convert(sum(i.totalPrice*((s.totalPrice-s.discountPrice)/s.totalPrice)),decimal(32,2)) as totalMoney,
+	convert(sum((i.totalPrice)-(i.totalPrice*((s.totalPrice-s.discountPrice)/s.totalPrice))),decimal(32,2)) as totalCutOff
+	from t_storeSale_item i 
+	INNER JOIN t_storeSale_order s on i.storeSaleOrderId=s.storeSaleOrderId
+	INNER JOIN t_goods_detail d on i.goodsBarCode=d.barcode
+	INNER JOIN t_goods g on d.goodsId=g.goodsId
+	INNER JOIN t_product p on g.productId=p.productId
+	where s.companyId=#{storeSaleItem.storeID}
+	and p.companyId=#{storeSaleItem.entId}
+	and i.storeSaleOrderId=#{storeSaleItem.storeSaleOrderId}
+	group by i.storeSaleOrderId;
+	</select>
+	
+	<select id="getSaleItemsByTraceCode" resultMap="storeSaleItem" useCache="false">
+		select storeSaleItemId from t_storeSale_item where goodsTraceCode = #{goodsTraceCode}
+	</select>
+</mapper>

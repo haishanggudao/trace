@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.rfidcer.dao.SaleOutstockMapper">
+  <resultMap id="BaseResultMap" type="cn.rfidcer.bean.SaleOutstock"></resultMap>
+  
+  <!-- 新增出库主单信息 -->
+  <insert id="insertSelective" parameterType="cn.rfidcer.bean.OutstockMain">
+    insert into t_saleOutstock
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="outstockMainId != null">
+        outstockMainId,
+      </if>
+      <if test="saleOrderId != null">
+        saleOrderId,
+      </if>
+      <if test="createTime != null">
+        createTime,
+      </if>
+      <if test="createBy != null">
+        createBy,
+      </if>
+      <if test="updateTime != null">
+        updateTime,
+      </if>
+      <if test="updateBy != null">
+        updateBy,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="outstockMainId != null">
+        #{outstockMainId,jdbcType=CHAR},
+      </if>
+      <if test="saleOrderId != null">
+        #{saleOrderId,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+    <!-- 查询销售单明细根据ids -->
+  <select id="selectById" resultMap="BaseResultMap" useCache="false">
+  	SELECT   * from t_saleOutstock
+	<where>
+		<if test="saleOrderId != null ">
+			saleOrderId = #{saleOrderId}  
+		</if>
+	</where>
+	 LIMIT 1 
+  </select>
+</mapper>

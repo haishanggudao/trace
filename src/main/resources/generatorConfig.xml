@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration >
+	
+	<classPathEntry location="C:\Users\honest\.m2\repository\mysql\mysql-connector-java\5.1.35\mysql-connector-java-5.1.35.jar"/> 
+	
+  <context id="context1" >
+    <jdbcConnection 
+    	driverClass="com.mysql.jdbc.Driver" 
+    	connectionURL="jdbc:mysql://192.168.8.134:3306/trace" 
+    	userId="trace" 
+    	password="trace" />
+    <javaModelGenerator 
+    	targetPackage="cn.rfidcer.bean" 
+    	targetProject="trace/src/main/java" />
+    <sqlMapGenerator 
+    	targetPackage="cn.rfidcer.mapper" 
+    	targetProject="trace/src/main/java" />
+    <javaClientGenerator 
+    	targetPackage="cn.rfidcer.dao" 
+    	targetProject="trace/src/main/java" 
+    	type="XMLMAPPER" />
+    	
+    <table schema="root" tableName="t_purchase_item" domainObjectName="PurchaseItemXXX"  
+    		enableCountByExample="false" 
+    		enableUpdateByExample="false" 
+    		enableDeleteByExample="false"  
+    		enableSelectByExample="false" 
+    		selectByExampleQueryId="false"> 
+      <!-- <property name="useActualColumnNames" value="true" /> -->
+    </table>
+  </context>
+</generatorConfiguration>

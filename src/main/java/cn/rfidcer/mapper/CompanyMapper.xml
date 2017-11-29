@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.CompanyMapper">
+	<resultMap id="BaseResultMap" type="cn.rfidcer.bean.Company">
+		<id column="companyId" property="companyid" jdbcType="CHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="shortName" property="shortname" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="contact" property="contact" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="tel" property="tel" jdbcType="VARCHAR" />
+		<result column="license" property="license" jdbcType="VARCHAR" />
+		<result column="foodSafetyCode" property="foodSafetyCode" jdbcType="VARCHAR" />
+		<result column="orgCode" property="orgcode" jdbcType="VARCHAR" />
+		<result column="companyFieldId" property="companyfieldid" jdbcType="CHAR" />
+		<result column="province" property="province" jdbcType="CHAR" />
+		<result column="city" property="city" jdbcType="CHAR" />
+		<result column="area" property="area" jdbcType="CHAR" />
+		<result column="status" property="status" jdbcType="CHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+		<!-- 2016.06.13 -->
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+    	<result column="cnature" property="cnature" jdbcType="VARCHAR" />
+    	<result column="cidnumb" property="cidnumb" jdbcType="VARCHAR" />
+    	<result column="ccustomercategories" property="ccustomercategories" jdbcType="VARCHAR" />
+    	<result column="cbusinessscope" property="cbusinessscope" jdbcType="VARCHAR" />
+    	<result column="cliquorbusinesslicense" property="cliquorbusinesslicense" jdbcType="VARCHAR" />
+    	<result column="cbusinessaddress" property="cbusinessaddress" jdbcType="VARCHAR" />
+    	<result column="chygienelicense" property="chygienelicense" jdbcType="VARCHAR" />
+    	<result column="clegalpersonaddress" property="clegalpersonaddress" jdbcType="VARCHAR" />
+    	<result column="cbusinesslicense" property="cbusinesslicense" jdbcType="VARCHAR" />
+    	<result column="ceffectivedate1" property="ceffectivedate1" jdbcType="TIMESTAMP" />
+    	<result column="ceffectivedate2" property="ceffectivedate2" jdbcType="TIMESTAMP" />
+    	<result column="cregistrationnumber" property="cregistrationnumber" jdbcType="VARCHAR" />
+    	<result column="traceSerialNum" property="traceSerialNum" />
+    	<result column="macNum" property="macNum" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		companyId, name, shortName, code, address, contact, email, tel,
+		license,foodSafetyCode, orgCode,
+		companyFieldId, province, city, area, status, createTime, createBy, updateTime,
+		updateBy, cname, cnature, cidnumb, ccustomercategories, cbusinessscope, 
+    	cliquorbusinesslicense, cbusinessaddress, chygienelicense, clegalpersonaddress, cbusinesslicense, 
+    	ceffectivedate1,ceffectivedate2,cregistrationnumber,traceSerialNum,macNum
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_company
+		where companyId = #{companyid,jdbcType=CHAR}
+	</select>
+	<select id="listQueryByCompany" resultMap="BaseResultMap"
+		parameterType="cn.rfidcer.bean.Company">
+		select
+		<include refid="Base_Column_List" />
+		from t_company
+		where 1=1 and isDeleted != -1
+		<if test="company.name !=null and company.name !=''">
+			and name LIKE CONCAT(CONCAT('%',#{company.name}),'%')
+		</if>
+	</select>
+	<select id="listQueryByBlurOr" resultMap="BaseResultMap"
+		parameterType="cn.rfidcer.bean.Company">
+		select
+		<include refid="Base_Column_List" />
+		from t_company
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="company.name !=null and company.name !=''">
+				name LIKE CONCAT(CONCAT('%',#{company.name}),'%')
+				OR shortname LIKE CONCAT(CONCAT('%',#{company.name}),'%')
+				OR contact LIKE CONCAT(CONCAT('%',#{company.name}),'%')
+				OR address LIKE CONCAT(CONCAT('%',#{company.name}),'%')
+				OR code LIKE CONCAT(CONCAT('%',#{company.name}),'%')
+				OR email LIKE CONCAT(CONCAT('%',#{company.name}),'%')
+				OR tel LIKE CONCAT(CONCAT('%',#{company.name}),'%')
+				OR license LIKE CONCAT(CONCAT('%',#{company.name}),'%')
+				OR foodSafetyCode LIKE CONCAT(CONCAT('%',#{company.name}),'%')
+			</if>
+			and isDeleted != -1
+		</trim>
+		order by createTime desc
+	</select>
+	<select id="listQueryByBlurAnd" resultMap="BaseResultMap"
+		parameterType="cn.rfidcer.bean.Company">
+		select
+		<include refid="Base_Column_List" />
+		from t_company
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="company.name !=null and company.name !=''">
+				name LIKE CONCAT(CONCAT('%',#{company.name}),'%')
+			</if>
+			<if test="company.shortname !=null and company.shortname !=''">
+				AND shortname LIKE
+				CONCAT(CONCAT('%',#{company.shortname}),'%')
+			</if>
+			<if test="company.contact !=null and company.contact !=''">
+				AND contact LIKE
+				CONCAT(CONCAT('%',#{company.contact}),'%')
+			</if>
+			<if test="company.address !=null and company.address !=''">
+				AND address LIKE
+				CONCAT(CONCAT('%',#{company.address}),'%')
+			</if>
+			<if test="company.code !=null and company.code !=''">
+				AND code LIKE CONCAT(CONCAT('%',#{company.code}),'%')
+			</if>
+			<if test="company.email !=null and company.email !=''">
+				AND email LIKE CONCAT(CONCAT('%',#{company.email}),'%')
+			</if>
+			<if test="company.tel !=null and company.tel !=''">
+				AND tel LIKE CONCAT(CONCAT('%',#{company.tel}),'%')
+			</if>
+			<if test="company.license !=null and company.license !=''">
+				AND license LIKE
+				CONCAT(CONCAT('%',#{company.license}),'%')
+			</if>
+			<if test="company.foodSafetyCode !=null and company.foodSafetyCode !=''">
+				AND foodSafetyCode LIKE
+				CONCAT(CONCAT('%',#{company.foodSafetyCode}),'%')
+			</if>
+			and isDeleted != -1
+		</trim>
+		order by createTime desc
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_company
+		where companyId = #{companyid,jdbcType=CHAR}
+	</delete>
+	<insert id="insert" parameterType="cn.rfidcer.bean.Company">
+		insert into t_company (companyId, name, shortName,
+		code, address, contact,
+		email, tel, license,foodSafetyCode,
+		orgCode, companyFieldId, province,
+		city, area, status, createTime,
+		createBy, updateTime, updateBy
+		)
+		values (#{companyid,jdbcType=CHAR}, #{name,jdbcType=VARCHAR},
+		#{shortname,jdbcType=VARCHAR},
+		#{code,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{contact,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR},
+		#{license,jdbcType=VARCHAR},#{foodSafetyCode,jdbcType=VARCHAR},
+		#{orgcode,jdbcType=VARCHAR}, #{companyfieldid,jdbcType=CHAR},
+		#{province,jdbcType=CHAR},
+		#{city,jdbcType=CHAR}, #{area,jdbcType=CHAR}, #{status,jdbcType=CHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.Company">
+		insert into t_company
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="companyid != null">
+				companyId,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="shortname != null">
+				shortName,
+			</if>
+			<if test="code != null">
+				code,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="contact != null">
+				contact,
+			</if>
+			<if test="email != null">
+				email,
+			</if>
+			<if test="tel != null">
+				tel,
+			</if>
+			<if test="license != null">
+				license,
+			</if>
+			<if test="foodSafetyCode != null">
+				foodSafetyCode,
+			</if>
+			<if test="orgcode != null">
+				orgCode,
+			</if>
+			<if test="companyfieldid != null">
+				companyFieldId,
+			</if>
+			<if test="province != null">
+				province,
+			</if>
+			<if test="city != null">
+				city,
+			</if>
+			<if test="area != null">
+				area,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updatetime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+			<if test="cname != null">
+				cname,
+			</if>
+			<if test="cnature != null">
+				cnature,
+			</if>
+			<if test="cidnumb != null">
+				cidnumb,
+			</if>
+			<if test="ccustomercategories != null">
+				ccustomercategories,
+			</if>
+			<if test="cbusinessscope != null">
+				cbusinessscope,
+			</if>
+			<if test="cliquorbusinesslicense != null">
+				cliquorbusinesslicense,
+			</if>
+			<if test="cbusinessaddress != null">
+				cbusinessaddress,
+			</if>
+			<if test="chygienelicense != null">
+				chygienelicense,
+			</if>
+			<if test="clegalpersonaddress != null">
+				clegalpersonaddress,
+			</if>
+			<if test="cbusinesslicense != null">
+				cbusinesslicense,
+			</if>
+			<if test="ceffectivedate1 != null">
+				ceffectivedate1,
+			</if>
+			<if test="ceffectivedate2 != null">
+				ceffectivedate2,
+			</if>
+			<if test="cregistrationnumber != null">
+				cregistrationnumber,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="companyid != null">
+				#{companyid,jdbcType=CHAR},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="shortname != null">
+				#{shortname,jdbcType=VARCHAR},
+			</if>
+			<if test="code != null">
+				#{code,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="contact != null">
+				#{contact,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				#{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="license != null">
+				#{license,jdbcType=VARCHAR},
+			</if>
+			<if test="foodSafetyCode != null">
+				#{foodSafetyCode,jdbcType=VARCHAR},
+			</if>
+			<if test="orgcode != null">
+				#{orgcode,jdbcType=VARCHAR},
+			</if>
+			<if test="companyfieldid != null">
+				#{companyfieldid,jdbcType=CHAR},
+			</if>
+			<if test="province != null">
+				#{province,jdbcType=CHAR},
+			</if>
+			<if test="city != null">
+				#{city,jdbcType=CHAR},
+			</if>
+			<if test="area != null">
+				#{area,jdbcType=CHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="cname != null">
+				#{cname,jdbcType=VARCHAR},
+			</if>
+			<if test="cnature != null">
+				#{cnature,jdbcType=VARCHAR},
+			</if>
+			<if test="cidnumb != null">
+				#{cidnumb,jdbcType=VARCHAR},
+			</if>
+			<if test="ccustomercategories != null">
+				#{ccustomercategories,jdbcType=VARCHAR},
+			</if>
+			<if test="cbusinessscope != null">
+				#{cbusinessscope,jdbcType=VARCHAR},
+			</if>
+			<if test="cliquorbusinesslicense != null">
+				#{cliquorbusinesslicense,jdbcType=VARCHAR},
+			</if>
+			<if test="cbusinessaddress != null">
+				#{cbusinessaddress,jdbcType=VARCHAR},
+			</if>
+			<if test="chygienelicense != null">
+				#{chygienelicense,jdbcType=VARCHAR},
+			</if>
+			<if test="clegalpersonaddress != null">
+				#{clegalpersonaddress,jdbcType=VARCHAR},
+			</if>
+			<if test="cbusinesslicense != null">
+				#{cbusinesslicense,jdbcType=VARCHAR},
+			</if>
+			<if test="ceffectivedate1 != null">
+				#{ceffectivedate1,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ceffectivedate2 != null">
+				#{ceffectivedate2,jdbcType=TIMESTAMP},
+			</if>
+			<if test="cregistrationnumber != null">
+				#{cregistrationnumber,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.Company">
+		update t_company
+		<set>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="shortname != null">
+				shortName = #{shortname,jdbcType=VARCHAR},
+			</if>
+			<if test="code != null">
+				code = #{code,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="contact != null">
+				contact = #{contact,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				email = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				tel = #{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="license != null">
+				license = #{license,jdbcType=VARCHAR},
+			</if>
+			<if test="foodSafetyCode != null">
+				foodSafetyCode = #{foodSafetyCode,jdbcType=VARCHAR},
+			</if>
+			<if test="orgcode != null">
+				orgCode = #{orgcode,jdbcType=VARCHAR},
+			</if>
+			<if test="companyfieldid != null">
+				companyFieldId = #{companyfieldid,jdbcType=CHAR},
+			</if>
+			<if test="province != null">
+				province = #{province,jdbcType=CHAR},
+			</if>
+			<if test="city != null">
+				city = #{city,jdbcType=CHAR},
+			</if>
+			<if test="area != null">
+				area = #{area,jdbcType=CHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				createBy = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="cname != null">
+				cname = #{cname,jdbcType=VARCHAR},
+			</if>
+			<if test="cnature != null">
+				cnature = #{cnature,jdbcType=VARCHAR},
+			</if>
+			<if test="cidnumb != null">
+				cidnumb = #{cidnumb,jdbcType=VARCHAR},
+			</if>
+			<if test="ccustomercategories != null">
+				ccustomercategories = #{ccustomercategories,jdbcType=VARCHAR},
+			</if>
+			<if test="cbusinessscope != null">
+				cbusinessscope = #{cbusinessscope,jdbcType=VARCHAR},
+			</if>
+			<if test="cliquorbusinesslicense != null">
+				cliquorbusinesslicense = #{cliquorbusinesslicense,jdbcType=VARCHAR},
+			</if>
+			<if test="cbusinessaddress != null">
+				cbusinessaddress = #{cbusinessaddress,jdbcType=VARCHAR},
+			</if>
+			<if test="chygienelicense != null">
+				chygienelicense = #{chygienelicense,jdbcType=VARCHAR},
+			</if>
+			<if test="clegalpersonaddress != null">
+				clegalpersonaddress = #{clegalpersonaddress,jdbcType=VARCHAR},
+			</if>
+			<if test="cbusinesslicense != null">
+				cbusinesslicense = #{cbusinesslicense,jdbcType=VARCHAR},
+			</if>
+			<if test="ceffectivedate1 != null">
+				ceffectivedate1 = #{ceffectivedate1,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ceffectivedate2 != null">
+				ceffectivedate2 = #{ceffectivedate2,jdbcType=TIMESTAMP},
+			</if>
+			<if test="cregistrationnumber != null">
+				cregistrationnumber = #{cregistrationnumber,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where companyId = #{companyid,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.Company">
+		update t_company
+		set name = #{name,jdbcType=VARCHAR},
+		shortName = #{shortname,jdbcType=VARCHAR},
+		code = #{code,jdbcType=VARCHAR},
+		address = #{address,jdbcType=VARCHAR},
+		contact = #{contact,jdbcType=VARCHAR},
+		email = #{email,jdbcType=VARCHAR},
+		tel = #{tel,jdbcType=VARCHAR},
+		license = #{license,jdbcType=VARCHAR},
+		foodSafetyCode = #{foodSafetyCode,jdbcType=VARCHAR},
+		orgCode = #{orgcode,jdbcType=VARCHAR},
+		companyFieldId = #{companyfieldid,jdbcType=CHAR},
+		province = #{province,jdbcType=CHAR},
+		city = #{city,jdbcType=CHAR},
+		area = #{area,jdbcType=CHAR},
+		status = #{status,jdbcType=CHAR},
+		createTime = #{createTime,jdbcType=TIMESTAMP},
+		createBy = #{createBy,jdbcType=VARCHAR},
+		updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		updateBy = #{updateBy,jdbcType=VARCHAR}
+		where companyId = #{companyid,jdbcType=CHAR}
+	</update>
+	<!--移除 -->
+	<update id="deleteWithStatusByPrimaryKey" parameterType="cn.rfidcer.bean.Company">
+		update t_company
+		set isDeleted = '-1'
+		where companyId = #{companyid,jdbcType=CHAR}
+	</update>
+	<select id="list" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_company where isDeleted != -1
+	</select>
+	<select id="getCompanys" resultMap="BaseResultMap">
+		select
+		c.companyId,c.name,c.shortName,c.address,c.contact,c.email,c.tel,c.code,c.companyFieldId
+		from t_company c
+		INNER JOIN sys_user_company u on c.companyId=u.companyId where
+		userId=#{userId} and isDeleted != -1
+	</select>
+	<select id="selectCompanyByName" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" /> 
+		from t_company where
+		name=#{companyName} and isDeleted != -1
+	</select>
+	<select id="findByCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_company where code=#{code}
+	</select>
+
+	<!-- 根据企业名称查找企业信息 -->
+	<select id="checkCompanyExistsByCompanyName" resultType="int">
+		select count(companyId)
+		from t_company
+		where name = #{name} 
+		and isDeleted = 0
+		<if test="companyid != null and companyid != ''">
+			and companyId != #{companyid}
+		</if>
+	</select>
+	
+	<!-- 	企业追溯码流水号递增 -->
+	<update id="updateTraceSerialNum">
+		update t_company set traceSerialNum=
+		(CASE WHEN traceSerialNum>99998 THEN 1
+		ELSE traceSerialNum+1 END)
+		where companyId=#{companyId}
+	</update>
+	<!-- 	企业追溯码流水号递增 -->
+	<update id="updateMacNum">
+		update t_company set macNum=macNum+1
+		where companyId=#{companyId}
+	</update>	
+	
+	
+</mapper>

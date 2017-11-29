@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.SlaughterhouseMapper" >
+  <resultMap id="BaseResultMap" type="cn.rfidcer.bean.Slaughterhouse" >
+    <id column="slaughterhouseId" property="slaughterhouseId" jdbcType="CHAR" />
+    <result column="companyId" property="companyId" jdbcType="CHAR" />
+    <result column="slaughterhouseCompanyId" property="slaughterhouseCompanyId" jdbcType="CHAR" />
+    <result column="contact" property="contact" jdbcType="VARCHAR" />
+    <result column="altContact" property="altContact" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="createBy" property="createBy" jdbcType="VARCHAR" />
+    <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="mode" property="mode" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap type="Slaughterhouse" id="slaughterhouse">
+  	<id column="slaughterhouseId" property="slaughterhouseId"/>
+  	<result column="slaughterhouseCompanyId" property="slaughterhouseCompanyId"/>
+  	<result column="slaughterhouseName" property="slaughterhouseName"/>
+  	<result column="slaughterhouseAddress" property="slaughterhouseAddress"/>
+  	<result column="contact" property="contact" jdbcType="VARCHAR" />
+    <result column="altContact" property="altContact" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="mode" property="mode" jdbcType="VARCHAR" />
+  	<association property="company" javaType="Company">
+  		<id property="companyid" column="companyid"/>
+  		<result property="name" column="name"/>
+  		<result property="shortname" column="shortname"/>
+  	</association>
+  </resultMap>
+  <resultMap type="Slaughterhouse" id="slaughterhouseCompany">
+  	<id column="companyId" property="slaughterhouseCompanyId"/>
+  	<result column="slaughterhouseName" property="slaughterhouseName"/>
+  	<result column="name" property="companyName"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    slaughterhouseId,slaughterhouseName, companyId, slaughterhouseCompanyId, contact, altContact, tel, status, createTime, 
+    createBy, updateTime, updateBy,remark
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_slaughterhouse
+    where slaughterhouseId = #{slaughterhouseId,jdbcType=CHAR} and isDeleted != -1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_slaughterhouse
+    where slaughterhouseId = #{slaughterhouseId,jdbcType=CHAR}
+  </delete>
+  <update id="deleteWithStatusByPrimaryKey" parameterType="java.lang.String" >
+    update t_slaughterhouse
+    set   isDeleted = -1
+    where slaughterhouseId = #{slaughterhouseId,jdbcType=CHAR}
+  </update>
+  
+  <insert id="insert" parameterType="cn.rfidcer.bean.Slaughterhouse" >
+    insert into t_slaughterhouse (slaughterhouseId, companyId, slaughterhouseCompanyId, 
+      contact, altContact, tel, slaughterhouseName,slaughterhouseAddress,
+      status, createTime, createBy, 
+      updateTime, updateBy,remark, mode)
+    values (#{slaughterhouseId,jdbcType=CHAR}, #{companyId,jdbcType=CHAR}, #{slaughterhouseCompanyId,jdbcType=CHAR}, 
+      #{contact,jdbcType=VARCHAR}, #{altContact,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR},#{slaughterhouseName,jdbcType=VARCHAR},#{slaughterhouseAddress,jdbcType=VARCHAR}, 
+      #{status,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR},#{remark,jdbcType=VARCHAR},#{mode,jdbcType=VARCHAR})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="cn.rfidcer.bean.Slaughterhouse" >
+    insert into t_slaughterhouse
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="slaughterhouseId != null" >
+        slaughterhouseId,
+      </if>
+      <if test="companyId != null" >
+        companyId,
+      </if>
+      <if test="slaughterhouseCompanyId != null" >
+        slaughterhouseCompanyId,
+      </if>
+      <if test="contact != null" >
+        contact,
+      </if>
+      <if test="altContact != null" >
+        altContact,
+      </if>
+      <if test="tel != null" >
+        tel,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="createBy != null" >
+        createBy,
+      </if>
+      <if test="updateTime != null" >
+        updateTime,
+      </if>
+      <if test="updateBy != null" >
+        updateBy,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="slaughterhouseId != null" >
+        #{slaughterhouseId,jdbcType=CHAR},
+      </if>
+      <if test="companyId != null" >
+        #{companyId,jdbcType=CHAR},
+      </if>
+      <if test="slaughterhouseCompanyId != null" >
+        #{slaughterhouseCompanyId,jdbcType=CHAR},
+      </if>
+      <if test="contact != null" >
+        #{contact,jdbcType=VARCHAR},
+      </if>
+      <if test="altContact != null" >
+        #{altContact,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null" >
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 修改屠宰场信息 -->
+  <update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.Slaughterhouse" >
+    update t_slaughterhouse
+    <set >
+      <if test="companyId != null" >
+        companyId = #{companyId,jdbcType=CHAR},
+      </if>
+      <if test="slaughterhouseCompanyId != null" >
+        slaughterhouseCompanyId = #{slaughterhouseCompanyId,jdbcType=CHAR},
+      </if>
+      <if test="contact != null" >
+        contact = #{contact,jdbcType=VARCHAR},
+      </if>
+      <if test="altContact != null" >
+        altContact = #{altContact,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="slaughterhouseName!=null">
+      	slaughterhouseName=#{slaughterhouseName,jdbcType=VARCHAR},
+      </if>
+      <if test="slaughterhouseAddress!=null">
+      	slaughterhouseAddress=#{slaughterhouseAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null" >
+        createBy = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        updateBy = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="mode != null" >
+        mode = #{mode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where slaughterhouseId = #{slaughterhouseId,jdbcType=CHAR}
+  </update>
+  
+  <!-- 查询屠宰场列表信息 -->
+  <select id="list" resultMap="slaughterhouse">
+    select 
+    	s.slaughterhouseId, s.slaughterhouseCompanyId companyid, s.slaughterhouseCompanyId, s.contact,  
+    	s.altContact, s.tel, s.status, 
+    	s.createTime, s.createBy, s.updateTime, s.updateBy,  
+    	s.slaughterhouseName, c.name, c.shortname, s.slaughterhouseAddress,
+    	s.remark, s.mode
+    from t_slaughterhouse s
+    INNER JOIN t_company c on s.slaughterhouseCompanyId=c.companyId
+    where s.companyId = #{slaughterhouse.companyId,jdbcType=CHAR} 
+    and s.isDeleted != -1
+    order by s.updateTime desc,s.createTime desc
+  </select>
+  
+  <select id="getslaughterhouseCompanys" resultMap="slaughterhouseCompany">
+  	select s.slaughterhouseId,c.companyId,c.name,s.slaughterhouseName from t_slaughterhouse s
+	RIGHT JOIN t_company c on s.slaughterhouseCompanyId=c.companyId and s.isDeleted=0 and s.companyId=#{companyId}
+  </select>
+  
+  <select id="checkSlaughterhouseExistsBySlaughterhouseId" resultType="int">
+  	select count(slaughterhouseId) from t_slaughterhouse where slaughterhouseCompanyId=#{slaughterhouseCompanyId} and companyId=#{companyId} and isDeleted != -1
+  		<if test="slaughterhouseId!=null and slaughterhouseId!=''">
+  			and slaughterhouseId!=#{slaughterhouseId}
+  		</if>
+  </select>
+  <select id="findBySlaughterhouseName" resultMap="slaughterhouse">
+  	select slaughterhouseId,companyId,slaughterhouseCompanyId,slaughterhouseName,slaughterhouseAddress,
+  		contact,altContact,tel,status,createBy,createTime,updateBy,updateTime,remark from t_slaughterhouse
+  	 where slaughterhouseName=#{companyName} and companyId=#{companyId}
+  </select>
+  <select id="checkSlaughterhouseExistsBySlaughterhouseName" resultType="int">
+  	select count(slaughterhouseId) from t_slaughterhouse where slaughterhouseName=#{companyName} and companyId=#{companyId} and isDeleted =0
+  		<if test="slaughterhouseId!=null and slaughterhouseId!=''">
+  			and slaughterhouseId!=#{slaughterhouseId}
+  		</if>
+  </select>
+</mapper>

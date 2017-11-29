@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.AreaInfoMapper" >
+  <resultMap id="BaseResultMap" type="cn.rfidcer.bean.AreaInfo" > 
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="cityName" property="cityName" jdbcType="VARCHAR" />
+    <result column="catgName" property="catgName" jdbcType="VARCHAR" />
+    <result column="catgNameEn" property="catgNameEn" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="createBy" property="createBy" jdbcType="VARCHAR" />
+    <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" > 
+    id, cityName, catgName, catgNameEn, province, city, area, createTime, createBy, updateTime, 
+    updateBy
+  </sql>
+  <select id="findAllCatgNameAndId" resultMap="BaseResultMap" parameterType="cn.rfidcer.bean.AreaInfo"  useCache="true" >
+    select id, catgName 
+    from sys_area_info
+    <where>
+        <if test="areainfo.cityName !=null and areainfo.cityName !=''">
+		 catgName = #{areainfo.catgName,jdbcType=VARCHAR}
+		</if>
+    </where>
+	 ORDER BY province, city, area
+  </select>
+  
+  <!-- 查询地区信息 -->
+  <select id="findAllWithQuery" resultMap="BaseResultMap" parameterType="cn.rfidcer.bean.AreaInfo" useCache="false">
+  select id, catgName 
+    from sys_area_info
+    <where>
+        <if test="areainfo.catgName !=null and areainfo.catgName !=''">
+		 catgName like CONCAT('%',#{areainfo.catgName},'%')
+		</if>
+    </where>
+	 ORDER BY province, city, area
+  </select>
+  
+  <select id="list" resultMap="BaseResultMap" parameterType="cn.rfidcer.bean.AreaInfo" > 
+    select 
+    <include refid="Base_Column_List" />
+    from sys_area_info
+    where 1=1
+    <if test="areainfo.cityName !=null and areainfo.cityName !=''">
+		and cityName = #{areainfo.cityName,jdbcType=VARCHAR}
+	</if>
+  </select>
+  <select id="findExitId" resultType="int"  > 
+    SELECT count(id) from sys_area_info  WHERE  id = #{id}
+  </select>
+  
+  
+  
+</mapper>

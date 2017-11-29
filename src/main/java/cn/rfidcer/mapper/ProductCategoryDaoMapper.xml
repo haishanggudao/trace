@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProductCategoryDao">
+	<resultMap type="ProductCategory" id="productCategory">
+		<id column="productCategoryId" property="productCategoryId" />
+		<result column="productCategoryName" property="productCategoryName" />
+		<result column="productCategoryDesc" property="productCategoryDesc" />
+		<result column="level" property="level" />
+		<result column="parentCategoryId" property="parentCategoryId" />
+		<result column="status" property="status" />
+		<result column="companyId" property="companyId" />
+		<collection property="children" ofType="ProductCategory" select="getSubs" column="productCategoryId">
+			<id column="productCategoryId" property="productCategoryId" />
+			<result column="productCategoryName" property="productCategoryName" />
+			<result column="parentCategoryId" property="parentCategoryId" />
+			<result column="level" property="level" />
+		</collection>
+	</resultMap>
+
+	<select id="findAll" resultMap="productCategory" useCache="false">
+		select productCategoryId,productCategoryName, productCategoryDesc,
+		level, parentCategoryId,status,createTime,
+		createBy,updateTime,updateBy from t_product_category
+		where isDeleted = 0
+		<if
+			test="category.productCategoryName!=null and category.productCategoryName!=''">
+			and productCategoryName=#{category.productCategoryName}
+		</if>
+		<if test="category.level!=null and category.level!=''">
+			and level=#{category.level}
+		</if>
+		<if
+			test="category.parentCategoryId!=null and category.parentCategoryId!=''">
+			and parentCategoryId=#{category.parentCategoryId}
+		</if>
+		<if test="category.companyId != null and category.companyId != ''">
+			and companyId = #{category.companyId}
+		</if>
+		order by updateTime desc,createTime desc
+	</select>
+	
+	<select id="getSubs" resultMap="productCategory"  useCache="false">
+	SELECT sub.productCategoryId, sub.productCategoryName, sub.parentCategoryId, sub.level 
+	FROM t_product_category sub
+	WHERE sub.parentCategoryId = #{productCategoryId}
+	</select> 
+
+	<insert id="createProductCategory">
+		insert into t_product_category
+		(productCategoryId, productCategoryName, productCategoryDesc, level,
+		parentCategoryId, status, companyId, createTime, createBy,updateTime,updateBy)
+		values
+		(#{productCategoryId}, #{productCategoryName}, #{productCategoryDesc},
+		#{level},
+		#{parentCategoryId}, #{status}, #{companyId}, #{createTime},
+		#{createBy},#{updateTime},#{updateBy})
+	</insert>
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.ProductCategory">
+
+		insert into t_product_category
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="productCategoryId != null">
+				productCategoryId,
+			</if>
+			<if test="productCategoryName != null">
+				productCategoryName,
+			</if>
+			<if test="level != null">
+				level,
+			</if>
+			<if test="parentCategoryId != null">
+				parentCategoryId,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="companyId != null">
+				companyId,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+			<if test="productCategoryDesc != null">
+				productCategoryDesc,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="productCategoryId != null">
+				#{productCategoryId,jdbcType=CHAR},
+			</if>
+			<if test="productCategoryName != null">
+				#{productCategoryName,jdbcType=VARCHAR},
+			</if>
+			<if test="level != null">
+				#{level,jdbcType=CHAR},
+			</if>
+			<if test="parentCategoryId != null">
+				#{parentCategoryId,jdbcType=CHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=CHAR},
+			</if>
+			<if test="companyId != null">
+				#{companyId,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="productCategoryDesc != null">
+				#{productCategoryDesc,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<delete id="delProductCategory">
+		delete from t_product_category where
+		productCategoryId=#{productCategoryId}
+	</delete>
+
+
+	<update id="deleteWithStatusByPrimaryKey" parameterType="java.lang.String">
+		update t_product_category
+		set isDeleted = -1
+		where productCategoryId = #{productCategoryId,jdbcType=CHAR}
+	</update>
+
+	<update id="updateProductCategory">
+		update t_product_category
+		set productCategoryName=#{productCategoryName},
+		productCategoryDesc=#{productCategoryDesc},
+		level=#{level},
+		parentCategoryId=#{parentCategoryId},
+		status=#{status},
+		companyId = #{companyId},
+		updateTime=#{updateTime},
+		updateBy=#{updateBy}
+		where productCategoryId=#{productCategoryId}
+	</update>
+	<select id="findProductCategoryByName" resultMap="productCategory">
+		select
+		productCategoryId,productCategoryName, productCategoryDesc, level,
+		parentCategoryId,status,createTime,
+		createBy,updateTime,updateBy from t_product_category
+		where isDeleted = 0
+		and productCategoryName=#{productCategoryName}
+		and companyId = #{companyId}
+	</select>
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>

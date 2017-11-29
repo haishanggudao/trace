@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProductStandardDao">
+	<resultMap type="ProductStandard" id="productStandard"></resultMap>
+	<select id="findAll" resultMap="productStandard" useCache="false">
+		select
+		s.productStandardId,s.productStandardName,
+		s.productCategoryId,c.productCategoryName
+		from t_product_standard s
+		inner JOIN t_product_category c on
+		s.productCategoryId=c.productCategoryId
+		<where>
+			<if test="standard.productStandardName!=null and standard.productStandardName!=''">
+				s.productStandardName=#{standard.productStandardName}
+			</if>
+			<if test="standard.companyId != null and standard.companyId != ''">
+				and c.companyId = #{standard.companyId}
+			</if>
+			<if test="standard.productCategoryId != null and standard.productCategoryId != ''">
+				and c.productCategoryId = #{standard.productCategoryId}
+			</if>
+		</where>
+		order by s.updateTime desc
+	</select>
+	<insert id="createProductStandard">
+		insert into t_product_standard
+		(productStandardId,productStandardName,productCategoryId,createTime,createBy,updateTime,updateBy)
+		values
+		(#{productStandardId},#{productStandardName},#{productCategoryId},#{createTime},#{createBy},#{updateTime},#{updateBy})
+	</insert>
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.ProductStandard">
+
+		insert into t_product_standard
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="productStandardId != null">
+				productStandardId,
+			</if>
+			<if test="productStandardName != null">
+				productStandardName,
+			</if>
+			<if test="productCategoryId != null">
+				productCategoryId,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="productStandardId != null">
+				#{productStandardId,jdbcType=CHAR},
+			</if>
+			<if test="productStandardName != null">
+				#{productStandardName,jdbcType=VARCHAR},
+			</if>
+			<if test="productCategoryId != null">
+				#{productCategoryId,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<delete id="delProductStandard">
+		delete from t_product_standard where
+		productStandardId=#{productStandardId}
+	</delete>
+
+	<update id="updateProductStandard">
+		update t_product_standard set
+		productStandardName=#{productStandardName},productCategoryId=#{productCategoryId},
+		updateTime=#{updateTime},updateBy=#{updateBy} where
+		productStandardId=#{productStandardId}
+	</update>
+	<select id="checkProductStandardExists" resultMap="productStandard">
+		select s.productStandardId,s.productStandardName,s.productCategoryId
+		from t_product_standard s
+		INNER JOIN t_product_category c on
+		s.productCategoryId=c.productCategoryId
+		where
+		s.productStandardName=#{productStandardName} and
+		s.productCategoryId=#{productCategoryId}
+		<if test="productStandardId!=null and productStandardId!=''">
+			and s.productStandardId!=#{productStandardId}
+		</if>
+	</select>
+	
+	<select id="getProductStandardCount" resultType="int">
+		select count(productStandardId) 
+		from t_product_standard 
+		<where>
+			<if test="productStandardName!=null and productStandardName!=''">
+				and productStandardName=#{productStandardName}
+			</if>
+			<if test="companyId != null and companyId != ''">
+				and companyId = #{companyId}
+			</if>
+			<if test="productCategoryId != null and productCategoryId != ''">
+				and productCategoryId = #{productCategoryId}
+			</if>
+			<if test="productStandardId != null and productStandardId != ''">
+				and productStandardId = #{productStandardId}
+			</if>			
+		</where>
+	</select>
+	
+	
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>

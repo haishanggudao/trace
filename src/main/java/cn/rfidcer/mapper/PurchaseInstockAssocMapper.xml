@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.PurchaseInstockAssocMapper">
+	<resultMap id="BaseResultMap" type="cn.rfidcer.bean.PurchaseInstockAssoc">
+		<id column="instockMainId" property="instockMainId" jdbcType="CHAR" />
+		<id column="purchaseOrderId" property="purchaseOrderId" jdbcType="CHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		instockMainId, purchaseOrderId, createTime, createBy, updateTime, updateBy
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="cn.rfidcer.bean.PurchaseInstockAssoc">
+		select
+		<include refid="Base_Column_List" />
+		from t_purchase_instock_assoc
+		where instockMainId = #{instockMainId,jdbcType=CHAR}
+		and purchaseOrderId = #{purchaseOrderId,jdbcType=CHAR}
+	</select>
+	<select id="selectByInstockMainId" resultMap="BaseResultMap" parameterType="String">
+		select
+		<include refid="Base_Column_List" />
+		from t_purchase_instock_assoc
+		where instockMainId = #{instockMainId,jdbcType=CHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="cn.rfidcer.bean.PurchaseInstockAssoc">
+		delete from t_purchase_instock_assoc
+		where instockMainId = #{instockMainId,jdbcType=CHAR}
+		and purchaseOrderId = #{purchaseOrderId,jdbcType=CHAR}
+	</delete>
+	<delete id="deleteByInstockMainId" parameterType="String">
+		delete from t_purchase_instock_assoc
+		where instockMainId = #{instockMainId,jdbcType=CHAR}
+	</delete>
+	<insert id="insert" parameterType="cn.rfidcer.bean.PurchaseInstockAssoc">
+		insert into t_purchase_instock_assoc (instockMainId, purchaseOrderId,
+		createTime,
+		createBy, updateTime, updateBy
+		)
+		values (#{instockMainId,jdbcType=CHAR}, #{purchaseOrderId,jdbcType=CHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.PurchaseInstockAssoc">
+
+		insert into t_purchase_instock_assoc
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="instockMainId != null">
+				instockMainId,
+			</if>
+			<if test="purchaseOrderId != null">
+				purchaseOrderId,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="instockMainId != null">
+				#{instockMainId,jdbcType=CHAR},
+			</if>
+			<if test="purchaseOrderId != null">
+				#{purchaseOrderId,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.PurchaseInstockAssoc">
+
+		update t_purchase_instock_assoc
+		<set>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				createBy = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where instockMainId = #{instockMainId,jdbcType=CHAR}
+		and purchaseOrderId = #{purchaseOrderId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.PurchaseInstockAssoc">
+		update t_purchase_instock_assoc
+		set createTime = #{createTime,jdbcType=TIMESTAMP},
+		createBy = #{createBy,jdbcType=VARCHAR},
+		updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		updateBy = #{updateBy,jdbcType=VARCHAR}
+		where instockMainId = #{instockMainId,jdbcType=CHAR}
+		and purchaseOrderId = #{purchaseOrderId,jdbcType=CHAR}
+	</update>
+</mapper>

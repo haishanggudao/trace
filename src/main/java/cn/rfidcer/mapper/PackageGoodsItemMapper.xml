@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.PackageGoodsItemMapper">
+	<resultMap id="BaseResultMap" type="cn.rfidcer.bean.PackageGoodsItem">
+		<id column="packageGoodsItemId" property="packageGoodsItemId" jdbcType="CHAR" />
+		<result column="packageMainId" property="packageMainId" jdbcType="CHAR" />
+		<result column="goodsDetailId" property="goodsDetailId" jdbcType="CHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+		<result column="goodsBatch" property="goodsBatch" jdbcType="VARCHAR" />
+		<association property="product" javaType="Product">
+			<id property="productId" column="productId" />
+			<result property="productName" column="productName" />
+		</association>
+		<association property="productStandardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="productStandardDetailId" />
+			<result property="productStandardNum" column="productStandardNum" />
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId" />
+				<result property="productStandardName" column="productStandardName" />
+			</association>
+		</association>
+	</resultMap>
+	<sql id="Base_Column_List">
+		packageGoodsItemId, packageMainId, goodsDetailId, createTime, createBy, updateTime,
+		updateBy
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_package_goods_item
+		where packageGoodsItemId = #{packageGoodsItemId,jdbcType=CHAR}
+	</select>
+
+	<!-- find all items of main package -->
+	<select id="findAll" resultMap="BaseResultMap" useCache="false">
+		select pgi.packageGoodsItemId, pgi.packageMainId, pgi.goodsDetailId,
+		pgi.createTime, pgi.createBy,
+		pgi.updateTime, pgi.updateBy,
+		g.goodsId, g.goodsBatch,
+		p.productName, d.productStandardNum, s.productStandardName
+		from t_package_goods_item pgi
+		inner join t_goods g on g.goodsId = pgi.goodsDetailId
+		inner join t_product p on p.productId = g.productId
+		INNER JOIN t_product_standard_detail d on g.productStandardDetailId=d.productStandardDetailId
+		INNER JOIN t_product_standard s on d.productStandardId=s.productStandardId
+		<where>
+			<if test="packageGoodsItem.packageMainId != null">
+				pgi.packageMainId = #{packageGoodsItem.packageMainId}
+			</if>
+		</where>
+		order by pgi.packageMainId, pgi.createTime
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_package_goods_item
+		where packageGoodsItemId = #{packageGoodsItemId,jdbcType=CHAR}
+	</delete>
+
+	<!-- deletePackageGoodsItemsByPackageMainId -->
+	<delete id="deletePackageGoodsItemsByPackageMainId">
+		delete from t_package_goods_item
+		where packageMainId = #{packageMainId}
+	</delete>
+
+	<insert id="insert" parameterType="cn.rfidcer.bean.PackageGoodsItem">
+		insert into t_package_goods_item (packageGoodsItemId, packageMainId,
+		goodsDetailId,
+		createTime, createBy, updateTime,
+		updateBy)
+		values (#{packageGoodsItemId,jdbcType=CHAR}, #{packageMainId,jdbcType=CHAR},
+		#{goodsDetailId,jdbcType=CHAR},
+		#{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP},
+		#{updateBy,jdbcType=VARCHAR})
+	</insert>
+	<!-- insert a new goodsItems of main package -->
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.PackageGoodsItem">
+		insert into t_package_goods_item
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="packageGoodsItemId != null">
+				packageGoodsItemId,
+			</if>
+			<if test="packageMainId != null">
+				packageMainId,
+			</if>
+			<if test="goodsDetailId != null">
+				goodsDetailId,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="packageGoodsItemId != null">
+				#{packageGoodsItemId,jdbcType=CHAR},
+			</if>
+			<if test="packageMainId != null">
+				#{packageMainId,jdbcType=CHAR},
+			</if>
+			<if test="goodsDetailId != null">
+				#{goodsDetailId,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.PackageGoodsItem">
+		update t_package_goods_item
+		<set>
+			<if test="packageMainId != null">
+				packageMainId = #{packageMainId,jdbcType=CHAR},
+			</if>
+			<if test="goodsDetailId != null">
+				goodsDetailId = #{goodsDetailId,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				createBy = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where packageGoodsItemId = #{packageGoodsItemId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.PackageGoodsItem">
+		update t_package_goods_item
+		set packageMainId = #{packageMainId,jdbcType=CHAR},
+		goodsDetailId = #{goodsDetailId,jdbcType=CHAR},
+		createTime = #{createTime,jdbcType=TIMESTAMP},
+		createBy = #{createBy,jdbcType=VARCHAR},
+		updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		updateBy = #{updateBy,jdbcType=VARCHAR}
+		where packageGoodsItemId = #{packageGoodsItemId,jdbcType=CHAR}
+	</update>
+</mapper>

@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.SupplierMapper" >
+  <resultMap id="BaseResultMap" type="cn.rfidcer.bean.Supplier" >
+    <id column="supplierId" property="supplierId" jdbcType="CHAR" />
+    <result column="companyId" property="companyId" jdbcType="CHAR" />
+    <result column="supplierCompanyId" property="supplierCompanyId" jdbcType="CHAR" />
+    <result column="contact" property="contact" jdbcType="VARCHAR" />
+    <result column="altContact" property="altContact" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="supplierAlias" property="supplierAlias"/>
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="createBy" property="createBy" jdbcType="VARCHAR" />
+    <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+    <result column="isDeleted" property="isDeleted" jdbcType="INTEGER" />
+    <result column="supplierAddress" property="supplierAddress"/>
+    <result column="remark" property="remark"/>
+    <!-- 20160614 -->
+    <result column="sregisteredperson" property="sregisteredperson" jdbcType="VARCHAR" />
+	<result column="sregiesteredtime" property="sregiesteredtime" jdbcType="TIMESTAMP" />
+	<result column="supplierCode" property="supplierCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap type="Supplier" id="supplier">
+  	<id column="supplierId" property="supplierId"/>
+  	<result column="supplierCompanyId" property="supplierCompanyId"/>
+  	<result column="supplierAlias" property="supplierAlias"/>
+  	<result column="contact" property="contact" jdbcType="VARCHAR" />
+    <result column="altContact" property="altContact" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="isDeleted" property="isDeleted" />
+    <result column="supplierAddress" property="supplierAddress"/>
+    <result column="remark" property="remark"/>
+    <!-- 20160614 -->
+    <result column="sregisteredperson" property="sregisteredperson" jdbcType="VARCHAR" />
+	<result column="sregiesteredtime" property="sregiesteredtime" jdbcType="TIMESTAMP" />
+	<result column="supplierCode" property="supplierCode" jdbcType="VARCHAR" />
+	<result column="supplierDesc" property="supplierDesc" jdbcType="VARCHAR" />
+  	<association property="company" javaType="Company">
+  		<id property="companyid" column="companyid"/>
+  		<result property="name" column="name"/>
+  		<result property="shortname" column="shortname"/>
+  		<result column="code" property="code" jdbcType="VARCHAR" />
+  		<!-- 2016.06.13 -->
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+    	<result column="cnature" property="cnature" jdbcType="VARCHAR" />
+    	<result column="cidnumb" property="cidnumb" jdbcType="VARCHAR" />
+    	<result column="ccustomercategories" property="ccustomercategories" jdbcType="VARCHAR" />
+    	<result column="cbusinessscope" property="cbusinessscope" jdbcType="VARCHAR" />
+    	<result column="cliquorbusinesslicense" property="cliquorbusinesslicense" jdbcType="VARCHAR" />
+    	<result column="cbusinessaddress" property="cbusinessaddress" jdbcType="VARCHAR" />
+    	<result column="chygienelicense" property="chygienelicense" jdbcType="VARCHAR" />
+    	<result column="clegalpersonaddress" property="clegalpersonaddress" jdbcType="VARCHAR" />
+    	<result column="cbusinesslicense" property="cbusinesslicense" jdbcType="VARCHAR" />
+    	<result column="ceffectivedate1" property="ceffectivedate1" jdbcType="TIMESTAMP" />
+    	<result column="ceffectivedate2" property="ceffectivedate2" jdbcType="TIMESTAMP" />
+    	<result column="cregistrationnumber" property="cregistrationnumber" jdbcType="VARCHAR" />
+    	<result column="cnatureName" property="cnatureName" jdbcType="VARCHAR" />
+  	</association>
+  </resultMap>
+  <resultMap type="Supplier" id="supplierCompany">
+  	<id column="companyId" property="supplierCompanyId"/>
+  	<result column="supplierAlias" property="supplierAlias"/>
+  	<result column="name" property="companyName"/>
+  	<association property="company" javaType="Company" autoMapping="true">
+  	</association>
+  </resultMap>
+  <resultMap type="Supplier" id="yzSupplier">
+  	<id column="supplierCompanyId" property="supplierCompanyId"/>
+  	<result column="supplierAlias" property="supplierAlias"/>
+  	<result column="contact" property="contact"/>
+  	<result column="tel" property="tel"/>
+  	<result column="status" property="status"/>
+  	<result column="isDeleted" property="isDeleted"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    supplierId, companyId, supplierCompanyId, contact, altContact, tel,supplierAlias, status, createTime,
+    createBy, updateTime, updateBy,supplierAddress,remark,sregisteredperson, sregiesteredtime,supplierCode
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_supplier
+    where supplierId = #{supplierId,jdbcType=CHAR} 
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_supplier
+    where supplierId = #{supplierId,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="cn.rfidcer.bean.Supplier" >
+    insert into t_supplier (supplierId, companyId, supplierCompanyId, 
+      contact, altContact,supplierAlias, tel, 
+      status, createTime, createBy,
+      updateTime, updateBy,supplierAddress,remark,supplierCode,supplierDesc)
+    values (#{supplierId,jdbcType=CHAR}, #{companyId,jdbcType=CHAR}, #{supplierCompanyId,jdbcType=CHAR}, 
+      #{contact,jdbcType=VARCHAR}, #{altContact,jdbcType=VARCHAR},#{supplierAlias}, #{tel,jdbcType=VARCHAR}, 
+      #{status,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR},#{supplierAddress,jdbcType=VARCHAR},#{remark,jdbcType=VARCHAR},#{supplierCode,jdbcType=VARCHAR},#{supplierDesc})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.rfidcer.bean.Supplier" >
+    insert into t_supplier
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="supplierId != null" >
+        supplierId,
+      </if>
+      <if test="companyId != null" >
+        companyId,
+      </if>
+      <if test="supplierCompanyId != null" >
+        supplierCompanyId,
+      </if>
+      <if test="contact != null" >
+        contact,
+      </if>
+      <if test="altContact != null" >
+        altContact,
+      </if>
+      <if test="tel != null" >
+        tel,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="createBy != null" >
+        createBy,
+      </if>
+      <if test="updateTime != null" >
+        updateTime,
+      </if>
+      <if test="updateBy != null" >
+        updateBy,
+      </if>
+      <if test="supplierAddress != null" >
+        supplierAddress,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="sregisteredperson != null">
+      	sregisteredperson,
+      </if>
+      <if test="sregiesteredtime != null">
+      	sregiesteredtime,
+      </if>
+      <if test="supplierCode != null" >
+      	supplierCode,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="supplierId != null" >
+        #{supplierId,jdbcType=CHAR},
+      </if>
+      <if test="companyId != null" >
+        #{companyId,jdbcType=CHAR},
+      </if>
+      <if test="supplierCompanyId != null" >
+        #{supplierCompanyId,jdbcType=CHAR},
+      </if>
+      <if test="contact != null" >
+        #{contact,jdbcType=VARCHAR},
+      </if>
+      <if test="altContact != null" >
+        #{altContact,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null" >
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierAddress != null" >
+        #{supplierAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="sregisteredperson != null">
+      	#{sregisteredperson,jdbcType=VARCHAR},
+      </if>
+      <if test="sregiesteredtime != null">
+      	#{sregiesteredtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="supplierCode != null" >
+        #{supplierCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.Supplier" >
+    update t_supplier
+    <set >
+      <if test="companyId != null" >
+        companyId = #{companyId,jdbcType=CHAR},
+      </if>
+      <if test="supplierCompanyId != null" >
+        supplierCompanyId = #{supplierCompanyId,jdbcType=CHAR},
+      </if>
+      <if test="contact != null" >
+        contact = #{contact,jdbcType=VARCHAR},
+      </if>
+      <if test="altContact != null" >
+        altContact = #{altContact,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierAlias!=null">
+      	supplierAlias=#{supplierAlias,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null" >
+        createBy = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        updateBy = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="isDeleted != null" >
+        isDeleted = #{isDeleted,jdbcType=INTEGER},
+      </if>
+      <if test="supplierAddress != null" >
+        supplierAddress = #{supplierAddress,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=INTEGER},
+      </if>
+      <if test="sregisteredperson != null">
+      	sregisteredperson = #{sregisteredperson,jdbcType=VARCHAR},
+      </if>
+      <if test="sregiesteredtime != null">
+      	sregiesteredtime = #{sregiesteredtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="supplierCode != null" >
+        supplierCode = #{supplierCode,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierDesc != null" >
+        supplierDesc = #{supplierDesc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where supplierId = #{supplierId,jdbcType=CHAR}
+  </update>
+  
+  <select id="getSupplierCompanys" resultMap="supplierCompany">
+  	select 
+  		s.supplierId,
+  		c.companyId,
+  		c.name,
+  		s.supplieralias,
+  		c.contact,
+  		c.cidnumb,
+  		c.clegalpersonaddress,
+  		c.cbusinessaddress,
+  		c.chygienelicense,
+  		c.cbusinessscope,
+  		c.tel,
+  		c.cname,
+  		c.cbusinesslicense,
+  		c.ceffectivedate1,
+  		c.ceffectivedate2
+  	 from t_supplier s
+	RIGHT JOIN t_company c on s.supplierCompanyId=c.companyId and s.isDeleted = 0 
+	and s.companyId=#{companyId}
+  </select>
+  
+  <!-- 默认查询所有的供应商列表信息 -->
+  <select id="list" resultMap="supplier" useCache="false">
+	select
+	s.supplierId,
+	s.supplierCompanyId companyid,
+	s.supplierCompanyId,
+	s.contact,
+	s.altContact,
+	s.tel, s.status, 
+	s.createTime,
+	s.createBy,
+	s.updateTime,
+	s.updateBy,
+	s.supplierAlias,
+	s.supplierCode,
+	s.supplierAddress,
+	s.remark,
+	s.supplierDesc,
+	c.name,
+	c.code,
+	c.cname, c.cnature, c.cidnumb, c.ccustomercategories, c.cbusinessscope,
+	c.cliquorbusinesslicense, c.cbusinessaddress, c.chygienelicense,
+	c.clegalpersonaddress, c.cbusinesslicense,
+	c.ceffectivedate1,
+	c.ceffectivedate2,
+	c.cregistrationnumber,
+	tn.name as cnatureName
+	from t_supplier s
+	INNER JOIN t_company c on s.supplierCompanyId=c.companyId
+	left join t_nature	tn on c.cnature = tn.id
+	where s.isDeleted = 0
+	<if test="supplier != null">
+		<if test="supplier.companyId != null">
+			and s.companyId = #{supplier.companyId}
+		</if>
+		<if test="supplier.supplierId != null">
+			and s.supplierId = #{supplier.supplierId}
+		</if>
+		<if test="supplier.companyName != null and supplier.companyName != ''">
+			and c.name like CONCAT('%','${supplier.companyName}','%' )
+		</if>
+		<if test="supplier.supplierCompanyId != null">
+			and s.supplierCompanyId = #{supplier.supplierCompanyId}
+		</if>
+		<if test="supplier.contact != null and supplier.contact!=''">
+			and s.contact = #{supplier.contact}
+		</if>
+		<if test="supplier.altContact != null">
+			and s.altContact = #{supplier.altContact}
+		</if>
+		<if test="supplier.tel != null and supplier.tel != ''">
+			and s.tel = #{supplier.tel}
+		</if>
+		<if test="supplier.status != null">
+			and s.status = #{supplier.status}
+		</if>
+		<if test="supplier.createTime != null">
+			and s.createTime = #{supplier.createTime}
+		</if>
+		<if test="supplier.createBy != null">
+			and s.createBy = #{supplier.createBy}
+		</if>
+		<if test="supplier.updateTime != null">
+			and s.updateTime = #{supplier.updateTime}
+		</if>
+		<if test="supplier.updateBy != null">
+			and s.updateBy = #{supplier.updateBy}
+		</if>
+		<if test="supplier.supplierAlias != null and supplier.supplierAlias != ''">
+			and s.supplierAlias like CONCAT('%','${supplier.supplierAlias}','%' )
+		</if>
+		<if test="supplier.isDeleted != null">
+			and s.isDeleted = #{supplier.isDeleted}
+		</if>
+		<if test="supplier.supplierCode != null and supplier.supplierCode != ''">
+			and s.supplierCode = #{supplier.supplierCode}
+		</if>
+	</if>
+	<if test="company != null">
+		<if test="company.code != null and company.code != ''">
+			and c.code = #{company.code}
+		</if>
+		<if test="company.cname != null and company.cname != ''">
+			and c.cname = #{company.cname}
+		</if>
+		<if test="company.cidnumb != null and company.cidnumb != ''">
+			and c.cidnumb = #{company.cidnumb}
+		</if>
+		<if test="company.cnature != null and company.cnature != ''">
+			and c.cnature = #{company.cnature}
+		</if>
+		<if test="company.clegalpersonaddress != null and company.clegalpersonaddress != ''">
+			and c.clegalpersonaddress = #{company.clegalpersonaddress}
+		</if>
+		<if test="company.tel != null and company.tel != ''">
+			and c.tel = #{company.tel}
+		</if>
+		<if test="company.cregistrationnumber != null and company.cregistrationnumber != ''">
+			and c.cregistrationnumber = #{company.cregistrationnumber}
+		</if>
+		<if test="company.ccustomercategories != null and company.ccustomercategories != ''">
+			and c.ccustomercategories = #{company.ccustomercategories}
+		</if>
+		<if test="company.cbusinesslicense != null and company.cbusinesslicense != ''">
+			and c.cbusinesslicense = #{company.cbusinesslicense}
+		</if>
+		<if test="company.cbusinessscope != null and company.cbusinessscope != ''">
+			and c.cbusinessscope = #{company.cbusinessscope}
+		</if>
+		<if test="company.cliquorbusinesslicense != null and company.cliquorbusinesslicense != ''">
+			and c.cliquorbusinesslicense = #{company.cliquorbusinesslicense}
+		</if>
+		<if test="company.cbusinessaddress != null and company.cbusinessaddress != ''">
+			and c.cbusinessaddress = #{company.cbusinessaddress}
+		</if>
+		<if test="company.chygienelicense != null and company.chygienelicense != ''">
+			and c.chygienelicense = #{company.chygienelicense}
+		</if>
+	</if>
+    order by s.updateTime desc,s.createTime desc
+  </select>
+  
+  <select id="checkSupplierExistsBySupplierId" resultType="int">
+  	select count(supplierId) from t_supplier where supplierCompanyId=#{supplierCompanyId} and companyId=#{companyId} and isDeleted = 0
+  		<if test="supplierId!=null and supplierId!=''">
+  			and supplierId!=#{supplierId}
+  		</if>
+  </select>
+    <select id="checkSupplierExistsBySupplierName" resultType="int">
+  	select count(supplierId) from t_supplier where supplierAlias=#{companyName} and companyId=#{companyId} and isDeleted = 0
+  		<if test="supplierId!=null and supplierId!=''">
+  			and supplierId!=#{supplierId}
+  		</if>
+  </select>
+  <select id="getSupplierByCompanyId" resultMap="yzSupplier">
+  	select 
+  		supplierCompanyId,
+  		supplierAlias,
+  		contact,
+  		tel,
+  		status,
+  		isDeleted
+   from t_supplier
+   where companyId=#{companyId}
+   <!-- <if test="lastUpdateTime!=null and lastUpdateTime != ''">
+		and updateTime>#{lastUpdateTime}
+	</if> -->
+  </select>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.jinji.MaterialMapper" > 
+
+	<select id="checkMaterialNameExists" resultType="int">
+		SELECT count(productId) FROM t_product 
+		where productName = #{productName} 
+		and companyId=#{companyId}
+		<if test="productId!=null and productId!=''">
+			and productId!=#{productId} 
+		</if>
+	</select>
+	
+	<!-- 通过更改状态来移除产品 -->
+	<update id="deleteWithStatusByPrimaryKey" parameterType="java.lang.String">
+		update t_product
+		set isDeleted = -1
+		where productId = #{productId,jdbcType=CHAR}
+	</update>
+	
+</mapper>

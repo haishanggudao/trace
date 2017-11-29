@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<builderConfig >
+  <classPathEntry location="D:\\mysql-connector-java-5.1.35.jar"/> 
+  <jdbcConfig driverClass="com.mysql.jdbc.Driver" 
+    	connectionURL="jdbc:mysql://192.168.8.134:3306/trace" 
+		userId="trace" password="trace" />
+	<fileSet baseEnable="true"  path="trace/src/main/java" charsetName="UTF-8"  logpath = "D:/log.txt"/>
+	<templates>
+		  <property id="author"  tags="${authorFlag}" templatePath="D:/resources/TempleteIntroductionXml" />
+	</templates>
+   <bulders>
+        <property id="bean" baseEnable="true" iPackage="cn.rfidcer.bean" path="trace/src/main/java" removeSign="_" classReg="t_(.*)"  fileType=".java" 
+        description="model层" classNameAppend="${class}" templatePath="D:/resources/TempleteBean" />
+    	
+    	<property id="dao"  baseEnable="true" iPackage="cn.rfidcer.dao" path="trace/src/main/java" removeSign="_" classReg="t_(.*)" fileType=".java" 
+        description="Dao层" classNameAppend="${class}Dao" templatePath="D:/resources/TemplateMybatisDao" />
+    	
+    	<property id="mapper" baseEnable="true" iPackage="cn.rfidcer.mapper" path="trace/src/main/java"  removeSign="_" classReg="t_(.*)"  fileType=".xml" 
+    	description="数据访问层" classNameAppend="${class}Mapper" templatePath="D:/resources/TemplateMybatisXml" />
+    	
+    	<property id="controller" baseEnable="true" iPackage="cn.rfidcer.controller" path="trace/src/main/java"  removeSign="_" classReg="t_(.*)"  fileType=".java" 
+    	description="控制层" classNameAppend="${class}Controller" templatePath="D:/resources/TemplateController" />
+    	
+    	<property id="service" baseEnable="true" iPackage="cn.rfidcer.service" path="trace/src/main/java"  removeSign="_" classReg="t_(.*)"  fileType=".java" 
+    	description="业务逻辑层接口" classNameAppend="${class}Service" templatePath="D:/resources/TemplateService" />
+    	
+    	<property id="serviceimpl" baseEnable="true" iPackage="cn.rfidcer.service.impl" path="trace/src/main/java"  removeSign="_" classReg="t_(.*)"  fileType=".java" 
+    	description="业务逻辑层接口实现" classNameAppend="${class}ServiceImpl" templatePath="D:/resources/TemplateServiceImpl" />
+   </bulders>
+   <tables>
+      <table schema="root" tableName="t_Test" tabelDescription="商品入库"/>
+   </tables>
+</builderConfig>

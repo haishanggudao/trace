@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace = "cn.rfidcer.dao.codetrace.CodeTraceInfoDao" >
+
+  <insert id="insertCodeTraceInfo" parameterType="cn.rfidcer.bean.codetrace.CodeTraceInfo" >
+    insert into t_trace_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tracelog.traceLogId != null" >
+        traceLogId,
+      </if>
+      <if test="tracelog.IPAddress != null" >
+        IPAddress,
+      </if>
+      <if test="tracelog.kernel != null" >
+        kernel,
+      </if>
+      <if test="tracelog.country != null" >
+        country,
+      </if>
+      <if test="tracelog.province != null" >
+        province,
+      </if>
+      <if test="tracelog.city != null" >
+        city,
+      </if>
+      <if test="tracelog.area != null" >
+        area,
+      </if>
+      <if test="tracelog.isp != null" >
+        isp,
+      </if>
+      <if test="qrcode != null" >
+        qrcode,
+      </if>
+      <if test="tracelog.createTime != null" >
+        createTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tracelog.traceLogId != null" >
+        #{tracelog.traceLogId,jdbcType=CHAR},
+      </if>
+      <if test="tracelog.IPAddress != null" >
+        #{tracelog.IPAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="tracelog.kernel != null" >
+        #{tracelog.kernel,jdbcType=VARCHAR},
+      </if>
+      <if test="tracelog.country != null" >
+        #{tracelog.country,jdbcType=VARCHAR},
+      </if>
+      <if test="tracelog.province != null" >
+        #{tracelog.province,jdbcType=VARCHAR},
+      </if>
+      <if test="tracelog.city != null" >
+        #{tracelog.city,jdbcType=VARCHAR},
+      </if>
+      <if test="tracelog.area != null" >
+        #{tracelog.area,jdbcType=VARCHAR},
+      </if>
+      <if test="tracelog.isp != null" >
+        #{tracelog.isp,jdbcType=VARCHAR},
+      </if>
+      <if test="qrcode != null" >
+        #{qrcode, jdbcType=VARCHAR},
+      </if>
+      <if test="tracelog.createTime != null" >
+        #{tracelog.createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+</mapper>

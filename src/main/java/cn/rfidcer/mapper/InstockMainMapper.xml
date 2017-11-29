@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.rfidcer.dao.InstockMainMapper">
+	<resultMap id="BaseResultMap" type="cn.rfidcer.bean.InstockMain">
+
+		<id column="instockMainId" jdbcType="CHAR" property="instockMainId" />
+		<result column="purchaseOrderId" jdbcType="CHAR" property="purchaseOrderId" />
+		<result column="companyId" jdbcType="CHAR" property="companyId" />
+		<result column="instockNum" jdbcType="VARCHAR" property="instockNum" />
+		<result column="instockBatchNum" jdbcType="VARCHAR" property="instockBatchNum" />
+		<result column="consignee" jdbcType="VARCHAR" property="consignee" />
+		<result column="registrant" jdbcType="VARCHAR" property="registrant" />
+		<result column="instockDate" jdbcType="VARCHAR" property="instockDate" />
+		<result column="registDate" jdbcType="VARCHAR" property="registDate" />
+		<result column="instockType" jdbcType="CHAR" property="instockType" />
+		<result column="status" jdbcType="CHAR" property="status" />
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+		<result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="createBy" jdbcType="VARCHAR" property="createBy" />
+		<result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="updateBy" jdbcType="VARCHAR" property="updateBy" />
+	</resultMap>
+	<sql id="Base_Column_List">
+
+		instockMainId, purchaseOrderId, companyId, instockNum, instockBatchNum, consignee,
+		registrant, instockDate, registDate, instockType, status,remark,
+		createTime, createBy, updateTime,
+		updateBy
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+
+		select
+		<include refid="Base_Column_List" />
+		from t_instock_main
+		where instockMainId = #{instockMainId,jdbcType=CHAR}
+	</select>
+	<select id="getBactchNum" resultType="java.util.HashMap" parameterType="java.lang.String">
+		select DISTINCT(instockBatchNum) as id,instockBatchNum as val
+		from t_instock_main t 
+		<if test="companyid != null and companyid != ''">
+			where t.companyId = #{companyid,jdbcType=CHAR}
+		</if>
+		group by instockBatchNum
+	</select>
+	
+	
+	<select id="findRepeat" resultType="int">
+		select count(instockMainId) from t_instock_main where  1=1 
+		<if test="companyId!=null and companyId !=''">
+			and companyId =#{companyId} 
+		</if>
+		<if test="instockNum!=null and instockNum!=''">
+			and instockNum =#{instockNum}
+		</if>
+	</select>
+	
+	
+	<select id="list" resultMap="BaseResultMap">
+
+		select
+		<include refid="Base_Column_List" />
+		from t_instock_main
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+
+		delete from t_instock_main
+		where instockMainId = #{instockMainId,jdbcType=CHAR}
+	</delete>
+
+	<delete id="deleteInstockMainByPurchaseOrderId" parameterType="java.lang.String">
+
+		delete from t_instock_main
+		where purchaseOrderId = #{purchaseOrderId,jdbcType=CHAR}
+	</delete>
+
+	<select id="selectByPurchaseOrderId" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_instock_main
+		where purchaseOrderId = #{purchaseOrderId,jdbcType=CHAR}
+	</select>
+
+
+
+	<insert id="insert" parameterType="cn.rfidcer.bean.InstockMain">
+
+		insert into t_instock_main (instockMainId, purchaseOrderId, companyId,
+		instockNum, instockBatchNum, consignee,
+		registrant, instockDate, registDate,
+		instockType, status,remark, createTime,
+		createBy, updateTime, updateBy
+		)
+		values (#{instockMainId,jdbcType=CHAR}, #{purchaseOrderId,jdbcType=CHAR},
+		#{companyId,jdbcType=CHAR},
+		#{instockNum,jdbcType=VARCHAR}, #{instockBatchNum,jdbcType=VARCHAR}, #{consignee,jdbcType=VARCHAR},
+		#{registrant,jdbcType=VARCHAR}, #{instockDate,jdbcType=VARCHAR},
+		#{registDate,jdbcType=VARCHAR},
+		#{instockType,jdbcType=CHAR}, #{status,jdbcType=CHAR}, #{remark,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.InstockMain">
+
+		insert into t_instock_main
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="instockMainId != null">
+				instockMainId,
+			</if>
+			<if test="purchaseOrderId != null">
+				purchaseOrderId,
+			</if>
+			<if test="companyId != null">
+				companyId,
+			</if>
+			<if test="instockNum != null">
+				instockNum,
+			</if>
+			<if test="instockBatchNum != null">
+				instockBatchNum,
+			</if>
+			<if test="consignee != null">
+				consignee,
+			</if>
+			<if test="registrant != null">
+				registrant,
+			</if>
+			<if test="instockDate != null">
+				instockDate,
+			</if>
+			<if test="registDate != null">
+				registDate,
+			</if>
+			<if test="instockType != null">
+				instockType,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="instockMainId != null">
+				#{instockMainId,jdbcType=CHAR},
+			</if>
+			<if test="purchaseOrderId != null">
+				#{purchaseOrderId,jdbcType=CHAR},
+			</if>
+			<if test="companyId != null">
+				#{companyId,jdbcType=CHAR},
+			</if>
+			<if test="instockNum != null">
+				#{instockNum,jdbcType=VARCHAR},
+			</if>
+			<if test="instockBatchNum != null">
+				#{instockBatchNum,jdbcType=VARCHAR},
+			</if>
+			<if test="consignee != null">
+				#{consignee,jdbcType=VARCHAR},
+			</if>
+			<if test="registrant != null">
+				#{registrant,jdbcType=VARCHAR},
+			</if>
+			<if test="instockDate != null">
+				#{instockDate,jdbcType=VARCHAR},
+			</if>
+			<if test="registDate != null">
+				#{registDate,jdbcType=VARCHAR},
+			</if>
+			<if test="instockType != null">
+				#{instockType,jdbcType=CHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=CHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.InstockMain">
+
+		update t_instock_main
+		<set>
+			<if test="purchaseOrderId != null">
+				purchaseOrderId = #{purchaseOrderId,jdbcType=CHAR},
+			</if>
+			<if test="companyId != null">
+				companyId = #{companyId,jdbcType=CHAR},
+			</if>
+			<if test="instockNum != null">
+				instockNum = #{instockNum,jdbcType=VARCHAR},
+			</if>
+			<if test="instockBatchNum != null">
+				instockBatchNum = #{instockBatchNum,jdbcType=VARCHAR},
+			</if>
+			<if test="consignee != null">
+				consignee = #{consignee,jdbcType=VARCHAR},
+			</if>
+			<if test="registrant != null">
+				registrant = #{registrant,jdbcType=VARCHAR},
+			</if>
+			<if test="instockDate != null">
+				instockDate = #{instockDate,jdbcType=VARCHAR},
+			</if>
+			<if test="registDate != null">
+				registDate = #{registDate,jdbcType=VARCHAR},
+			</if>
+			<if test="instockType != null">
+				instockType = #{instockType,jdbcType=CHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=CHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				createBy = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where instockMainId = #{instockMainId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.InstockMain">
+
+		update t_instock_main
+		set purchaseOrderId = #{purchaseOrderId,jdbcType=CHAR},
+		companyId = #{companyId,jdbcType=CHAR},
+		instockNum = #{instockNum,jdbcType=VARCHAR},
+		instockBatchNum = #{instockBatchNum,jdbcType=VARCHAR},
+		consignee = #{consignee,jdbcType=VARCHAR},
+		registrant = #{registrant,jdbcType=VARCHAR},
+		instockDate = #{instockDate,jdbcType=VARCHAR},
+		registDate = #{registDate,jdbcType=VARCHAR},
+		instockType = #{instockType,jdbcType=CHAR},
+		status = #{status,jdbcType=CHAR},
+		remark = #{remark,jdbcType=VARCHAR},
+		createTime = #{createTime,jdbcType=TIMESTAMP},
+		createBy = #{createBy,jdbcType=VARCHAR},
+		updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		updateBy = #{updateBy,jdbcType=VARCHAR}
+		where instockMainId = #{instockMainId,jdbcType=CHAR}
+	</update>
+	
+	<select id="listQCompanyId" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_instock_main
+		where companyId = #{companyId,jdbcType=CHAR}
+	</select>
+	
+	<select id="findAllList" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_instock_main
+		where companyId = #{instockMain.companyId,jdbcType=CHAR}
+		<if test="instockMain.instockBatchNum !=null and instockMain.instockBatchNum != ''">
+			and instockBatchNum like CONCAT(CONCAT('%',#{instockMain.instockBatchNum}),'%')
+		</if>
+		<if test="instockMain.instockDate !=null and instockMain.instockDate != ''">
+			and instockDate like CONCAT(CONCAT(#{instockMain.instockDate}),'%')
+		</if>
+		 ORDER BY updateTime DESC
+	</select>
+
+
+</mapper>

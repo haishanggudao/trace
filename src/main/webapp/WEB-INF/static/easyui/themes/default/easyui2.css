@@ -1,0 +1,96 @@
+.datagrid-cell-rownumber {
+    color: #404040;
+}
+
+.datagrid-resize-proxy {
+    background: #1a7bc9;
+}
+
+.datagrid-htable,
+.datagrid-btable,
+.datagrid-ftable {
+    color: #404040;
+      border-collapse: separate;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.datagrid-row-over,
+.datagrid-header td.datagrid-header-over {
+    background: #ecf6fa;
+    color: #404040;
+    cursor: default;
+}
+
+.datagrid-mask {
+    background: #eee;
+}
+
+.datagrid-mask-msg {
+    border-color: #c3d9e0;
+}
+
+.datagrid .panel-body {
+    padding:0px !important;
+}
+
+
+.datagrid-pager.pagination {
+border-radius:0px !important;
+}
+
+.panel.datagrid {
+border-radius:0px !important;
+}
+
+
+.datagrid-header,.datagrid-td-rownumber {
+    background:none;
+    background-color: #F8FAFC;
+}
+
+.datagrid-header-row,
+.datagrid-row {
+    height: 35px;
+}
+
+.panel-header,
+.panel-body {
+    border-color: #E1E1E1;
+}
+
+.datagrid-toolbar,
+.datagrid-pager {
+    background: #eff3f8;
+}
+
+.datagrid-header,
+.datagrid-toolbar,
+.datagrid-pager,
+.datagrid-footer-inner {
+    border-color: #dedede;
+}
+
+    .datagrid-header td,
+    .datagrid-body td,
+    .datagrid-footer td {
+        border-color:#E1E1E1;
+        border-style:solid;
+    }
+
+.datagrid-header-check input[type='checkbox'] {
+    margin:0px  !important;
+}
+
+.datagrid-cell-check input[type='checkbox'] {
+    margin:0px  !important;
+}
+
+.propertygrid .datagrid-group {
+    height:30px;
+}
+
+.datagrid-editcolumn-color {
+color:blue;
+}
+/* end*/

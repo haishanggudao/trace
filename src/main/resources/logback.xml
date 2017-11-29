@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<Target>System.out</Target>
+		<encoder>
+			<pattern>%date %5p %C:%L - %m%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="file"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>/home/trace/logs/trace.log</File>
+		<encoder>
+			<pattern>%date %5p %C:%L - %m%n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<maxIndex>100</maxIndex>
+			<FileNamePattern>/home/trace/logs/trace.log.%i</FileNamePattern>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>8096KB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+
+	<appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
+		<connectionSource
+			class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+			<driverClass>com.mysql.jdbc.Driver</driverClass>
+			<url>jdbc:mysql://192.168.8.134:3306/trace</url>
+			<user>trace</user>
+			<password>trace</password>
+		</connectionSource>
+	</appender>
+
+	<root level="DEBUG">
+<!--    <appender-ref ref="stdout" /> -->
+		<appender-ref ref="file" />
+		<!-- <appender-ref ref="DB" /> -->
+	</root>
+</configuration>

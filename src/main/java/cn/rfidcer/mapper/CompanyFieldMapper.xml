@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.CompanyFieldMapper">
+	<resultMap id="BaseResultMap" type="cn.rfidcer.bean.CompanyField">
+
+		<id column="companyFieldId" property="companyFieldId" jdbcType="CHAR" />
+		<result column="companyFieldName" property="companyFieldName"
+			jdbcType="VARCHAR" />
+		<result column="level" property="level" jdbcType="CHAR" />
+		<result column="parentFieldId" property="parentFieldId"
+			jdbcType="CHAR" />
+		<result column="status" property="status" jdbcType="CHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ResultMapWithBLOBs" type="cn.rfidcer.bean.CompanyField"
+		extends="BaseResultMap">
+
+		<result column="companyFieldDesc" property="companyFieldDesc"
+			jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+
+		companyFieldId, companyFieldName, level, parentFieldId, status, createTime, createBy,
+		updateTime, updateBy
+	</sql>
+	<sql id="Blob_Column_List">
+
+		companyFieldDesc
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs"
+		parameterType="java.lang.String">
+
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from t_company_field
+		where companyFieldId = #{companyFieldId,jdbcType=CHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+
+		delete from t_company_field
+		where companyFieldId = #{companyFieldId,jdbcType=CHAR}
+	</delete>
+	<insert id="insert" parameterType="cn.rfidcer.bean.CompanyField">
+
+		insert into t_company_field (companyFieldId, companyFieldName, level,
+		parentFieldId, status, createTime,
+		createBy, updateTime, updateBy,
+		companyFieldDesc)
+		values (#{companyFieldId,jdbcType=CHAR},
+		#{companyFieldName,jdbcType=VARCHAR}, #{level,jdbcType=CHAR},
+		#{parentFieldId,jdbcType=CHAR}, #{status,jdbcType=CHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR},
+		#{companyFieldDesc,jdbcType=LONGVARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.CompanyField">
+
+		insert into t_company_field
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="companyFieldId != null">
+				companyFieldId,
+			</if>
+			<if test="companyFieldName != null">
+				companyFieldName,
+			</if>
+			<if test="level != null">
+				level,
+			</if>
+			<if test="parentFieldId != null">
+				parentFieldId,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+			<if test="companyFieldDesc != null">
+				companyFieldDesc,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="companyFieldId != null">
+				#{companyFieldId,jdbcType=CHAR},
+			</if>
+			<if test="companyFieldName != null">
+				#{companyFieldName,jdbcType=VARCHAR},
+			</if>
+			<if test="level != null">
+				#{level,jdbcType=CHAR},
+			</if>
+			<if test="parentFieldId != null">
+				#{parentFieldId,jdbcType=CHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="companyFieldDesc != null">
+				#{companyFieldDesc,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.CompanyField">
+
+		update t_company_field
+		<set>
+			<if test="companyFieldName != null">
+				companyFieldName = #{companyFieldName,jdbcType=VARCHAR},
+			</if>
+			<if test="level != null">
+				level = #{level,jdbcType=CHAR},
+			</if>
+			<if test="parentFieldId != null">
+				parentFieldId = #{parentFieldId,jdbcType=CHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				createBy = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="companyFieldDesc != null">
+				companyFieldDesc = #{companyFieldDesc,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where companyFieldId = #{companyFieldId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="cn.rfidcer.bean.CompanyField">
+
+		update t_company_field
+		set companyFieldName = #{companyFieldName,jdbcType=VARCHAR},
+		level = #{level,jdbcType=CHAR},
+		parentFieldId = #{parentFieldId,jdbcType=CHAR},
+		status = #{status,jdbcType=CHAR},
+		createTime = #{createTime,jdbcType=TIMESTAMP},
+		createBy = #{createBy,jdbcType=VARCHAR},
+		updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		updateBy = #{updateBy,jdbcType=VARCHAR},
+		companyFieldDesc = #{companyFieldDesc,jdbcType=LONGVARCHAR}
+		where companyFieldId = #{companyFieldId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.CompanyField">
+
+		update t_company_field
+		set companyFieldName = #{companyFieldName,jdbcType=VARCHAR},
+		level = #{level,jdbcType=CHAR},
+		parentFieldId = #{parentFieldId,jdbcType=CHAR},
+		status = #{status,jdbcType=CHAR},
+		createTime = #{createTime,jdbcType=TIMESTAMP},
+		createBy = #{createBy,jdbcType=VARCHAR},
+		updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		updateBy = #{updateBy,jdbcType=VARCHAR}
+		where companyFieldId = #{companyFieldId,jdbcType=CHAR}
+	</update>
+	<select id="list" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from t_company_field
+	</select>
+	<select id="listExcept" resultMap="ResultMapWithBLOBs"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from t_company_field where companyFieldId not
+		in(#{exceptid,jdbcType=CHAR})
+	</select>
+	<select id="findAll" resultMap="ResultMapWithBLOBs"
+		parameterType="cn.rfidcer.bean.CompanyField">
+
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from t_company_field
+		where 1=1
+		<if
+			test="companyfield.companyFieldName!=null and companyfield.companyFieldName!=''">
+			and companyFieldName = #{companyfield.companyFieldName,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<select id="findByFiledName" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from t_company_field where companyFieldName=#{companyFieldName}
+	</select>
+</mapper>

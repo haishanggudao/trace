@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProductCompanyMapper" >
+	<resultMap id="ProductCompanyMap" type="cn.rfidcer.bean.ProductCompany">
+	</resultMap>
+	<resultMap type="Product" id="product">
+		<id column="productId" property="productId"/>
+		<result column="productName" property="productName"/>
+	</resultMap>
+	<select id="findAllProductCompanyByProductId" resultMap="ProductCompanyMap"  useCache="false">
+		SELECT pc.productId, pc.companyId, c.name as companyName , cm.customerAlias 
+		FROM t_product_company pc
+		LEFT JOIN t_customers cm on cm.custCompanyId=pc.companyId
+		LEFT JOIN t_company c on c.companyId=pc.companyId
+		WHERE pc.productId = #{productId}  
+		AND  pc.companyId != #{companyId}  
+	</select>
+
+	<select id="findAllNotCheckedProducts" resultMap="product">
+		select p.productId,p.productName from t_product p
+		where p.companyId=#{productCompanyParam.supplierCompanyId}
+		<if test="productCompanyParam.productType != null">
+			and p.productType=#{productCompanyParam.productType}
+		</if>
+		and NOT EXISTS 
+		(select productId 
+			from t_product_company c 
+			where c.companyId=#{productCompanyParam.companyId} 
+			and c.productId=p.productId
+		)
+	</select>
+
+</mapper>

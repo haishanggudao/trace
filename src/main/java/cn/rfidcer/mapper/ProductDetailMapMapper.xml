@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProductDetailMapMapper" >
+<resultMap type="ProductCategory" id="productCategory" autoMapping="true">
+</resultMap>
+  <resultMap id="BaseResultMap" type="cn.rfidcer.bean.ProductDetailMap" >
+    <id column="productDetailMapId" property="productDetailMapId" jdbcType="CHAR" />
+    <result column="productCategoryId" property="productCategoryId" jdbcType="CHAR" />
+    <result column="companyId" property="companyId" jdbcType="CHAR" />
+    <result column="productDetailTable" property="productDetailTable" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="createBy" property="createBy" jdbcType="VARCHAR" />
+    <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="updateBy" property="updateBy" jdbcType="VARCHAR" /> 
+    <association property="category"  resultMap="productCategory" column="productCategoryId" javaType="ProductCategory"></association>
+    <association property="company" javaType="cn.rfidcer.bean.Company" >
+    	<id column="companyid" property="companyid"/>
+    	<result column="name" property="name"/>
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    productDetailMapId, productCategoryId, companyId, productDetailTable, status, createTime, 
+    createBy, updateTime, updateBy
+  </sql>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_product_detail_map
+    where productDetailMapId = #{productDetailMapId,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="cn.rfidcer.bean.ProductDetailMap" >
+    insert into t_product_detail_map (productDetailMapId, productCategoryId, 
+      companyId, productDetailTable, status, 
+      createTime, createBy, updateTime, 
+      updateBy)
+    values (#{productDetailMapId,jdbcType=CHAR}, #{productCategoryId,jdbcType=CHAR}, 
+      #{companyId,jdbcType=CHAR}, #{productDetailTable,jdbcType=VARCHAR}, #{status,jdbcType=CHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateBy,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.rfidcer.bean.ProductDetailMap" >
+    insert into t_product_detail_map
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="productDetailMapId != null" >
+        productDetailMapId,
+      </if>
+      <if test="productCategoryId != null" >
+        productCategoryId,
+      </if>
+      <if test="companyId != null" >
+        companyId,
+      </if>
+      <if test="productDetailTable != null" >
+        productDetailTable,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="createBy != null" >
+        createBy,
+      </if>
+      <if test="updateTime != null" >
+        updateTime,
+      </if>
+      <if test="updateBy != null" >
+        updateBy,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="productDetailMapId != null" >
+        #{productDetailMapId,jdbcType=CHAR},
+      </if>
+      <if test="productCategoryId != null" >
+        #{productCategoryId,jdbcType=CHAR},
+      </if>
+      <if test="companyId != null" >
+        #{companyId,jdbcType=CHAR},
+      </if>
+      <if test="productDetailTable != null" >
+        #{productDetailTable,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null" >
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.ProductDetailMap" >
+    update t_product_detail_map
+    <set >
+      <if test="productCategoryId != null" >
+        productCategoryId = #{productCategoryId,jdbcType=CHAR},
+      </if>
+      <if test="companyId != null" >
+        companyId = #{companyId,jdbcType=CHAR},
+      </if>
+      <if test="productDetailTable != null" >
+        productDetailTable = #{productDetailTable,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null" >
+        createBy = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        updateBy = #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where productDetailMapId = #{productDetailMapId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.ProductDetailMap" >
+    update t_product_detail_map
+    set productCategoryId = #{productCategoryId,jdbcType=CHAR},
+      companyId = #{companyId,jdbcType=CHAR},
+      productDetailTable = #{productDetailTable,jdbcType=VARCHAR},
+      status = #{status,jdbcType=CHAR}, 
+      updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      updateBy = #{updateBy,jdbcType=VARCHAR}
+    where productDetailMapId = #{productDetailMapId,jdbcType=CHAR}
+  </update>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_product_detail_map
+    where productDetailMapId = #{productDetailMapId,jdbcType=CHAR}
+  </select>
+  
+  <select id="getProductDetailMapList" resultMap="BaseResultMap" >
+  	SELECT m.productDetailMapId, m.productCategoryId, m.companyId, m.productDetailTable, 
+		m.status, m.createTime, m.createBy, m.updateTime, m.updateBy,
+    	c.productCategoryName, 
+    	cp.name 
+	FROM t_product_detail_map m
+	inner join t_product_category c on m.productCategoryId = c.productCategoryId
+	inner join t_company cp on m.companyId = cp.companyId
+		<where>		 
+		<if test="productDetailMap.productCategoryId!=null and productDetailMap.productCategoryId!=''">
+			m.productCategoryId=#{productDetailMap.productCategoryId}
+		</if>
+		<if test="productDetailMap.companyId != null and productDetailMap.companyId != ''">
+			and m.companyId=#{productDetailMap.companyId}
+		</if>
+		</where>
+  </select>
+</mapper>

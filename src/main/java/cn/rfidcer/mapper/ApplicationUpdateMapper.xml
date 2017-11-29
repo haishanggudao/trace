@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ApplicationUpdateMapper">
+
+<select id="findAllList" resultType="ApplicationUpdate">
+	select * from t_appliation_update
+<!-- 	<where> -->
+<!-- 		<if test="applicationUpdate.companyId !=null"> -->
+<!-- 			companyId=#{applicationUpdate.companyId} -->
+<!-- 		</if> -->
+<!-- 	</where> -->
+</select>
+<select id="getLastVersion" resultType="ApplicationUpdate">
+	select version,applicationPath from t_appliation_update where version=(select max(version) from t_appliation_update) 
+</select>
+</mapper>

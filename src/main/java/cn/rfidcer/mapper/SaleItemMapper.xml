@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.SaleItemMapper" >
+  <resultMap id="BaseResultMap" type="cn.rfidcer.bean.SaleItem" >
+    <id column="saleItemId" property="saleItemId" jdbcType="CHAR" />
+    <result column="saleOrderId" property="saleOrderId" jdbcType="CHAR" />
+    <result column="productId" property="productId" jdbcType="CHAR" />
+    <result column="quantity" property="quantity" jdbcType="DECIMAL" />
+    <result column="salePrice" property="salePrice" jdbcType="DECIMAL" />
+    <result column="stockNum" property="stockNum" jdbcType="DECIMAL" />   
+    <result column="productStandardDetailId" property="productStandardDetailId" jdbcType="CHAR" />
+    <result column="catgName" property="catgName" jdbcType="VARCHAR" />  
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="createBy" property="createBy" jdbcType="VARCHAR" />
+    <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+	<association property="product" javaType="Product">
+		<id property="productId" column="productId" />
+		<result property="productName" column="productName" />
+	</association>
+	<association property="standardDetail" javaType="ProductStandardDetail">
+		<id property="productStandardDetailId" column="productStandardDetailId" />
+		<result property="productStandardNum" column="productStandardNum" />
+		<result property="purchasePrice" column="purchasePrice" />
+		<result property="salePrice" column="salePrice" />
+		<association property="productStandard" javaType="ProductStandard">
+			<id property="productStandardId" column="productStandardId" />
+			<result property="productStandardName" column="productStandardName" />
+		</association>
+	</association>
+  </resultMap>	
+  <!-- 查询销售单明细根据ids -->
+  <select id="findAllGroupByProductId" resultMap="BaseResultMap" useCache="false">
+  	SELECT  si.saleItemId,si.saleOrderId,si.productId, SUM(si.quantity) AS quantity , 
+  	si.productStandardDetailId,p.productName, sd.productStandardNum, s.productStandardName, 
+  	s.productStandardId,si.salePrice
+  	<!-- ,psk.stockNum -->
+	FROM t_sale_item si
+	INNER JOIN t_product p on p.productId = si.productId
+	INNER JOIN t_product_standard_detail sd on sd.productStandardDetailId = si.productStandardDetailId
+	INNER JOIN t_product_standard s on s.productStandardId = sd.productStandardId
+	<!-- INNER JOIN t_productStock  psk on  psk.productStandardDetailId = si.productStandardDetailId  and p.companyId=psk.companyId -->
+	<where>
+		<if test="ids != null ">
+			si.saleOrderId in 
+			<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+			  	#{item}  
+			 </foreach>
+		</if>
+	</where>
+	GROUP BY si.productStandardDetailId
+	ORDER BY si.createTime
+  </select>
+  
+  
+  
+  <sql id="Base_Column_List" >
+    saleItemId, saleOrderId, productId, quantity, productStandardDetailId, createTime, 
+    createBy, updateTime, updateBy
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_sale_item
+    where saleItemId = #{saleItemId,jdbcType=CHAR}
+  </select>
+  
+  <!-- 查询销售单明细 -->
+  <select id="findAll" resultMap="BaseResultMap" useCache="false">
+  	select si.saleItemId, si.saleOrderId, si.productId, si.quantity, si.productStandardDetailId, 
+		si.createTime, si.createBy, si.updateTime, si.updateBy,
+    	p.productName, sd.productStandardNum, s.productStandardName, s.productStandardId,
+    	sd.purchasePrice,si.salePrice,area.catgName
+	FROM t_sale_item si
+	inner join t_product p on p.productId = si.productId
+	inner join t_product_standard_detail sd on sd.productStandardDetailId = si.productStandardDetailId
+	inner join t_product_standard s on s.productStandardId = sd.productStandardId
+	LEFT JOIN sys_area_info area ON p.madein = area.id
+	<where>
+		<if test="saleItem.saleOrderId != null ">
+		si.saleOrderId = #{saleItem.saleOrderId}
+		</if>
+	</where>
+	order by si.createTime
+  </select>
+  
+
+  
+  
+  
+  <select id="listSaleItems" resultMap="BaseResultMap" useCache="false">
+  	select si.saleItemId, si.saleOrderId, si.productId, si.quantity, si.productStandardDetailId, 
+		si.createTime, si.createBy, si.updateTime, si.updateBy,
+    	p.productName, sd.productStandardNum, s.productStandardName, s.productStandardId
+	FROM t_sale_item si
+	inner join t_product p on p.productId = si.productId
+	inner join t_product_standard_detail sd on sd.productStandardDetailId = si.productStandardDetailId
+	inner join t_product_standard s on s.productStandardId = sd.productStandardId
+	<where>
+		<if test="saleorderid != null ">
+		si.saleOrderId = #{saleorderid}
+		</if>
+	</where>
+	order by si.createTime
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_sale_item
+    where saleItemId = #{saleItemId,jdbcType=CHAR}
+  </delete>
+  
+  <!-- 依据销售主单来删除销售明细 -->
+  <delete id="deleteByMainid" parameterType="java.lang.String">
+  	delete from t_sale_item
+    where saleOrderId = #{saleMainId,jdbcType=CHAR}
+  </delete>
+  
+  <insert id="insert" parameterType="cn.rfidcer.bean.SaleItem" >
+    insert into t_sale_item (saleItemId, saleOrderId, productId, 
+      quantity, productStandardDetailId, createTime, 
+      createBy, updateTime, updateBy
+      )
+    values (#{saleItemId,jdbcType=CHAR}, #{saleOrderId,jdbcType=CHAR}, #{productId,jdbcType=CHAR}, 
+      #{quantity,jdbcType=DECIMAL}, #{productStandardDetailId,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.rfidcer.bean.SaleItem" >
+    insert into t_sale_item
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="saleItemId != null" >
+        saleItemId,
+      </if>
+      <if test="saleOrderId != null" >
+        saleOrderId,
+      </if>
+      <if test="productId != null" >
+        productId,
+      </if>
+      <if test="quantity != null" >
+        quantity,
+      </if>
+      <if test="salePrice != null" >
+        salePrice,
+      </if>      
+      <if test="productStandardDetailId != null" >
+        productStandardDetailId,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="createBy != null" >
+        createBy,
+      </if>
+      <if test="updateTime != null" >
+        updateTime,
+      </if>
+      <if test="updateBy != null" >
+        updateBy,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="saleItemId != null" >
+        #{saleItemId,jdbcType=CHAR},
+      </if>
+      <if test="saleOrderId != null" >
+        #{saleOrderId,jdbcType=CHAR},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=CHAR},
+      </if>
+      <if test="quantity != null" >
+        #{quantity,jdbcType=DECIMAL},
+      </if>
+      <if test="salePrice != null" >
+        #{salePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="productStandardDetailId != null" >
+        #{productStandardDetailId,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null" >
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.SaleItem" >
+    update t_sale_item
+    <set >
+      <if test="saleOrderId != null" >
+        saleOrderId = #{saleOrderId,jdbcType=CHAR},
+      </if>
+      <if test="productId != null" >
+        productId = #{productId,jdbcType=CHAR},
+      </if>
+      <if test="quantity != null" >
+        quantity = #{quantity,jdbcType=DECIMAL},
+      </if>
+       <if test="salePrice != null" >
+         salePrice = #{salePrice,jdbcType=DECIMAL},
+      </if>     
+      <if test="productStandardDetailId != null" >
+        productStandardDetailId = #{productStandardDetailId,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null" >
+        createBy = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        updateBy = #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where saleItemId = #{saleItemId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.SaleItem" >
+    update t_sale_item
+    set saleOrderId = #{saleOrderId,jdbcType=CHAR},
+      productId = #{productId,jdbcType=CHAR},
+      quantity = #{quantity,jdbcType=DECIMAL},
+      productStandardDetailId = #{productStandardDetailId,jdbcType=CHAR},
+      createTime = #{createTime,jdbcType=TIMESTAMP},
+      createBy = #{createBy,jdbcType=VARCHAR},
+      updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      updateBy = #{updateBy,jdbcType=VARCHAR}
+    where saleItemId = #{saleItemId,jdbcType=CHAR}
+  </update>
+  
+  <update id="updateStatusBySaleOrderId" parameterType="cn.rfidcer.bean.SaleItem" >
+    update t_sale_item 
+    set status = #{status,jdbcType=VARCHAR}
+    where saleOrderId = #{saleOrderId,jdbcType=CHAR}
+  </update>
+</mapper>

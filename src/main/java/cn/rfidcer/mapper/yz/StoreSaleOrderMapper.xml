@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.yz.StoreSaleOrderMapper">
+	<resultMap id="storeSaleOrderMap" type="cn.rfidcer.bean.yz.StoreSaleOrder">
+	</resultMap>
+
+	<resultMap id="saleTotalMap" type="cn.rfidcer.bean.yz.SaleTotal">
+	</resultMap>
+	<resultMap id="saleStoreTotalMap" type="cn.rfidcer.bean.yz.SaleTotalMoney">
+	</resultMap>
+	<resultMap type="YzStoreSale" id="yzStoreSale"></resultMap>
+	<!-- 查询销售单记录 -->
+	<select id="findAll" resultMap="storeSaleOrderMap" useCache="false">
+		SELECT
+		s.storeSaleOrderId,s.orderTime,s.storeSaleOrdeNo,s.companyId,s.totalPrice,s.discountPrice,s.clubCard,s.payType,ct.customerAlias
+		FROM t_storeSale_order s
+		INNER JOIN t_customers ct on ct.companyId=#{storeSaleOrder.companyId} and
+		ct.customerId = s.companyId
+		ORDER BY s.updateTime desc
+	</select>
+
+	<!-- 查询销售单记录  -->
+	<select id="findAllWithDataType" resultMap="storeSaleOrderMap" useCache="false">
+	 SELECT s.storeSaleOrderId,s.orderTime,s.storeSaleOrdeNo,s.companyId,s.totalPrice,s.discountPrice,s.clubCard,s.payType,ct.customerAlias  
+	 FROM t_storeSale_order s 
+	 INNER JOIN t_customers ct on ct.custCompanyId = s.companyId  
+	 INNER JOIN t_storeSale_item i on s.storeSaleOrderId=i.storeSaleOrderId
+	 INNER JOIN t_goods_detail d on i.goodsBarCode=d.barcode
+	 INNER JOIN t_goods g on d.goodsId=g.goodsId
+	 INNER JOIN t_product p on g.productId=p.productId 
+	 <where>
+		<if test="storeSaleOrder.companyId != null">
+			s.companyId = #{storeSaleOrder.companyId}
+		</if>
+		<if test="startTime != null and endTime != null ">
+			AND s.orderTime BETWEEN #{startTime} AND #{endTime} 
+		</if>
+		<if test="storeSaleOrder.entId != null">
+			AND p.companyId = #{storeSaleOrder.entId}
+		</if>
+	</where>
+	group by s.storeSaleOrderId  
+	 ORDER BY s.updateTime desc
+	</select>
+	<select id="todaySaleTotalPrice" resultMap="saleTotalMap" useCache="false">
+		select 
+		convert(sum(i.totalPrice*((s.totalPrice-s.discountPrice)/s.totalPrice)),decimal(32,2)) as saleAmount
+		FROM t_storeSale_order s
+		INNER JOIN t_storeSale_item i on s.storeSaleOrderId=i.storeSaleOrderId
+		INNER JOIN t_goods_detail d on i.goodsBarCode=d.barcode
+		INNER JOIN t_goods g on d.goodsId=g.goodsId
+	 	INNER JOIN t_customers cs ON cs.custCompanyId = s.companyId and cs.companyId = #{entId}
+		INNER JOIN t_product p on g.productId=p.productId and p.companyId = cs.companyId
+		where  (s.orderTime BETWEEN #{startTime} AND #{endTime}) OR s.orderTime is null
+	</select>	
+	
+	<select id="todaySaleOrderCount" resultMap="saleTotalMap" useCache="false">
+		select count(*) as saleCount  FROM (select s.storeSaleOrderId
+		FROM t_storeSale_order s
+		INNER JOIN t_storeSale_item i on s.storeSaleOrderId=i.storeSaleOrderId
+		INNER JOIN t_goods_detail d on i.goodsBarCode=d.barcode
+		INNER JOIN t_goods g on d.goodsId=g.goodsId
+	 	INNER JOIN t_customers cs ON cs.custCompanyId = s.companyId and cs.companyId = #{entId}
+		INNER JOIN t_product p on g.productId=p.productId and p.companyId = cs.companyId
+		where  (s.orderTime BETWEEN #{startTime} AND #{endTime}) OR s.orderTime is null
+		GROUP BY  s.storeSaleOrderId) a
+	</select>	
+
+	<select id="getSaleTotalMoney" resultMap="saleStoreTotalMap"
+		useCache="false">
+		select 
+		convert(sum(i.totalPrice*((s.totalPrice-s.discountPrice)/s.totalPrice)),decimal(32,2)) as totalMoney,
+		convert(sum((i.totalPrice)-(i.totalPrice*((s.totalPrice-s.discountPrice)/s.totalPrice))),decimal(32,2)) as totalCutOff
+		FROM t_storeSale_order s
+		INNER JOIN t_storeSale_item i on s.storeSaleOrderId=i.storeSaleOrderId
+		INNER JOIN t_goods_detail d on i.goodsBarCode=d.barcode
+		INNER JOIN t_goods g on d.goodsId=g.goodsId
+		INNER JOIN t_product p on g.productId=p.productId
+		where s.companyId=#{storeID} and p.companyId = #{entId}
+		and s.orderTime BETWEEN #{startTime} and #{endTime}
+	</select>
+	
+	<select id="getSaleTotalCount" resultType="int">
+		select count(*) from (
+		select i.storeSaleOrderId
+		from t_storeSale_item i 
+		INNER JOIN t_storeSale_order s on i.storeSaleOrderId=s.storeSaleOrderId
+		INNER JOIN t_goods_detail d on i.goodsBarCode=d.barcode
+		INNER JOIN t_goods g on d.goodsId=g.goodsId
+		INNER JOIN t_product p on g.productId=p.productId
+		where s.companyId=#{storeID}
+		and p.companyId=#{entId}
+		and s.orderTime BETWEEN #{startTime} and #{endTime}
+		group by i.storeSaleOrderId) a
+	</select>
+
+
+	<select id="getStoreSaleTop10" resultMap="yzStoreSale" useCache="false">
+		select storeID,storeName,sum(totalSaleMoney) totalSaleMoney from (
+		(select
+		cu.custCompanyId as storeID,
+		convert(sum(i.totalPrice*((s.totalPrice-s.discountPrice)/s.totalPrice)),decimal(32,2)) as totalSaleMoney,
+		cu.customerAlias as storeName
+		FROM t_customers cu
+		INNER JOIN t_storeSale_order s on cu.custCompanyId=s.companyId
+		INNER JOIN t_storeSale_item i on s.storeSaleOrderId=i.storeSaleOrderId
+		INNER JOIN t_goods_detail d on i.goodsBarCode=d.barcode
+		INNER JOIN t_goods g on d.goodsId=g.goodsId
+		INNER JOIN t_product p on g.productId=p.productId
+		where cu.companyId=#{entId}
+		and p.companyId=#{entId}
+		and cu.isDeleted=0
+		and s.orderTime BETWEEN #{startTime} and #{endTime}
+		group by cu.custCompanyId
+		)
+
+		union
+
+		(select custCompanyId as storeID,0,customerAlias as storeName from
+		t_customers where companyId=#{entId})) a
+		GROUP BY storeID,storeName order by totalSaleMoney desc
+	</select>
+
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>
+<!-- SELECT om.outstockMainId,so.saleOrderId,so.status, (SELECT varValue 
+	from t_common_variable where varGroup = 'saleOrderStatus' and varName = so.status) 
+	as statusName, so.saleOrderNo, so.customerId, so.companyId, so.orderTime, 
+	so.traceCode, so.createTime, so.createBy, so.updateTime, so.updateBy, so.logisticsId, 
+	om.outstockDate, (SELECT l.logisticsAlias from t_logistics l where l.logisticsId 
+	= so.logisticsId) as logisticsCompanyName, ct.customerAlias as name,ct.tel,c.cname 
+	contact,cm.cliquorbusinesslicense,cm.tel companyTel FROM t_sale_order so 
+	left join t_outstock_main om on so.saleOrderId = om.saleOrderId INNER JOIN 
+	t_customers ct on ct.customerId=so.customerId INNER JOIN t_company c on ct.custCompanyId=c.companyId 
+	INNER JOIN t_company cm on so.companyId=cm.companyId <where> <if test="saleOrder.companyId 
+	!= null"> so.companyId = #{saleOrder.companyId} and so.saleOrderNo NOT LIKE 
+	'G%' </if> <if test="saleOrder.saleOrderNo !=null and saleOrder.saleOrderNo 
+	!= ''"> and so.saleOrderNo LIKE CONCAT(CONCAT('%',#{saleOrder.saleOrderNo}),'%') 
+	</if> <if test="saleOrder.orderTimeStart !=null and saleOrder.orderTimeStart 
+	!='' and saleOrder.orderTimeEnd !=null and saleOrder.orderTimeEnd !='' "> 
+	and so.orderTime between #{saleOrder.orderTimeStart} and #{saleOrder.orderTimeEnd} 
+	</if> <if test="saleOrder.customerName !=null and saleOrder.customerName 
+	!=''"> and so.customerId in (SELECT ct.customerId from t_customers ct where 
+	ct.customerAlias LIKE CONCAT(CONCAT('%',#{saleOrder.customerName}),'%')) 
+	</if> <if test="saleOrder.customerId !=null and saleOrder.customerId !=''"> 
+	and so.customerId = #{saleOrder.customerId} </if> <if test="saleOrder.logisticsId 
+	!=null and saleOrder.logisticsId !=''"> and so.logisticsId = #{saleOrder.logisticsId} 
+	</if> <if test="saleOrder.status !=null and saleOrder.status !=''"> and so.status 
+	= #{saleOrder.status} </if> <if test="saleOrder.productName !=null and saleOrder.productName 
+	!=''"> and so.saleOrderId in (SELECT si.saleOrderId FROM t_sale_item si inner 
+	join t_product tp on tp.productId = si.productId where tp.productName LIKE 
+	CONCAT(CONCAT('%',#{saleOrder.productName}),'%') ) </if> </where> order by 
+	so.updateTime desc -->

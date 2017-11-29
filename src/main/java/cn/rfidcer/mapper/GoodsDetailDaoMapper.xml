@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.GoodsDetailDao">
+	<resultMap type="GoodsDetail" id="goodsDetail"></resultMap>
+	<select id="getGoodsByQRCode" resultMap="goodsDetail">
+		select d.type,d.secretKey,p.productName
+		from t_goods_detail d
+		INNER JOIN t_goods g on d.goodsId=g.goodsId
+		INNER JOIN t_product p on g.productId=p.productId
+		where d.code=#{qrcode}
+	</select>
+	<select id="getGoodsByBarCode" resultMap="goodsDetail">
+		select d.type,d.secretKey,p.productName,d.goodsId,d.goodsDetailId,d.barcode,d.code,g.goodsBatch,g.companyId,s.productId,s.productStandardDetailId,s.productStandardNum,s.salePrice,s.retailPrice,s.purchasePrice
+		from t_goods_detail d
+		INNER JOIN t_goods g on d.goodsId=g.goodsId
+		INNER JOIN t_product p on g.productId=p.productId
+		INNER JOIN t_product_standard_detail s on g.productStandardDetailId=s.productStandardDetailId
+		where d.barcode=#{barcode} LIMIT 1 
+	</select>	
+	<select id="getGoodsDetailsByGoodsId" resultMap="goodsDetail">
+		select d.goodsId, d.goodsDetailId,d.code,d.barcode from t_goods_detail d where d.goodsId=#{goodsId}
+	</select>
+	<insert id="addOrUpdateGoodsDetail">
+		insert into t_goods_detail (goodsDetailId,goodsId,code,companyId,createTime,createBy,updateTime,updateBy) values 
+		(#{goodsDetailId},#{goodsId},#{code},#{companyId},#{createTime},#{createBy},#{updateTime},#{updateBy})
+	</insert>
+	<insert id="addGoodsDetailWithBarcode">
+		insert into t_goods_detail (goodsDetailId,goodsId,code,companyId,createTime,createBy,updateTime,updateBy, barcode) values 
+		(#{goodsDetailId},#{goodsId},#{code},#{companyId},#{createTime},#{createBy},#{updateTime},#{updateBy},#{barcode})
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.GoodsDetail" >
+		update t_goods_detail
+		<set>
+		  <if test="goodsId != null" >
+			goodsId = #{goodsId,jdbcType=CHAR},
+		  </if>
+		  <if test="companyId != null" >
+			companyId = #{companyId,jdbcType=VARCHAR},
+		  </if>
+		  <if test="type != null" >
+			type = #{type,jdbcType=INTEGER},
+		  </if>
+		  <if test="code != null" >
+			code = #{code,jdbcType=VARCHAR},
+		  </if>
+		  <if test="secretKey != null" >
+			secretKey = #{secretKey,jdbcType=VARCHAR},
+		  </if>
+		  <if test="updateTime != null" >
+			updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		  </if>
+		  <if test="updateBy != null" >
+			updateBy = #{updateBy,jdbcType=VARCHAR},
+		  </if>
+		  <if test="barcode != null" >
+			barcode = #{barcode,jdbcType=VARCHAR},
+		  </if> 
+		</set>
+		where goodsDetailId = #{goodsDetailId,jdbcType=CHAR}
+	</update>
+</mapper>

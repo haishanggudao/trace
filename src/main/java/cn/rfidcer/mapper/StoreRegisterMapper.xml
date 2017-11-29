@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.StoreRegisterMapper">
+<resultMap type="StoreRegister" id="storeRegister">
+	<id property="id" column="id"/>
+	<result property="license" column="license"/>
+	<result property="mac" column="mac"/>
+	<result property="location" column="location"/>
+	<result property="subLocation" column="subLocation"/>
+	<result property="companyId" column="companyId"/>
+	<association property="company" javaType="Company">
+		<id property="companyid" column="companyid"/>
+		<result property="name" column="name"/>
+	</association>
+</resultMap>
+
+<select id="findAllList" resultMap="storeRegister">
+	select 
+		r.id,
+		r.companyId,
+		r.license,
+		r.mac,
+		r.location,
+		r.subLocation,
+		c.name
+	from t_store_register r
+	INNER JOIN t_company c on r.companyId=c.companyId
+	order by r.updateTime desc
+</select>
+<select id="findLocationByCompanyId"  resultType="string">
+	select location from t_store_register where companyId=#{companyId} ORDER BY createTime LIMIT 1
+</select>
+<select id="addLocation" resultType="string">
+select MAX(location)+1 as location from t_store_register 
+</select>
+<select id="insertBySubLocation" resultType="string">
+SELECT MAX(subLocation)+1 from t_store_register where companyId=#{companyId} and location=#{location}
+</select>
+<select id="findCompanyCode" resultType="string">
+SELECT code from t_company where companyId=#{companyId}
+</select>
+</mapper>

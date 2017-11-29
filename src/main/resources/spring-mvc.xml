@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<aop:aspectj-autoproxy/>
+	<context:component-scan base-package="cn.rfidcer.interceptor"></context:component-scan>
+	<context:component-scan base-package="cn.rfidcer.controller"></context:component-scan>
+
+
+<!-- 	<bean class="cn.rfidcer.interceptor.TraceLogAspect"></bean> -->
+	<bean class="cn.rfidcer.interceptor.PageControllerAspect"></bean>
+	<bean class="cn.rfidcer.interceptor.LogAspect"></bean>
+	<bean class="cn.rfidcer.interceptor.IndexInterceptor"></bean>
+	<bean class="cn.rfidcer.interceptor.IOSSafetyAspect"></bean>
+	<bean class="cn.rfidcer.swagger.SwaggerConfig"/>
+
+	<!-- 静态资源映射 -->
+	<mvc:resources mapping="/static/**" location="/WEB-INF/static/" />
+	<mvc:resources mapping="/swagger/**" location="/WEB-INF/swagger/" />
+	<mvc:resources mapping="/umeditor/**" location="/umeditor/" />
+	
+	<mvc:interceptors>  
+		<mvc:interceptor>  
+        	<mvc:mapping path="/**" />  
+        	<!-- 定义在mvc:interceptor下面的表示是对特定的请求才进行拦截的 -->  
+        	<bean class="cn.rfidcer.interceptor.AvoidDuplicateSubmissionInterceptor"/>  
+    	</mvc:interceptor> 
+	</mvc:interceptors>
+
+<!-- 	<bean -->
+<!-- 		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"> -->
+<!-- 		<property name="useSuffixPatternMatch" value="false"></property> -->
+<!-- 		<property name="interceptors"> -->
+<!-- 			<list> -->
+<!-- 				<bean class="cn.rfidcer.interceptor.AvoidDuplicateSubmissionInterceptor"></bean> -->
+<!-- 			</list> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
+
+	<bean id="stringHttpMessageConverter"
+		class="org.springframework.http.converter.StringHttpMessageConverter" />
+
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="webBindingInitializer">
+			<bean
+				class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+				<property name="conversionService" ref="conversionService" />
+			</bean>
+		</property>
+		<property name="messageConverters">
+			<list>
+				<ref bean="byteConverter"/>
+				<ref bean="mappingJacksonHttpMessageConverter" />
+				<ref bean="stringHttpMessageConverter" />
+			</list>
+		</property>
+		<property name="customArgumentResolvers">
+			<list>
+				<bean class="cn.rfidcer.method.CurrentUserMethodResolver"></bean>
+			</list>
+		</property>
+	</bean>
+	<bean id="byteConverter" class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+	<bean id="mappingJacksonHttpMessageConverter"
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>text/html;charset=UTF-8</value>
+				<value>application/json;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+	<!-- 默认的视图解析器 在上边的解析错误时使用 (默认使用html)- -->
+	<bean id="defaultViewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:order="1">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="contentType" value="text/html" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	<bean id="conversionService"
+		class="org.springframework.format.support.DefaultFormattingConversionService" />
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="utf-8" />
+		<property name="resolveLazily" value="true"></property>
+	</bean>
+	<import resource="spring-mvc-shiro.xml" />
+</beans>

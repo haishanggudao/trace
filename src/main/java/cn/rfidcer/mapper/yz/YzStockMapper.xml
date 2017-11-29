@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.yz.YzStockMapper">
+	<resultMap type="YzProductStock" id="yzProductStock">
+		<id property="guid" column="productStandardDetailId"/>
+		<result property="goodsName" column="productName"/>
+		<result property="goodsCode" column="productCode"/>
+		<result property="storeName" column="customerAlias"/>
+		<result property="currentInventory" column="stockNum"/>
+	</resultMap>
+
+	<select id="getGoodsInventoryListByPage" resultMap="yzProductStock">
+		SELECT
+			ps.productStandardDetailId,
+			p.productName,
+			p.productCode,
+			cu.customerAlias,
+			ps.stockNum,
+			d.retailPrice
+		FROM t_productStock ps
+		INNER JOIN t_product p on p.productId = ps.productId
+		INNER JOIN t_product_standard_detail d on d.productStandardDetailId = ps.productStandardDetailId
+		INNER JOIN t_product_standard s on s.productStandardId = d.productStandardId
+		INNER JOIN t_customers cu on ps.companyId=cu.custCompanyId
+		WHERE ps.isDeleted = 0
+		and cu.companyId=#{entId}
+	</select>
+</mapper>

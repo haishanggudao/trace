@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.codetrace.CodeQueryLogsDao">
+    <resultMap type="cn.rfidcer.bean.codetrace.CodeQueryLogs" id="BaseResultMap">
+      
+      <id column="logId" property="logId"/>
+      
+      <result column="qrcode" property="qrcode"/>
+      <result column="totalTimes" property="totalTimes"/>
+      <result column="ipaddr" property="ipaddr"/>
+      <result column="checkDate" property="checkDate"/>
+      
+      <result column="minDate" property="minDate"/>
+      <result column="maxDate" property="maxDate"/>
+
+    </resultMap>
+	<!-- 
+		SELECT
+			t.qrcode,
+		    c.totalnums,
+			t.IPAddress,
+		    t.createTime
+		FROM
+			t_trace_log t,
+			(
+				SELECT
+					qrcode,
+					count(qrcode) totalnums
+				FROM
+					t_trace_log
+				GROUP BY
+					qrcode
+			) AS c
+		WHERE
+			t.qrcode = c.qrcode
+		ORDER BY
+			t.qrcode asc, t.createTime asc
+	-->
+    <select id="countTotalTimes" resultMap="BaseResultMap" parameterType="cn.rfidcer.bean.codetrace.CodeQueryLogs" >
+        SELECT
+             traceLogId logId, qrcode, count(qrcode) totalTimes, min(createTime) minDate, max(createTime) maxDate
+        FROM
+             t_trace_log
+        WHERE
+            qrcode != ''
+            <if test="codequerylogs != null">
+                <if test="codequerylogs.qrcode != null and codequerylogs.qrcode != ''">
+                    and qrcode = #{codequerylogs.qrcode, jdbcType=VARCHAR}
+                </if>
+                <if test="codequerylogs.checkDate1 != null">
+                    and createTime <![CDATA[ > ]]> #{codequerylogs.checkDate1,jdbcType=TIMESTAMP}
+                </if>
+                <if test="codequerylogs.checkDate2 != null">
+                    and createTime <![CDATA[ < ]]> DATE_ADD(#{codequerylogs.checkDate2,jdbcType=TIMESTAMP}, INTERVAL 1 DAY)
+                </if>
+                <if test="codequerylogs.ipaddr != null and codequerylogs.ipaddr != ''">
+                    and IPAddress = #{codequerylogs.ipaddr, jdbcType=VARCHAR}
+                </if>
+            </if>
+        GROUP BY qrcode
+    </select>
+
+    <select id="selectDetails" resultMap="BaseResultMap" parameterType="cn.rfidcer.bean.codetrace.CodeQueryLogs" >
+        SELECT
+             traceLogId logId, IPAddress ipaddr, createTime checkDate
+        FROM
+             t_trace_log
+        <where>
+            <if test="codequerylogs != null">
+                <if test="codequerylogs.qrcode != null and codequerylogs.qrcode != ''">
+                    and qrcode = #{codequerylogs.qrcode, jdbcType=VARCHAR}
+                </if>
+                <if test="codequerylogs.checkDate1 != null">
+                    and createTime <![CDATA[ > ]]> #{codequerylogs.checkDate1,jdbcType=TIMESTAMP}
+                </if>
+                <if test="codequerylogs.checkDate2 != null">
+                    and createTime <![CDATA[ < ]]> DATE_ADD(#{codequerylogs.checkDate2,jdbcType=TIMESTAMP}, INTERVAL 1 DAY)
+                </if>
+                <if test="codequerylogs.ipaddr != null and codequerylogs.ipaddr != ''">
+                    and IPAddress = #{codequerylogs.ipaddr, jdbcType=VARCHAR}
+                </if>
+            </if>
+        </where>
+        ORDER BY createTime asc
+    </select>
+</mapper>

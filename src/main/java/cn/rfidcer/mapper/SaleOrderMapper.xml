@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.rfidcer.dao.SaleOrderMapper">
+  <resultMap id="BaseResultMap" type="cn.rfidcer.bean.SaleOrder">
+    <id column="saleOrderId" jdbcType="CHAR" property="saleOrderId" />
+    <id column="outstockMainId" jdbcType="CHAR" property="outstockMainId" />
+    <result column="saleOrderNo" jdbcType="VARCHAR" property="saleOrderNo" />
+    <result column="customerId" jdbcType="CHAR" property="customerId" />
+    <result column="logisticsCompanyId" jdbcType="CHAR" property="logisticsCompanyId" />
+    <result column="companyId" jdbcType="CHAR" property="companyId" />
+    <result column="orderTime" property="orderTime" />
+    <result column="traceCode" jdbcType="VARCHAR" property="traceCode" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="createBy" jdbcType="VARCHAR" property="createBy" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="updateBy" jdbcType="VARCHAR" property="updateBy" />
+    <result column="status" property="status" />
+    <result column="statusName" property="statusName" />
+    <result column="logisticsId" jdbcType="CHAR" property="logisticsId" />
+    <result column="logisticsCompanyName" jdbcType="VARCHAR" property="logisticsCompanyName"/>
+    <result column="outstockDate" jdbcType="TIMESTAMP" property="outstockDate"/>
+    <result column="cliquorbusinesslicense" property="cliquorbusinesslicense"/>
+    <result column="companyTel" property="companyTel"/>
+    <association property="company" javaType="cn.rfidcer.bean.Company">
+    	<id column="customerId" property="companyid"/>
+    	<result column="name" property="name"/>
+    </association>
+    <association property="customers" javaType="Customers" autoMapping="true"></association>
+  </resultMap>
+  <resultMap id="saleOrderListResultMap" type="cn.rfidcer.bean.SaleOrder">
+    	<id column="saleOrderId" jdbcType="CHAR" property="saleOrderId" />
+    	<result column="saleOrderNo" jdbcType="VARCHAR" property="saleOrderNo" />
+    	<result column="orderTime"  property="orderTime" />
+    	<result column="customerName" jdbcType="VARCHAR" property="customerName" />
+  </resultMap>
+  
+  
+  
+  <sql id="Base_Column_List">
+    saleOrderId, saleOrderNo, customerId, companyId, orderTime, traceCode, createTime, createBy, updateTime, 
+    updateBy
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_sale_order
+    where saleOrderId = #{saleOrderId,jdbcType=CHAR}
+  </select>
+  <select id="list" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_sale_order where saleOrderNo NOT LIKE 'G%' 
+  </select>
+  
+   <select id="selectBybarCode" resultMap="saleOrderListResultMap" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from t_sale_order
+    where barcode = #{barcode,jdbcType=CHAR} 
+    LIMIT 1 
+  </select>
+  
+  
+  <!-- 根据订单状态查询销售单列表  -->
+  <select id="findByStatus" resultMap="saleOrderListResultMap">
+    select  so.saleOrderId,so.saleOrderNo, so.orderTime,(SELECT ct.customerAlias from t_customers ct  where ct.customerId = so.customerId) as customerName	
+    from t_sale_order so
+    <where>
+		<if test="companyId != null">
+			and so.companyId = #{companyId} and so.saleOrderNo NOT LIKE 'G%'
+		</if>
+		<if test="status != null">
+			and so.status = #{status} 
+		</if>		
+	</where>
+	ORDER BY so.createTime DESC
+  </select>  
+
+  <!-- 查询销售单记录  -->
+  <select id="findAll" resultMap="BaseResultMap" useCache="false">
+  	SELECT om.outstockMainId,so.saleOrderId,so.status,
+  	(SELECT varValue from t_common_variable where varGroup = 'saleOrderStatus' and varName = so.status) as statusName, 
+  	so.saleOrderNo, so.customerId, so.companyId, so.orderTime, 
+	so.traceCode, so.createTime, so.createBy, so.updateTime, so.updateBy,
+	so.logisticsId, om.outstockDate, 
+	(SELECT l.logisticsAlias from t_logistics l where l.logisticsId = so.logisticsId) as logisticsCompanyName,
+	ct.customerAlias as name,ct.tel,ct.contact,cm.cliquorbusinesslicense,cm.tel companyTel	
+	FROM t_sale_order so
+	LEFT JOIn t_outstock_main om on so.saleOrderId = om.saleOrderId
+	LEFT JOIN t_customers ct on ct.customerId=so.customerId
+	INNER JOIN t_company cm on so.companyId=cm.companyId
+	<where>
+		<if test="saleOrder.companyId != null">
+			so.companyId = #{saleOrder.companyId} and so.saleOrderNo NOT LIKE 'G%'
+		</if>
+		<if test="saleOrder.saleOrderNo !=null and saleOrder.saleOrderNo != ''">
+			and so.saleOrderNo LIKE CONCAT(CONCAT('%',#{saleOrder.saleOrderNo}),'%')
+		</if>
+		<if test="saleOrder.orderTimeStart !=null and saleOrder.orderTimeStart !='' and saleOrder.orderTimeEnd !=null and saleOrder.orderTimeEnd !='' ">
+			and so.orderTime between #{saleOrder.orderTimeStart} and #{saleOrder.orderTimeEnd}
+		</if>
+		<if test="saleOrder.customerName !=null and saleOrder.customerName !=''">
+			and so.customerId in  (SELECT ct.customerId from t_customers ct  where ct.customerAlias LIKE CONCAT(CONCAT('%',#{saleOrder.customerName}),'%')) 
+		</if>
+		<if test="saleOrder.customerId !=null and saleOrder.customerId !=''">
+			and so.customerId = #{saleOrder.customerId}
+		</if>
+		<if test="saleOrder.logisticsId !=null and saleOrder.logisticsId !=''">
+			and so.logisticsId = #{saleOrder.logisticsId}
+		</if>
+		<if test="saleOrder.status !=null and saleOrder.status !=''">
+			and so.status = #{saleOrder.status}
+		</if>		
+		<if test="saleOrder.productName !=null and saleOrder.productName !=''">
+		    and so.saleOrderId in (SELECT si.saleOrderId FROM t_sale_item si
+								inner join t_product tp on tp.productId = si.productId
+								where tp.productName LIKE CONCAT(CONCAT('%',#{saleOrder.productName}),'%') )
+		</if> 
+	</where>
+	order by so.updateTime desc
+  </select>
+  
+  <!-- 删除销售单 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_sale_order
+    where saleOrderId = #{saleOrderId,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="cn.rfidcer.bean.SaleOrder">
+    insert into t_sale_order (saleOrderId, customerId, companyId, 
+      orderTime, traceCode, createTime, 
+      createBy, updateTime, updateBy
+      )
+    values (#{saleOrderId,jdbcType=CHAR}, #{customerId,jdbcType=CHAR}, #{companyId,jdbcType=CHAR}, 
+      #{orderTime,jdbcType=TIMESTAMP}, #{traceCode,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <!-- 新增销售单 -->
+  <insert id="insertSelective" parameterType="cn.rfidcer.bean.SaleOrder">
+    insert into t_sale_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="saleOrderId != null">
+        saleOrderId,
+      </if>
+      <if test="saleOrderNo != null">
+      	saleOrderNo,
+      </if>
+      <if test="customerId != null">
+        customerId,
+      </if>
+      <if test="companyId != null">
+        companyId,
+      </if>
+      <if test="orderTime != null">
+        orderTime,
+      </if>
+      <if test="traceCode != null">
+        traceCode,
+      </if>
+      <if test="barcode != null">
+        barcode,
+      </if>
+      <if test="createTime != null">
+        createTime,
+      </if>
+      <if test="createBy != null">
+        createBy,
+      </if>
+      <if test="updateTime != null">
+        updateTime,
+      </if>
+      <if test="updateBy != null">
+        updateBy,
+      </if>
+      <if test="logisticsId != null">
+      	logisticsId,
+      </if>
+      <if test="status != null">
+      	status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="saleOrderId != null">
+        #{saleOrderId,jdbcType=CHAR},
+      </if>
+      <if test="saleOrderNo != null">
+      	#{saleOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="customerId != null">
+        #{customerId,jdbcType=CHAR},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=CHAR},
+      </if>
+      <if test="orderTime != null">
+        #{orderTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="traceCode != null">
+        #{traceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="barcode != null">
+        #{barcode,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="logisticsId != null">
+      	#{logisticsId,jdbcType=CHAR},
+      </if>
+      <if test="status != null">
+      	#{status},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 依据销售单ID来修改销售单信息 -->
+  <update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.SaleOrder">
+    update t_sale_order
+    <set>
+      <if test="saleOrderNo != null">
+      	saleOrderNo = #{saleOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="customerId != null">
+        customerId = #{customerId,jdbcType=CHAR},
+      </if>
+      <if test="companyId != null">
+        companyId = #{companyId,jdbcType=CHAR},
+      </if>
+      <if test="orderTime != null">
+        orderTime = #{orderTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="traceCode != null">
+        traceCode = #{traceCode,jdbcType=VARCHAR},
+      </if> 
+      <if test="barcode != null">
+        barcode = #{barcode,jdbcType=VARCHAR},
+      </if>      
+      <if test="updateTime != null">
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        updateBy = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="logisticsId != null">
+      	logisticsId = #{logisticsId, jdbcType=CHAR},
+      </if>
+      <if test="status != null">
+      	status = #{status},
+      </if>
+    </set>
+    where saleOrderId = #{saleOrderId,jdbcType=CHAR}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.SaleOrder">
+    update t_sale_order
+    set saleOrderNo = #{saleOrderNo,jdbcType=VARCHAR},
+    	customerId = #{customerId,jdbcType=CHAR},
+      	companyId = #{companyId,jdbcType=CHAR},
+      	orderTime = #{orderTime,jdbcType=TIMESTAMP},
+      	traceCode = #{traceCode,jdbcType=VARCHAR}, 
+      	updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      	updateBy = #{updateBy,jdbcType=VARCHAR}
+    where saleOrderId = #{saleOrderId,jdbcType=CHAR}
+  </update>
+</mapper>

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProcessMainMapper">
+	<resultMap id="BaseResultMap" type="cn.rfidcer.bean.ProcessMain">
+		<id column="processMainId" property="processMainId" jdbcType="CHAR" />
+		<result column="goodsId" property="goodsId" jdbcType="CHAR" />
+		<result column="productType" property="productType"  />
+		<result column="processTime" property="processTime" jdbcType="TIMESTAMP" />
+		<result column="processBatch" property="processBatch" jdbcType="VARCHAR" />
+		<result column="processRealBatch" property="processRealBatch" jdbcType="VARCHAR" />
+		<result column="processQuantity" property="processQuantity" jdbcType="DECIMAL" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+		<result column="processTimeStr" property="processTimeStr" />
+		<association property="goods" javaType="Goods">
+			<id property="goodsId" column="goodsId" />
+			<result property="productId" column="productId" />
+			<result property="productName" column="productName" />
+			<result property="productStandardDetailId" column="productStandardDetailId" />
+			<result property="goodsBatch" column="goodsBatch" />
+		</association>
+		<association property="processor" javaType="Processor" autoMapping="true">
+		</association>
+	</resultMap>
+	<sql id="Base_Column_List">
+		processMainId, goodsId, processTime, processBatch,processRealBatch, processQuantity,
+		createTime, createBy,
+		updateTime, updateBy
+	</sql>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_process_main
+		where processMainId = #{processMainId,jdbcType=CHAR}
+	</delete>
+	<insert id="insert" parameterType="cn.rfidcer.bean.ProcessMain">
+		insert into t_process_main (processMainId, goodsId, processTime,
+		processBatch,processRealBatch, processQuantity,companyId, createTime,
+		createBy, updateTime, updateBy
+		)
+		values (#{processMainId,jdbcType=CHAR}, #{goodsId,jdbcType=CHAR},
+		#{processTime,jdbcType=TIMESTAMP},
+		#{processBatch,jdbcType=VARCHAR},#{processRealBatch,jdbcType=VARCHAR},
+		#{processQuantity,jdbcType=DECIMAL},#{companyId,jdbcType=CHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.ProcessMain">
+		insert into t_process_main
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="processMainId != null">
+				processMainId,
+			</if>
+			<if test="goodsId != null">
+				goodsId,
+			</if>
+			<if test="processTime != null">
+				processTime,
+			</if>
+			<if test="processBatch != null">
+				processBatch,
+			</if>
+			<if test="processRealBatch != null">
+				processRealBatch,
+			</if>
+			<if test="processQuantity != null">
+				processQuantity,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="processor != null and processor.id != null">
+				processorId,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="processMainId != null">
+				#{processMainId,jdbcType=CHAR},
+			</if>
+			<if test="goodsId != null">
+				#{goodsId,jdbcType=CHAR},
+			</if>
+			<if test="processTime != null">
+				#{processTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="processBatch != null">
+				#{processBatch,jdbcType=VARCHAR},
+			</if>
+			<if test="processRealBatch != null">
+				#{processRealBatch,jdbcType=VARCHAR},
+			</if>
+			<if test="processQuantity != null">
+				#{processQuantity,jdbcType=DECIMAL},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=VARCHAR},
+			</if>
+			<if test="processor != null and processor.id != null">
+				#{processor.id,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.ProcessMain">
+		update t_process_main
+		<set>
+			<if test="goodsId != null">
+				goodsId = #{goodsId,jdbcType=CHAR},
+			</if>
+			<if test="processTime != null">
+				processTime = #{processTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="processBatch != null">
+				processBatch = #{processBatch,jdbcType=VARCHAR},
+			</if>
+			<if test="processRealBatch != null">
+				processRealBatch = #{processRealBatch,jdbcType=VARCHAR},
+			</if>
+			<if test="processQuantity != null">
+				processQuantity = #{processQuantity,jdbcType=DECIMAL},
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				createBy = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy = #{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="processor != null and processor.id != null">
+				processorId=#{processor.id,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where processMainId = #{processMainId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.ProcessMain">
+		update t_process_main
+		set goodsId = #{goodsId,jdbcType=CHAR},
+		processTime = #{processTime,jdbcType=TIMESTAMP},
+		processBatch = #{processBatch,jdbcType=VARCHAR},
+		processRealBatch = #{processRealBatch,jdbcType=VARCHAR},
+		processQuantity = #{processQuantity,jdbcType=DECIMAL},
+		createTime = #{createTime,jdbcType=TIMESTAMP},
+		createBy = #{createBy,jdbcType=VARCHAR},
+		updateTime = #{updateTime,jdbcType=TIMESTAMP},
+		updateBy = #{updateBy,jdbcType=VARCHAR}
+		where processMainId = #{processMainId,jdbcType=CHAR}
+	</update>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_process_main
+		where processMainId = #{processMainId,jdbcType=CHAR}
+	</select>
+
+	<!-- 查询加工记录 -->
+	<select id="getProcessList" resultMap="BaseResultMap" useCache="false">
+		select 
+			pm.processMainId,
+			pm.goodsId,
+			pm.processTime,
+			pm.processBatch,
+			pm.processRealBatch,
+			pm.processQuantity,
+			pm.createTime,
+			pm.updateTime,
+			p.productType,
+			u.username as createBy,
+			u2.username as updateBy,
+			pm.processTime as processTimeStr,
+			g.productId,
+			p.productName,
+			g.productStandardDetailId,
+			g.goodsBatch,
+			pr.id,
+			pr.name,
+			pr.healthCard
+		from t_process_main pm
+		inner join t_goods g on g.goodsId = pm.goodsId
+		inner join t_product p on p.productId = g.productId
+		INNER JOIN sys_user u on pm.createBy=u.id
+		INNER JOIN sys_user u2 on pm.updateBy=u2.id
+		LEFT JOIN t_processor pr on pm.processorId=pr.id
+		<where>
+			<if test="processMain.companyId != null and processMain.companyId != '' ">
+				g.companyId = #{processMain.companyId}
+			</if>
+			<if test="processMain.type != null and processMain.type != '' ">
+				and pm.type = #{processMain.type}
+			</if>
+		</where>
+		order by pm.updateTime desc
+	</select>
+
+</mapper>

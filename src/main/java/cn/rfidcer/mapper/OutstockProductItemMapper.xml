@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.OutstockProductItemMapper">
+
+	
+    <resultMap id="outstockProductItem" type="cn.rfidcer.bean.OutstockItem" >
+	    <id column="outstockItemId" property="outstockItemId" jdbcType="CHAR" />
+	    <result column="outstockMainId" property="outstockMainId" jdbcType="CHAR" />
+	    <result column="productId" property="productId" jdbcType="CHAR" />
+	    <result column="productName" property="productName" jdbcType="VARCHAR" />
+	    <result column="outstockNum" property="outstockNum" jdbcType="DECIMAL" />
+	    <result column="productStandardDetailId" property="productStandardDetailId" jdbcType="CHAR" />
+	   	<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+		<association property="product" javaType="Product">
+			<id property="productId" column="productId" />
+			<result property="productName" column="productName" />
+		</association>
+		<association property="standardDetail" javaType="ProductStandardDetail">
+			<id property="productStandardDetailId" column="productStandardDetailId" />
+			<result property="productStandardNum" column="productStandardNum" />
+			<association property="productStandard" javaType="ProductStandard">
+				<id property="productStandardId" column="productStandardId" />
+				<result property="productStandardName" column="productStandardName" />
+			</association>
+		</association>
+	</resultMap>  	
+	
+	
+
+
+
+
+	
+	
+	<select id="findAllList" resultMap="outstockProductItem" useCache="false">
+		select (select username from sys_user where id = i.createBy) as createBy,
+		(select username from sys_user where id = i.updateBy) as updateBy,
+		i.deliveryTime,i.deliveryBy,i.outstockItemId,i.outstockMainId,i.productId,i.outstockNum,
+		i.traceCode,p.productName,i.productStandardDetailId,s.productStandardId,d.productStandardNum,s.productStandardName,i.createTime,i.updateTime
+		from t_outstock_product_items i
+		LEFT JOIN t_product p on p.productId=i.productId
+		INNER JOIN t_product_standard_detail d on d.productStandardDetailId=i.productStandardDetailId
+		INNER JOIN t_product_standard s on s.productStandardId=d.productStandardId
+		where i.outstockMainId = #{outstockmainid} ORDER BY i.updateTime DESC
+	</select>
+
+
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+
+		delete from t_outstock_product_items
+		where outstockItemId =
+		#{outstockItemId,jdbcType=CHAR}
+	</delete>
+	<delete id="deleteByOutstockMainId" parameterType="java.lang.String">
+		delete from
+		t_outstock_product_items
+		where outstockMainId =
+		#{outstockMainId,jdbcType=CHAR}
+	</delete>
+
+	<select id="findCountByOutstockMainId" resultType="int"
+		parameterType="java.lang.String">
+		select count(outstockMainId) from t_outstock_product_items where outstockMainId
+		=#{outstockMainId}
+	</select>
+	
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.OutstockItem">
+		insert into t_outstock_product_items
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="outstockItemId != null">
+				outstockItemId,
+			</if>
+			<if test="outstockMainId != null">
+				outstockMainId,
+			</if>
+			<if test="productId != null">
+				productId,
+			</if>
+			<if test="productStandardDetailId != null">
+				productStandardDetailId,
+			</if>				
+			<if test="outstockNum != null">
+				outstockNum,
+			</if>
+			<if test="traceCode != null">
+				traceCode,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+			<if test="deliveryTime != null">
+				deliveryTime,
+			</if>
+			<if test="deliveryBy != null">
+				deliveryBy,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="outstockItemId != null">
+				#{outstockItemId,jdbcType=CHAR},
+			</if>
+			<if test="outstockMainId != null">
+				#{outstockMainId,jdbcType=CHAR},
+			</if>
+			<if test="productId != null">
+				#{productId,jdbcType=CHAR},
+			</if>
+			<if test="productStandardDetailId != null">
+				#{productStandardDetailId,jdbcType=CHAR},
+			</if>			
+			<if test="outstockNum != null">
+				#{outstockNum,jdbcType=DECIMAL},
+			</if>
+			<if test="traceCode != null">
+				#{traceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="deliveryTime != null">
+				#{deliveryTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="deliveryBy != null">
+				#{deliveryBy,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+</mapper>

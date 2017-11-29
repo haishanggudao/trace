@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProcessorMapper">
+
+<select id="findAllList" resultType="Processor">
+	select * from t_processor
+	<where>
+		<if test="processor.name != null and processor.name != ''">
+			name like CONCAT('%',#{processor.name},'%')
+		</if>
+		<if test="processor.companyId != null and processor.companyId != ''">
+			companyId =#{processor.companyId}
+		</if>
+	</where>
+</select>
+</mapper>

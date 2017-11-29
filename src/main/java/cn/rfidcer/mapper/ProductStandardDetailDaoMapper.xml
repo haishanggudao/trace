@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ProductStandardDetailDao">
+	<resultMap type="ProductStandard" id="productStandard"
+		autoMapping="true"></resultMap>
+	<resultMap type="Product" id="product" autoMapping="true"></resultMap>
+	<resultMap type="ProductStandardDetail" id="productStandardDetail">
+		<id property="productStandardDetailId" column="productStandardDetailId" />
+		<result property="productStandardNum" column="productStandardNum" />
+		<result property="productId" column="productId" />
+		<result property="productName" column="productName" />
+		<result property="productStandardId" column="productStandardId" />
+		<result property="productStandardName" column="productStandardName" />
+		<result property="purchasePrice" column="purchasePrice" />
+		<result property="purchaseCurrency" column="purchaseCurrency" />
+		<result property="saleCurrency" column="saleCurrency" />
+		<result property="salePrice" column="salePrice" />
+		<result property="retailPrice" column="retailPrice" />
+		<result property="retailCurrency" column="retailCurrency" />
+		<association property="productStandard" column="productStandardId" resultMap="productStandard"></association>
+		<association property="product" column="productId" resultMap="product"></association>
+			
+	</resultMap>
+	<resultMap type="GoodsPrice" id="productResult">
+		<id property="productId" column="productId" />
+		<result property="productName" column="productName" />
+		<result property="productStandardId" column="productStandardId" />
+		<result property="productStandardName" column="productStandardName" />
+		<result property="productStandardNum" column="productStandardNum" />
+		<result property="productStandardDetailId" column="productStandardDetailId" />
+	</resultMap>
+	<select id="findAll" resultMap="productStandardDetail" useCache="false">
+		select d.productStandardDetailId, d.productStandardNum,
+		d.productStandardId, s.productStandardName, d.productId,
+		d.purchasePrice,d.purchaseCurrency,d.saleCurrency,d.salePrice, 
+		d.retailPrice, d.retailCurrency, 
+		p.productName,p.productCategoryId
+		from t_product_standard_detail d
+		INNER JOIN t_product_standard s on s.productStandardId = d.productStandardId
+		INNER JOIN t_product p on p.productId = d.productId 
+		where d.isDeleted=0
+			<if test="standardDetail.productId != null and standardDetail.productId != ''">
+				and d.productId = #{standardDetail.productId}
+			</if>
+			<!-- 显示价格管理  -->
+			<if test="standardDetail.salePrice != null">
+				and d.salePrice != #{standardDetail.salePrice,jdbcType=DECIMAL}
+			</if>			
+			<if test="standardDetail.companyId != null and standardDetail.companyId != ''">
+				and d.companyId = #{standardDetail.companyId}
+			</if>		
+			<if test="standardDetail.productName !=null and standardDetail.productName !=''">
+				and d.productId in (SELECT tp.productId FROM t_product tp 
+									where tp.productName LIKE CONCAT(CONCAT('%',#{standardDetail.productName}),'%') )
+			</if>
+			<if test="standardDetail.productCategoryId !=null and standardDetail.productCategoryId !=''">
+				and d.productId in (SELECT tp.productId FROM t_product tp 
+									where tp.productCategoryId = #{standardDetail.productCategoryId} )
+			</if>
+			
+		order by d.updateTime desc,d.createTime desc
+	</select>
+	<select id="findNoPriceList" resultMap="productStandardDetail" useCache="false">
+			select d.productStandardDetailId, d.productStandardNum,
+			d.productStandardId,d.purchasePrice,d.purchaseCurrency,d.saleCurrency,d.salePrice, s.productStandardName, d.productId,
+			p.productName,p.productCategoryId
+			from t_product_standard_detail d
+			INNER JOIN t_product_standard s on s.productStandardId = d.productStandardId
+			INNER JOIN t_product p on p.productId = d.productId
+			<where>		
+				<if test="productId != null and productId != ''">
+					d.productId = #{productId}
+				</if>
+				<if test="companyId != null and companyId != ''">
+					and d.salePrice = '0' and p.companyId = #{companyId}
+				</if>
+				<if test="productStandardId != null and productStandardId != ''">
+					and d.productStandardId =  #{productStandardId}
+				</if>				
+			</where>
+			order by d.updateTime desc,d.createTime desc
+	</select>
+	
+	<select id="findProductIdList" resultMap="productResult" useCache="false">
+			select distinct d.productId,p.productName
+			from t_product_standard_detail d 
+			INNER JOIN t_product p on p.productId = d.productId
+			<where>		
+				<if test="standardDetail.companyId != null and standardDetail.companyId != ''">
+					d.salePrice = '0' and p.companyId = #{standardDetail.companyId}
+				</if>
+				<if test="standardDetail.productName!=null and standardDetail.productName!=''">
+					and p.productName like CONCAT('%',#{standardDetail.productName},'%')
+				</if>
+			</where>
+			order by d.updateTime desc,d.createTime desc
+	</select>
+	
+	<select id="findIdByStandardNameAndProductId" resultMap="productStandardDetail" useCache="false">
+		SELECT  s.productStandardDetailId,s.purchasePrice,s.salePrice,s.productStandardNum from t_product_standard_detail  s  
+		INNER JOIN t_product p on p.productId = s.productId
+		INNER JOIN t_product_standard d on d.productStandardId = s.productStandardId and d.productStandardName=#{productStandardName}
+		where s.productId = #{productId}  and d.productCategoryId = p.productCategoryId LIMIT 1
+	</select>
+	
+	<select id="findByStandardDetailId" resultMap="productStandardDetail" useCache="false">
+		SELECT  p.productId,s.productStandardDetailId,s.purchasePrice,s.salePrice,s.productStandardNum from t_product_standard_detail  s  
+		INNER JOIN t_product p on p.productId = s.productId
+		INNER JOIN t_product_standard d on d.productStandardId = s.productStandardId 
+		where s.productStandardDetailId = #{productStandardDetailId} 
+	</select>
+	
+	
+	<select id="findProductStandardIdList" resultMap="productResult" useCache="false">
+			select distinct d.productId,p.productName,d.productStandardId, s.productStandardName,d.productStandardNum,d.productStandardDetailId
+			from t_product_standard_detail d 
+			INNER JOIN t_product_standard s on s.productStandardId = d.productStandardId
+			INNER JOIN t_product p on p.productId = d.productId
+			<where>		
+				<if test="productId != null and productId != ''">
+					d.productId = #{productId}
+				</if>
+				<if test="companyId != null and companyId != ''">
+					and d.salePrice = '0' and p.companyId = #{companyId}
+				</if>
+				<if test="productStandardId != null and productStandardId != ''">
+					and d.productStandardId =  #{productStandardId}
+				</if>					
+			</where>
+			order by d.updateTime desc,d.createTime desc
+	</select>
+	
+	<insert id="createProductStandardDetail">
+		insert into t_product_standard_detail
+		(productStandardDetailId,productStandardNum,
+		productStandardId,productId,companyId,
+		createTime,createBy,updateTime,updateBy)
+		values
+		(#{productStandardDetailId},#{productStandardNum},
+		#{productStandard.productStandardId},#{product.productId},#{companyId},
+		#{createTime},#{createBy},#{updateTime},#{updateBy})
+	</insert>
+
+	<insert id="insertSelective" parameterType="cn.rfidcer.bean.ProductStandardDetail">
+		insert into t_product_standard_detail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="productStandardDetailId != null">
+				productStandardDetailId,
+			</if>
+			<if test="product.productId != null">
+				productId,
+			</if>
+			<if test="productStandardNum != null">
+				productStandardNum,
+			</if>
+			<if test="productStandard.productStandardId != null">
+				productStandardId,
+			</if>
+			<if test="purchasePrice != null">
+				purchasePrice,
+			</if>			
+			<if test="purchaseCurrency != null">
+				purchaseCurrency,
+			</if>			
+			<if test="saleCurrency != null">
+				saleCurrency,
+			</if>
+			<if test="salePrice != null">
+				salePrice,
+			</if>
+			<if test="companyId != null">
+				companyId,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="createBy != null">
+				createBy,
+			</if>
+			<if test="updateTime != null">
+				updateTime,
+			</if>
+			<if test="updateBy != null">
+				updateBy,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="productStandardDetailId != null">
+				#{productStandardDetailId,jdbcType=CHAR},
+			</if>
+			<if test="product.productId != null">
+				#{product.productId,jdbcType=CHAR},
+			</if>
+			<if test="productStandardNum != null">
+				#{productStandardNum,jdbcType=VARCHAR},
+			</if>
+			<if test="productStandard.productStandardId != null">
+				#{productStandard.productStandardId,jdbcType=CHAR},
+			</if>
+			
+			<if test="purchasePrice != null">
+				#{purchasePrice,jdbcType=DECIMAL},
+			</if>			
+			<if test="purchaseCurrency != null">
+				#{purchaseCurrency,jdbcType=VARCHAR},
+			</if>			
+			<if test="saleCurrency != null">
+				#{saleCurrency,jdbcType=VARCHAR},
+			</if>
+			<if test="salePrice != null">
+				#{salePrice,jdbcType=DECIMAL},
+			</if>
+			<if test="companyId != null">
+				#{companyId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<delete id="delProductStandardDetail">
+		delete from t_product_standard_detail where
+		productStandardDetailId=#{productStandardDetailId}
+	</delete>
+	
+	<!-- 修改产品规格明细 -->
+	<update id="updateProductStandardDetail" parameterType="cn.rfidcer.bean.ProductStandardDetail">
+		update t_product_standard_detail
+		<set>
+			<if test="product!=null and product.productId != null">
+				productId=#{product.productId,jdbcType=CHAR},
+			</if>
+			<if test="productStandardNum != null">
+				productStandardNum=#{productStandardNum,jdbcType=VARCHAR},
+			</if>
+			<if test="productStandard!=null and productStandard.productStandardId != null">
+				productStandardId=#{productStandard.productStandardId,jdbcType=CHAR},
+			</if>
+			<if test="purchasePrice != null">
+				purchasePrice=#{purchasePrice,jdbcType=DECIMAL},
+			</if>			
+			<if test="purchaseCurrency != null">
+				purchaseCurrency=#{purchaseCurrency,jdbcType=VARCHAR},
+			</if>			
+			<if test="saleCurrency != null">
+				saleCurrency=#{saleCurrency,jdbcType=VARCHAR},
+			</if>
+			<if test="salePrice != null">
+				salePrice=#{salePrice,jdbcType=DECIMAL},
+			</if>
+			<if test="retailPrice != null">
+				retailPrice=#{retailPrice,jdbcType=DECIMAL},
+			</if>
+			<if test="retailCurrency != null">
+				retailCurrency=#{retailCurrency,jdbcType=VARCHAR},
+			</if>			
+			<if test="createTime != null">
+				createTime=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				createBy=#{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				updateTime=#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateBy != null">
+				updateBy=#{updateBy,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where productStandardDetailId=#{productStandardDetailId}
+	</update>
+	
+	<select id="findProductStandardDetailByUnique" resultType="int">
+		select count(productStandardDetailId) from t_product_standard_detail
+		where productStandardNum=#{productStandardNum} and
+		productStandardId=#{productStandard.productStandardId}
+		and productId=#{product.productId}
+		<if test="productStandardDetailId!=null and productStandardDetailId!=''">
+			and productStandardDetailId!=#{productStandardDetailId}
+		</if>
+	</select>
+	<select id="findProductStandardDetailById" resultType="int">
+		select count(productStandardDetailId) from t_product_standard_detail
+		<if test="productStandardDetailId!=null and productStandardDetailId!=''">
+			where  productStandardDetailId!=#{productStandardDetailId}
+		</if>
+	</select>	
+	
+	<select id="findPriceById" resultMap="productStandardDetail" useCache="false">
+			select d.purchasePrice,d.purchaseCurrency,d.saleCurrency,d.salePrice	from t_product_standard_detail d
+			<where>		
+				<if test="productStandardDetailId != null and productStandardDetailId != ''">
+					d.productStandardDetailId = #{productStandardDetailId}
+				</if>
+			</where>
+	</select>
+	
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>

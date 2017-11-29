@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ResourceDao">
+	<resultMap type="Resource" id="resource" autoMapping="true">
+		<id column="id" property="id" />
+		<result column="parent_id" property="parentId" />
+		<collection property="children" ofType="Resource">
+			<id column="sub_id" property="id" />
+			<result column="sub_parent_id" property="parentId" />
+			<result column="sub_name" property="name"/>
+			<result column="sub_type" property="type"/>
+			<result column="sub_available" property="available"/>
+			<result column="sub_permission" property="permission"/>
+			<result column="sub_url" property="url"/>
+			<result column="sub_icon" property="icon"/>
+		</collection>
+	</resultMap>
+	<resultMap type="TreeBean" id="tree">
+		<id column="id" property="id"/>
+		<result column="name" property="text"/>
+		<result column="icon" property="iconCls"/>
+		<collection property="children" ofType="TreeBean" select="findSubNode" column="id">
+			<id column="id" property="id" />
+			<result column="name" property="text"/>
+			<result column="icon" property="iconCls"/>
+		</collection>
+	</resultMap>
+	<select id="findOne" resultMap="resource">
+		select id, name, type, url,
+		permission, parent_id, available from sys_resource where
+		id=#{resourceId}
+	</select>
+	<select id="findAll" resultMap="resource">
+		select a.id, a.name, a.type,a.url, a.permission, a.parent_id,a.available,
+		a.icon,b.id  sub_id,b.name sub_name, b.type sub_type, b.url sub_url, 
+		b.permission sub_permission, b.parent_id sub_parent_id,
+		b.available sub_available,b.icon sub_icon 
+		from sys_resource a 
+		JOIN sys_resource b ON b.parent_id=a.id 
+		order by a.id
+	</select>
+	<select id="findResourcesByRoleId" resultMap="resource">
+		select r.* from sys_resource r inner join sys_role_resource_relation b on r.id=b.resource_id where b.role_id=#{roleId}
+	</select>
+	<insert id="createResource">
+		insert into sys_resource(name, type, url, permission,
+		parent_id, available) values
+		(#{name},#{type},#{url},#{permission},#{parentId},#{available})
+	</insert>
+	<insert id="addResourceForRole">
+		insert into sys_role_resource_relation (role_id,resource_id) values (#{0},#{1})
+	</insert>
+	<update id="updateResource">
+		update sys_resource set name=#{name}, type=#{type},
+		url=#{url}, permission=#{permission}, parent_id=#{parentId},
+		 available=#{available} where id=#{id}
+	</update>
+	<delete id="deleteResource">
+		delete from sys_resource where id=#{id}
+	</delete>
+	<select id="findMenus" resultMap="resource">
+		select a.id, a.name, a.type,a.url, a.permission, a.parent_id,a.available,a.icon,b.id  sub_id,b.name sub_name, b.type sub_type, b.url sub_url, b.permission sub_permission, b.parent_id sub_parent_id,
+		b.available sub_available,b.icon sub_icon from sys_resource a LEFT JOIN sys_resource b
+		ON b.parent_id=a.id where a.type='menu' and b.type='menu' order by a.id, b.sort
+	</select>
+	<select id="findTree" resultMap="tree">
+		select id,name,permission,icon from sys_resource where parent_id=0
+	</select>
+	<select id="findSubNode" resultMap="tree">
+		select id,name,permission,icon from sys_resource where parent_id=#{parent_id}
+	</select>
+	<cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"></cache>
+</mapper>

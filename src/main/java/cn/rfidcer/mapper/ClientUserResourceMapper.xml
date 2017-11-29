@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.ClientUserResourceMapper" >
+  <resultMap id="BaseResultMap" type="cn.rfidcer.bean.ClientUserResource" >
+    <id column="resource_id" property="resourceId" jdbcType="CHAR" />
+    <result column="resource_num" property="resourceNum" jdbcType="INTEGER" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    resource_id, resource_num, description
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from client_user_resource
+    where resource_id = #{resourceId,jdbcType=CHAR}
+  </select>
+  
+  <!-- 查询所有的设备权限信息 -->
+  <select id="findAll" resultMap="BaseResultMap" useCache="false" >
+  select 
+  	resource_id, resource_num, description
+  from client_user_resource
+  order by resource_num
+  </select>
+  
+  <!-- 依据设备用户ID来查询设备权限 -->
+  <select id="findByClientUserId" resultMap="BaseResultMap" useCache="false">
+  	SELECT 
+  		cur.resource_id, cur.resource_num, cur.description 
+	FROM client_user_resource cur
+	inner join client_user_relation curr on curr.resource_id = cur.resource_id
+	where curr.client_user_id = #{clientUserId}
+  </select>
+  
+  <!-- 依据设备权限ID来删除该记录 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from client_user_resource
+    where resource_id = #{resourceId,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="cn.rfidcer.bean.ClientUserResource" >
+    insert into client_user_resource (resource_id, resource_num, description
+      )
+    values (#{resourceId,jdbcType=CHAR}, #{resourceNum,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <!-- 新增设备权限信息 -->
+  <insert id="insertSelective" parameterType="cn.rfidcer.bean.ClientUserResource" >
+    insert into client_user_resource
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="resourceId != null" >
+        resource_id,
+      </if>
+      <if test="resourceNum != null" >
+        resource_num,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="resourceId != null" >
+        #{resourceId,jdbcType=CHAR},
+      </if>
+      <if test="resourceNum != null" >
+        #{resourceNum,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 依据设备权限ID来修改该记录 -->
+  <update id="updateByPrimaryKeySelective" parameterType="cn.rfidcer.bean.ClientUserResource" >
+    update client_user_resource
+    <set >
+      <if test="resourceNum != null" >
+        resource_num = #{resourceNum,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where resource_id = #{resourceId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.rfidcer.bean.ClientUserResource" >
+    update client_user_resource
+    set resource_num = #{resourceNum,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR}
+    where resource_id = #{resourceId,jdbcType=CHAR}
+  </update>
+</mapper>

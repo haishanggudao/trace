@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.rfidcer.dao.jinji.JinJiCompanyMapper" > 
+<resultMap id="BaseResultMap" type="cn.rfidcer.bean.jinji.JinJiCompany">
+		<id column="companyId" property="companyid" jdbcType="CHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="shortName" property="shortname" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="contact" property="contact" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="tel" property="tel" jdbcType="VARCHAR" />
+		<result column="license" property="license" jdbcType="VARCHAR" />
+		<result column="foodSafetyCode" property="foodSafetyCode" jdbcType="VARCHAR" />
+		<result column="orgCode" property="orgcode" jdbcType="VARCHAR" />
+		<result column="companyFieldId" property="companyfieldid" jdbcType="CHAR" />
+		<result column="province" property="province" jdbcType="CHAR" />
+		<result column="city" property="city" jdbcType="CHAR" />
+		<result column="area" property="area" jdbcType="CHAR" />
+		<result column="status" property="status" jdbcType="CHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="createBy" property="createBy" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+		<!-- 2016.06.13 -->
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+    	<result column="cnature" property="cnature" jdbcType="VARCHAR" />
+    	<result column="cidnumb" property="cidnumb" jdbcType="VARCHAR" />
+    	<result column="ccustomercategories" property="ccustomercategories" jdbcType="VARCHAR" />
+    	<result column="cbusinessscope" property="cbusinessscope" jdbcType="VARCHAR" />
+    	<result column="cliquorbusinesslicense" property="cliquorbusinesslicense" jdbcType="VARCHAR" />
+    	<result column="cbusinessaddress" property="cbusinessaddress" jdbcType="VARCHAR" />
+    	<result column="chygienelicense" property="chygienelicense" jdbcType="VARCHAR" />
+    	<result column="clegalpersonaddress" property="clegalpersonaddress" jdbcType="VARCHAR" />
+    	<result column="cbusinesslicense" property="cbusinesslicense" jdbcType="VARCHAR" />
+    	<result column="ceffectivedate1" property="ceffectivedate1" jdbcType="TIMESTAMP" />
+    	<result column="ceffectivedate2" property="ceffectivedate2" jdbcType="TIMESTAMP" />
+    	<result column="cregistrationnumber" property="cregistrationnumber" jdbcType="VARCHAR" /> 
+    	<!-- 2016.10.27 -->
+    	<result column="licenseUrl" property="licenseUrl" jdbcType="VARCHAR" />
+    	<result column="chygienelicenseUrl" property="chygienelicenseUrl" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		companyId, name, shortName, code, address, contact, email, tel,
+		license,foodSafetyCode, orgCode,
+		companyFieldId, province, city, area, status, createTime, createBy, updateTime,
+		updateBy, cname, cnature, cidnumb, ccustomercategories, cbusinessscope, 
+    	cliquorbusinesslicense, cbusinessaddress, chygienelicense, clegalpersonaddress, cbusinesslicense, 
+    	ceffectivedate1,ceffectivedate2,cregistrationnumber,chygienelicenseUrl,licenseUrl
+	</sql>
+	
+	<select id="listQuery" resultMap="BaseResultMap" parameterType="cn.rfidcer.dao.jinji.JinJiCompanyMapper">
+		select
+		<include refid="Base_Column_List" />
+		from t_company
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="jinjiCompany.name != null and jinjiCompany.name != ''">
+				name LIKE CONCAT(CONCAT('%',#{jinjiCompany.name}),'%')
+				OR shortname LIKE CONCAT(CONCAT('%',#{jinjiCompany.name}),'%')
+				OR contact LIKE CONCAT(CONCAT('%',#{jinjiCompany.name}),'%')
+				OR address LIKE CONCAT(CONCAT('%',#{jinjiCompany.name}),'%')
+				OR code LIKE CONCAT(CONCAT('%',#{jinjiCompany.name}),'%')
+				OR email LIKE CONCAT(CONCAT('%',#{jinjiCompany.name}),'%')
+				OR tel LIKE CONCAT(CONCAT('%',#{jinjiCompany.name}),'%')
+				OR license LIKE CONCAT(CONCAT('%',#{jinjiCompany.name}),'%')
+				OR foodSafetyCode LIKE CONCAT(CONCAT('%',#{jinjiCompany.name}),'%')
+			</if>
+			<if test="jinjiCompany.shortname != null and jinjiCompany.shortname != ''">
+				AND shortname LIKE
+				CONCAT(CONCAT('%',#{jinjiCompany.shortname}),'%')
+			</if>
+			<if test="jinjiCompany.contact != null and jinjiCompany.contact != ''">
+				AND contact LIKE
+				CONCAT(CONCAT('%',#{jinjiCompany.contact}),'%')
+			</if>
+			<if test="jinjiCompany.address != null and jinjiCompany.address != ''">
+				AND address LIKE
+				CONCAT(CONCAT('%',#{jinjiCompany.address}),'%')
+			</if>
+			<if test="jinjiCompany.code != null and jinjiCompany.code != ''">
+				AND code LIKE CONCAT(CONCAT('%',#{jinjiCompany.code}),'%')
+			</if>
+			<if test="jinjiCompany.email != null and jinjiCompany.email != ''">
+				AND email LIKE CONCAT(CONCAT('%',#{jinjiCompany.email}),'%')
+			</if>
+			<if test="jinjiCompany.tel != null and jinjiCompany.tel != ''">
+				AND tel LIKE CONCAT(CONCAT('%',#{jinjiCompany.tel}),'%')
+			</if>
+			<if test="jinjiCompany.license != null and jinjiCompany.license != ''">
+				AND license LIKE
+				CONCAT(CONCAT('%',#{jinjiCompany.license}),'%')
+			</if>
+			<if test="jinjiCompany.foodSafetyCode !=null and jinjiCompany.foodSafetyCode !=''">
+				AND foodSafetyCode LIKE
+				CONCAT(CONCAT('%',#{jinjiCompany.foodSafetyCode}),'%')
+			</if>
+			and isDeleted != -1
+		</trim>
+		order by createTime desc
+	</select> 
+</mapper>
