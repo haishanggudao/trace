@@ -1,0 +1,28 @@
+# Operating System Files  
+  
+*.DS_Store  
+Thumbs.db  
+*.sw?  
+.#*  
+*#  
+*~  
+*.sublime-*  
+  
+# Build Artifacts  
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# ignore Maven generated target folders
+target
+
+# ignore eclipse files
+.project
+.classpath
+.settings
+.metadata
+
+README.html  
